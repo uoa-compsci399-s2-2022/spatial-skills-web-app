@@ -1,0 +1,36 @@
+.home {
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home__content {
+    width: 25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.home__logo {
+    width: 100%;
+}
+
+.home__button {
+    padding: 1rem;
+    color: var(--contrast-color);
+    outline: 1px solid var(--contrast-color);
+    border-radius: .5rem;
+    font-size: large;
+    font-weight: bold;
+    transition: color .25s, background-color .25s;
+}
+
+.home__button:hover {
+    background-color: var(--contrast-color);
+    color: var(--accent-color);
+}
