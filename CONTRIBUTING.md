@@ -9,7 +9,6 @@ First you must have the following installed.
 - [NodeJS](https://nodejs.org/en/download/)
 - [Git](https://git-scm.com/downloads)
 
-
 After installing the above prerequisites. Clone the repository locally.
 
 ```
@@ -40,15 +39,16 @@ Bellow is an illustration of the workflow this project uses.
 
 > Reference: https://rovitpm.com/5-git-workflows-to-improve-development/ 
 
-- **MASTER(or MAIN)**: For project release, hotfix and general documentation.
+- **MASTER(or MAIN)**: For product release, hotfix and general documentation.
 - **DEVELOP**: This branch will contain multiple features for a new product release.
-- **FEATURE**: This is were you will develop the feature.
+- **FEATURE**: This is where you will develop the feature.
 
-New features will be developed within their own feature branch. For example, suppose you wanted to work on a new navbar component. First you would create a new branch.
+New features will be developed within their own feature branch. For example, suppose you wanted to work on a new navbar component. First, you would create a new branch.
 
 ```
 git checkout -b [feature name]
 ```
+
 > Example feature names: navbar-component, user-authentication, spatial-memory-component
 
 While working on the feature you may want to commit the current state.
@@ -56,6 +56,7 @@ While working on the feature you may want to commit the current state.
 ```
 git commit -m "[message name]"
 ```
+
 > Example message names: "Add navbar component", "Fix navbar styling", "Add responsiveness to navbar at smaller resolutions"
 
 **Note**: For commit messages it is good to follow these guidelines,
@@ -64,4 +65,3 @@ git commit -m "[message name]"
 - Think of a commit message as a pitch to the team.
 
 When you have completed the feature open up a pull request for review.
-
