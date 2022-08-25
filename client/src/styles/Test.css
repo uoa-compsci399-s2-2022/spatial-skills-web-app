@@ -10,13 +10,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3rem;
+    gap: 6rem;
  }
  
  .test__question {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 3rem;
 }
 
 .test__answers {
@@ -25,6 +26,7 @@
     justify-content: space-around;
 }
 
-.test__answers button {
-    padding: 10px;
+.answer__option {
+    display: flex;
+    flex-direction: column;
 }
