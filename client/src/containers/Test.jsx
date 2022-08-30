@@ -3,11 +3,30 @@ import React from 'react';
 
 
 class Test extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            questionBank: [images, images2],
+            questionNum: 1,
+        };
+    }
+
+    handleClick(i) {
+        if (i < this.state.questionBank.length) {
+            this.setState({
+                questionNum: this.state.questionNum + 1,
+            })
+            return;
+        } else {
+            alert("No more questions!");
+        }
+    }
+
     render() {
         return (
             <div className='test'>
-                <TestContent question={images}/>
-                <NextButton />
+                <TestContent question={this.state.questionBank[this.state.questionNum - 1]}/>
+                <NextButton onClick={() => this.handleClick(this.state.questionNum)}/> 
             </div>
         )
     }
@@ -17,11 +36,10 @@ class Test extends React.Component {
 class NextButton extends React.Component {
     render() {
         return (
-            <button>Next</button>
+            <button onClick={this.props.onClick}>Next</button>
         )
     }
 }
-
 
 class TestContent extends React.Component {
     render() {
@@ -41,6 +59,7 @@ class Question extends React.Component {
     }
 
     render() {
+        // Question text doesn't change currently.
         return (
             <div className='test__question'>
                 <img src={this.renderQuestionImage()} className='test__image' alt=''/>
