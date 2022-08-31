@@ -1,18 +1,19 @@
 import '../styles/Test.css';
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 
 class Test extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            questionBank: [images, images2],
             questionNum: 1,
+            questionTime: 10,
         };
+        this.questionBank = [images, images2];
     }
 
-    handleClick(i) {
-        if (i < this.state.questionBank.length) {
+    nextQuestion(i) {
+        if (i < this.questionBank.length) {
             this.setState({
                 questionNum: this.state.questionNum + 1,
             })
@@ -25,8 +26,11 @@ class Test extends React.Component {
     render() {
         return (
             <div className='test'>
-                <TestContent question={this.state.questionBank[this.state.questionNum - 1]}/>
-                <NextButton onClick={() => this.handleClick(this.state.questionNum)}/> 
+                <TestContent question={this.questionBank[this.state.questionNum - 1]}/>
+                <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
+                
+                <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
+                <TestTimer seconds={this.state.questionTime} onFinish={() => this.nextQuestion(this.state.questionNum)}/>
             </div>
         )
     }
@@ -41,6 +45,14 @@ class NextButton extends React.Component {
     }
 }
 
+function TestProgress(props) {
+    return (
+        <div>
+            Question {props.current} / {props.total}
+        </div>
+    )
+}
+
 class TestContent extends React.Component {
     render() {
         return (
@@ -51,6 +63,64 @@ class TestContent extends React.Component {
         )
     }
 }
+
+const TestTimer = () => {
+    const Ref = useRef(null);
+    // The state for our timer
+    const [timer, setTimer] = useState('00:00');
+  
+    const getTimeRemaining = (e) => {
+        const total = Date.parse(e) - Date.parse(new Date());
+        const seconds = Math.floor((total / 1000) % 60);
+        const minutes = Math.floor((total / 1000 / 60) % 60);
+        return {
+            total, minutes, seconds
+        };
+    }
+  
+    const startTimer = (e) => {
+        let { total, minutes, seconds } 
+                    = getTimeRemaining(e);
+        if (total >= 0) {
+            setTimer(
+                (minutes > 9 ? minutes : '0' + minutes) + ':'
+                + (seconds > 9 ? seconds : '0' + seconds)
+            )
+        } else {
+            this.onFinish();
+        }
+    }
+  
+    const clearTimer = (e) => {
+        setTimer('00:10');
+        if (Ref.current) clearInterval(Ref.current);
+        const id = setInterval(() => {
+            startTimer(e);
+        }, 1000)
+        Ref.current = id;
+    }
+  
+    const getDeadTime = () => {
+        let deadline = new Date();
+        deadline.setSeconds(deadline.getSeconds() + 10);
+        return deadline;
+    }
+  
+    useEffect(() => {
+        clearTimer(getDeadTime());
+    }, []);
+  
+    const onClickReset = () => {
+        clearTimer(getDeadTime());
+    }
+  
+    return (
+        <div className="timer">
+            {timer}
+        </div>
+    )
+}
+
 
 class Question extends React.Component {
     renderQuestionImage() {
@@ -86,9 +156,10 @@ class Answer extends React.Component {
 
     render() {  // Currently only allows multichoice answers. We should also make an entry type answer
         return (
-            <div className='test__answers'>
+            <form action={console.log("answer submit")} className='test__answers'>
                 {this.renderMultiChoiceAnswers()}
-            </div>
+            </form>
+                
         )
     }
 }
