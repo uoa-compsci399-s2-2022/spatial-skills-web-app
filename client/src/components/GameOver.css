@@ -1,0 +1,12 @@
+
+.gameOver-text-block {
+    
+    position: relative;
+    text-align: center;
+}
+
+.gameOver-text {
+    margin-top: 20px;
+    font-size: 40px;
+
+}
