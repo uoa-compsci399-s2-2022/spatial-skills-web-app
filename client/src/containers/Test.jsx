@@ -5,22 +5,30 @@ import React, { useState, useRef, useEffect } from 'react';
 class Test extends React.Component {
     constructor(props) {
         super(props);
+        this.questionBank = [images, images2];
+        this.questionTimeBank = [3, 120]
         this.state = {
             questionNum: 1,
-            questionTime: 10,
+            questionTime: this.questionTimeBank[0],
         };
-        this.questionBank = [images, images2];
+
     }
 
     nextQuestion(i) {
         if (i < this.questionBank.length) {
             this.setState({
                 questionNum: this.state.questionNum + 1,
+                questionTime: this.questionTimeBank[this.state.questionNum],
             })
-            return;
+            return true;
         } else {
             alert("No more questions!");
+            return false;
         }
+    }
+
+    getCurrentQuestionTime() {
+        return this.state.questionTime;
     }
 
     render() {
@@ -30,7 +38,7 @@ class Test extends React.Component {
                 <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
                 
                 <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
-                <TestTimer seconds={this.state.questionTime} onFinish={() => this.nextQuestion(this.state.questionNum)}/>
+                <TestTimer questionTime={this.getCurrentQuestionTime()} nextQuestion={() => this.nextQuestion(this.state.questionNum)}/>
             </div>
         )
     }
@@ -64,62 +72,72 @@ class TestContent extends React.Component {
     }
 }
 
-const TestTimer = () => {
-    const Ref = useRef(null);
-    // The state for our timer
-    const [timer, setTimer] = useState('00:00');
-  
-    const getTimeRemaining = (e) => {
-        const total = Date.parse(e) - Date.parse(new Date());
-        const seconds = Math.floor((total / 1000) % 60);
-        const minutes = Math.floor((total / 1000 / 60) % 60);
-        return {
-            total, minutes, seconds
-        };
+class TestTimer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { time: {}, seconds: this.props.questionTime };
+        this.timer = 0;
+        this.startTimer = this.startTimer.bind(this);
+        this.countDown = this.countDown.bind(this);
     }
   
-    const startTimer = (e) => {
-        let { total, minutes, seconds } 
-                    = getTimeRemaining(e);
-        if (total >= 0) {
-            setTimer(
-                (minutes > 9 ? minutes : '0' + minutes) + ':'
-                + (seconds > 9 ? seconds : '0' + seconds)
-            )
-        } else {
-            this.onFinish();
+    secondsToTime(secs) {
+        // Returns dictionary array of minutes + seconds.
+        let divisor_for_minutes = secs % (60 * 60);
+        let minutes = Math.floor(divisor_for_minutes / 60);
+        let divisor_for_seconds = divisor_for_minutes % 60;
+        let seconds = Math.ceil(divisor_for_seconds);
+    
+        let obj = {
+            "m": minutes,
+            "s": seconds
+        };
+        return obj;
+    }
+  
+    componentDidMount() {
+        let timeLeftVar = this.secondsToTime(this.state.seconds);
+        this.setState({ time: timeLeftVar });
+    }
+  
+    startTimer() {
+        //this.setState({ seconds: this.props.questionTime });
+        if (this.timer == 0 && this.state.seconds > 0) {
+            this.timer = setInterval(this.countDown, 1000);
+        }
+    }
+
+    // Ideally we wouldn't use this, but this component doesn't update when parent state changes
+    componentWillReceiveProps(nextProps) {
+        this.setState({ seconds: nextProps.questionTime });  
+    }
+
+    countDown() {
+        let seconds = this.state.seconds - 1;
+        this.setState({
+            time: this.secondsToTime(seconds),
+            seconds: seconds,
+        });
+        if (seconds == 0) { 
+            
+            if (this.props.nextQuestion()) {
+                //this.setState({ seconds: this.props.questionTime });
+            } 
+            else {
+                clearInterval(this.timer);
+            }
         }
     }
   
-    const clearTimer = (e) => {
-        setTimer('00:10');
-        if (Ref.current) clearInterval(Ref.current);
-        const id = setInterval(() => {
-            startTimer(e);
-        }, 1000)
-        Ref.current = id;
+    render() {
+        this.startTimer();
+        return(
+            <div>
+                {this.state.time.m} : {this.state.time.s}
+            </div>
+        );
     }
-  
-    const getDeadTime = () => {
-        let deadline = new Date();
-        deadline.setSeconds(deadline.getSeconds() + 10);
-        return deadline;
-    }
-  
-    useEffect(() => {
-        clearTimer(getDeadTime());
-    }, []);
-  
-    const onClickReset = () => {
-        clearTimer(getDeadTime());
-    }
-  
-    return (
-        <div className="timer">
-            {timer}
-        </div>
-    )
-}
+  }
 
 
 class Question extends React.Component {
