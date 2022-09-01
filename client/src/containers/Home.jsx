@@ -1,30 +1,24 @@
 import '../styles/Home.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-
-const GOOGLE_CLIENT_ID = '126878629767-elluidkp4g3iost84sgh5spapdq30su7.apps.googleusercontent.com';
+import { GoogleLogin} from '@react-oauth/google';
 
 const Home = () => {
+    const navigate = useNavigate();
     return(
         <div className='home'>
+            <img src={logo} className='home__logo' alt="" />
             <div className='home__content'>
-                <img src={logo} className='home__logo' alt="" />
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Aliquam ac purus laoreet, consequat ante eu, aliquam neque. 
-                    Fusce finibus tristique dui ac pretium.<br /><br />Quisque 
-                    diam quam, tristique gravida lectus id, hendrerit eleifend 
-                    felis.
-                </p>
-                <Link to="test" className='home__button'>START TEST</Link>
-                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                    <GoogleLogin 
-                        onSuccess={() => console.log("Success!")}
-                        onFailure={() => console.log("Failed!")}
-                    />
-                </GoogleOAuthProvider>
+                <GoogleLogin 
+                    onSuccess={() => console.log("Success!")}
+                    onError={() => console.log("Failed!")}
+                    width='240'
+                />
+                <form onSubmit={(e) => {e.preventDefault(); navigate('/test')}} className='home__form'>
+                    <input type="text" placeholder="Name" className='home__input home__input--text' />
+                    <button className='home__input home__input--button'>Enter</button>
+                </form>
             </div>
         </div>
     );
