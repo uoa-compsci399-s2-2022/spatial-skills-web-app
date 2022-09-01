@@ -1,6 +1,14 @@
+import MatchingGame from '../components/MatchingGame';
+import '../styles/Home.css';
+
+
+
 const Test = () => {
     return(
-        <div className="test">Testing page</div>
+        <div>
+            <MatchingGame />
+
+        </div>
     );
 }
 
