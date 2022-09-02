@@ -27,7 +27,7 @@ const Home = () => {
                 email: null,
                 picture: null
             })
-            navigate('/test');     // go to test page 
+            // navigate('/test');     // go to test page 
         }        
     }
 
@@ -39,7 +39,7 @@ const Home = () => {
             email: payload.email,
             picture: payload.picture
         })
-        navigate('/test');
+        // navigate('/test');
     }
 
     return(

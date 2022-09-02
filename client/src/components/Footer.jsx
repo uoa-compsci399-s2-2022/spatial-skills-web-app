@@ -1,6 +1,9 @@
+import '../styles/Footer.css';
 const Footer = () => {
     return(
-        <footer></footer>
+        <footer className='footer'>
+            <p>[untitled-project] is developed by Team Marshmallow<br />Legal | Privacy</p>
+        </footer>
     );
 }
 
