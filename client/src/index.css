@@ -2,8 +2,10 @@
   box-sizing: border-box;
   --accent-color: #4895EF;
   --contrast-color: #ffffff;
+  --mid-color: #dadce0;
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
+  --error-color: #f51d24;
   --font: 'Quicksand';
   --font-cta: 'Montserrat';
 }

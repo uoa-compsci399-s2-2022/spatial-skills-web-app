@@ -10,6 +10,7 @@
 }
 
 .home__content {
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,8 +33,8 @@
 .home__input {
     padding: 14px;
     width: 240px;
-    text-align: center;
     border-radius: 3px;
+    text-align: center;
 }
 
 .home__input--text {
@@ -54,4 +55,12 @@
 .home__input--button:hover {
     background-color: var(--dark-color);
     transform: translateY(-5px);
+}
+
+.home__error {
+    background-color: var(--error-color);
+    color: var(--contrast-color);
+    padding: 7px;
+    border-radius: 3px;
+    left: 0;
 }
