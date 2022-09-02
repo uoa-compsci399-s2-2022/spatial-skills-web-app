@@ -6,12 +6,15 @@ class Test extends React.Component {
     constructor(props) {
         super(props);
         this.questionBank = [images, images2];
-        this.questionTimeBank = [3, 120]
+        this.questionTimeBank = [3, 10]
         this.state = {
             questionNum: 1,
             questionTime: this.questionTimeBank[0],
         };
         this.answers = Array.apply(null, Array(this.questionBank.length));
+        this.timer = 0;
+        this.startTimer = this.startTimer.bind(this);
+        this.countDown = this.countDown.bind(this);
     }
 
     nextQuestion() {
@@ -33,15 +36,33 @@ class Test extends React.Component {
         this.answers[this.state.questionNum - 1] = event.target.value;
     };
 
-    getCurrentQuestionTime() {
-        return this.state.questionTime;
-    }
-
     getCurrentQuestion() {
         return this.questionBank[this.state.questionNum - 1];
     }
 
+    countDown() {
+        this.setState({
+            questionTime: this.state.questionTime - 1,
+        });
+        if (this.state.questionTime <= 0) {
+            if (this.nextQuestion()) {
+
+            } else {
+                clearInterval(this.timer);
+            }
+        }
+    }
+
+    startTimer() {
+        // Timer === 0: timer has not been started yet
+        if (this.timer === 0 && this.state.questionTime > 0) {
+            this.timer = setInterval(this.countDown, 1000);
+        }
+    }
+
     render() {
+        this.startTimer();
+
         return (
             <div className='test'>
                 <div className='test__content'>
@@ -51,11 +72,102 @@ class Test extends React.Component {
                 <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
                 
                 <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
-                <TestTimer questionTime={this.getCurrentQuestionTime()} nextQuestion={() => this.nextQuestion(this.state.questionNum)}/>
+                <Timer seconds={this.state.questionTime}/>
             </div>
         )
     }
 }
+
+class Timer extends React.Component {
+    secondsToTime(secs) {
+        // Returns dictionary array of minutes + seconds.
+        let divisor_for_minutes = secs % (60 * 60);
+        let minutes = Math.floor(divisor_for_minutes / 60);
+        let divisor_for_seconds = divisor_for_minutes % 60;
+        let seconds = Math.ceil(divisor_for_seconds);
+    
+        let time = {
+            "m": minutes,
+            "s": seconds
+        };
+        return time;
+    }
+
+    render() {
+        return (
+            <div>
+                Time Left: {this.props.seconds} seconds
+            </div>
+        );
+    }
+}
+
+// class TestTimer extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.state = { time: {}, seconds: this.props.questionTime };
+//         this.timer = 0;
+//         this.startTimer = this.startTimer.bind(this);
+//         this.countDown = this.countDown.bind(this);
+//     }
+  
+//     secondsToTime(secs) {
+//         // Returns dictionary array of minutes + seconds.
+//         let divisor_for_minutes = secs % (60 * 60);
+//         let minutes = Math.floor(divisor_for_minutes / 60);
+//         let divisor_for_seconds = divisor_for_minutes % 60;
+//         let seconds = Math.ceil(divisor_for_seconds);
+    
+//         let obj = {
+//             "m": minutes,
+//             "s": seconds
+//         };
+//         return obj;
+//     }
+  
+//     componentDidMount() {
+//         let timeLeftVar = this.secondsToTime(this.state.seconds);
+//         this.setState({ time: timeLeftVar });
+//     }
+  
+//     startTimer() {
+//         //this.setState({ seconds: this.props.questionTime });
+//         if (this.timer === 0 && this.state.seconds > 0) {
+//             this.timer = setInterval(this.countDown, 1000);
+//         }
+//     }
+
+//     // Ideally we wouldn't use this, but this component doesn't update when parent state changes
+//     componentWillReceiveProps(nextProps) {
+//         this.setState({ seconds: nextProps.questionTime });  
+//     }
+
+//     countDown() {
+//         let seconds = this.state.seconds - 1;
+//         this.setState({
+//             time: this.secondsToTime(seconds),
+//             seconds: seconds,
+//         });
+//         if (seconds <= 0) { 
+            
+//             if (this.props.nextQuestion()) {
+//                 //this.setState({ seconds: this.props.questionTime });
+//             } 
+//             else {
+//                 clearInterval(this.timer);
+//             }
+//         }
+//     }
+  
+//     render() {
+//         this.startTimer();
+//         return (
+//             <div>
+//                 {this.state.time.m} : {this.state.time.s}
+//             </div>
+//         );
+//     }
+//   }
 
 
 class NextButton extends React.Component {
@@ -73,75 +185,6 @@ function TestProgress(props) {
         </div>
     )
 }
-
-
-class TestTimer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { time: {}, seconds: this.props.questionTime };
-        this.timer = 0;
-        this.startTimer = this.startTimer.bind(this);
-        this.countDown = this.countDown.bind(this);
-    }
-  
-    secondsToTime(secs) {
-        // Returns dictionary array of minutes + seconds.
-        let divisor_for_minutes = secs % (60 * 60);
-        let minutes = Math.floor(divisor_for_minutes / 60);
-        let divisor_for_seconds = divisor_for_minutes % 60;
-        let seconds = Math.ceil(divisor_for_seconds);
-    
-        let obj = {
-            "m": minutes,
-            "s": seconds
-        };
-        return obj;
-    }
-  
-    componentDidMount() {
-        let timeLeftVar = this.secondsToTime(this.state.seconds);
-        this.setState({ time: timeLeftVar });
-    }
-  
-    startTimer() {
-        //this.setState({ seconds: this.props.questionTime });
-        if (this.timer === 0 && this.state.seconds > 0) {
-            this.timer = setInterval(this.countDown, 1000);
-        }
-    }
-
-    // Ideally we wouldn't use this, but this component doesn't update when parent state changes
-    componentWillReceiveProps(nextProps) {
-        this.setState({ seconds: nextProps.questionTime });  
-    }
-
-    countDown() {
-        let seconds = this.state.seconds - 1;
-        this.setState({
-            time: this.secondsToTime(seconds),
-            seconds: seconds,
-        });
-        if (seconds <= 0) { 
-            
-            if (this.props.nextQuestion()) {
-                //this.setState({ seconds: this.props.questionTime });
-            } 
-            else {
-                clearInterval(this.timer);
-            }
-        }
-    }
-  
-    render() {
-        this.startTimer();
-        return(
-            <div>
-                {this.state.time.m} : {this.state.time.s}
-            </div>
-        );
-    }
-  }
-
 
 class Question extends React.Component {
     renderQuestionImage() {
@@ -161,6 +204,7 @@ class Question extends React.Component {
 }
 
 class Answer extends React.Component {
+    // Currently only allows multichoice answers. We should also make an entry type answer
     renderMultiChoiceAnswers() {
         const answerChoices = [];
         const labels = ["a", "b", "c", "d", "e"];
@@ -176,7 +220,7 @@ class Answer extends React.Component {
         return answerChoices;
     }
 
-    render() {  // Currently only allows multichoice answers. We should also make an entry type answer
+    render() {  
         return (
             <form className='test__answers'>
                 {this.renderMultiChoiceAnswers()}
