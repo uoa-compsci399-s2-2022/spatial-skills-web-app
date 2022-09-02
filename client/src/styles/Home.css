@@ -34,6 +34,7 @@
     width: 240px;
     border-radius: 3px;
     text-align: center;
+    font-family: var(--font-cta);
 }
 
 .home__input--text {

@@ -6,6 +6,7 @@
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
   --error-color: #f51d24;
+  --shadow-color: rgba(49, 50, 53, 0.26);
   --font: 'Quicksand';
   --font-cta: 'Montserrat';
 }
@@ -34,12 +35,12 @@ body {
 input {
   outline: none;
   border: none;
-  font-family: var(--font-cta);
 }
 
 button {
   border: none;
   cursor: pointer;
+  background-color: transparent;
   font-family: var(--font-cta);
 }
 
