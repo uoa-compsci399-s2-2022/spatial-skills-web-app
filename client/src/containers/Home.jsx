@@ -7,15 +7,15 @@ import logo from '../assets/logo.png';
 const Home = () => {
     const navigate = useNavigate();
     const nameRef = useRef(null);
-    const [displayError, setDisplayError] = useState(false);
+    const [error, setError] = useState("");
     const [userName, setUserName] = useState(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();    // this stops the page from reloading by default
-        setDisplayError(false);
+        setError("");
         const name = nameRef.current.value;
         if (name.length === 0) {
-            setDisplayError(true);
+            setError("Invalid name!");
         } else {
             setUserName(name);
             console.log(name)    // this is the input name
@@ -29,7 +29,7 @@ const Home = () => {
             <div className='home__content'>
                 <GoogleLogin 
                     onSuccess={(credentialResponse) => console.log(credentialResponse)}
-                    onError={() => console.log("Failed!")}
+                    onError={() => setError("Unable to authenticate Google account!")}
                     width='240'
                 />
                 <form onSubmit={(e) => handleSubmit(e)} className='home__form'>
@@ -40,9 +40,9 @@ const Home = () => {
                         ref={nameRef} 
                     />
                     {
-                        displayError ?
-                        <p className='home__error'>Invalid Name!</p> :
-                        null
+                        error === "" ?
+                        null :
+                        <p className='home__error'>{error}</p> 
                     }
                     <button 
                         className='home__input home__input--button'
