@@ -1,5 +1,5 @@
 import '../styles/Test.css';
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 
 
 class Test extends React.Component {
@@ -11,11 +11,12 @@ class Test extends React.Component {
             questionNum: 1,
             questionTime: this.questionTimeBank[0],
         };
-
+        this.answers = Array.apply(null, Array(this.questionBank.length));
     }
 
-    nextQuestion(i) {
-        if (i < this.questionBank.length) {
+    nextQuestion() {
+        console.log(this.answers);  // for debugging
+        if (this.state.questionNum < this.questionBank.length) {
             this.setState({
                 questionNum: this.state.questionNum + 1,
                 questionTime: this.questionTimeBank[this.state.questionNum],
@@ -27,14 +28,26 @@ class Test extends React.Component {
         }
     }
 
+    submitAnswer = event => {
+        const answer = event.target;
+        this.answers[this.state.questionNum - 1] = event.target.value;
+    };
+
     getCurrentQuestionTime() {
         return this.state.questionTime;
+    }
+
+    getCurrentQuestion() {
+        return this.questionBank[this.state.questionNum - 1];
     }
 
     render() {
         return (
             <div className='test'>
-                <TestContent question={this.questionBank[this.state.questionNum - 1]}/>
+                <div className='test__content'>
+                    <Question question={this.getCurrentQuestion()}/>
+                    <Answer question={this.getCurrentQuestion()} submit={this.submitAnswer}/>
+                </div>
                 <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
                 
                 <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
@@ -61,16 +74,6 @@ function TestProgress(props) {
     )
 }
 
-class TestContent extends React.Component {
-    render() {
-        return (
-            <div className='test__content'>
-                <Question question={this.props.question}/>
-                <Answer question={this.props.question}/>
-            </div>
-        )
-    }
-}
 
 class TestTimer extends React.Component {
     constructor(props) {
@@ -102,7 +105,7 @@ class TestTimer extends React.Component {
   
     startTimer() {
         //this.setState({ seconds: this.props.questionTime });
-        if (this.timer == 0 && this.state.seconds > 0) {
+        if (this.timer === 0 && this.state.seconds > 0) {
             this.timer = setInterval(this.countDown, 1000);
         }
     }
@@ -118,7 +121,7 @@ class TestTimer extends React.Component {
             time: this.secondsToTime(seconds),
             seconds: seconds,
         });
-        if (seconds == 0) { 
+        if (seconds <= 0) { 
             
             if (this.props.nextQuestion()) {
                 //this.setState({ seconds: this.props.questionTime });
@@ -159,22 +162,23 @@ class Question extends React.Component {
 
 class Answer extends React.Component {
     renderMultiChoiceAnswers() {
-        const answers = [];
+        const answerChoices = [];
         const labels = ["a", "b", "c", "d", "e"];
         for (var i = 0; i < this.props.question.length - 1; i++) {
-            answers.push(
+            answerChoices.push(
                 <MultichoiceAnswer 
                     image={this.props.question[i]}
                     label={labels[i]}
+                    submit={this.props.submit}
                 />
             );
         }
-        return answers;
+        return answerChoices;
     }
 
     render() {  // Currently only allows multichoice answers. We should also make an entry type answer
         return (
-            <form action={console.log("answer submit")} className='test__answers'>
+            <form className='test__answers'>
                 {this.renderMultiChoiceAnswers()}
             </form>
                 
@@ -186,7 +190,7 @@ function MultichoiceAnswer(props) {
     return (
         <div className='answer__option'>
             <label for={props.label}><img src={props.image} alt=''/></label>
-            <input type="radio" id={props.label} value={props.label} name="answer"/>
+            <input type="radio" id={props.label} value={props.label} name="answer" onChange={props.submit}/>
         </div>
     )
 }
