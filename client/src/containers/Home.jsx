@@ -1,10 +1,8 @@
 import '../styles/Home.css';
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
-
 import { GoogleLogin} from '@react-oauth/google';
-import { useState } from 'react';
+import logo from '../assets/logo.png';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -30,7 +28,7 @@ const Home = () => {
             <img src={logo} className='home__logo' alt="" />
             <div className='home__content'>
                 <GoogleLogin 
-                    onSuccess={() => console.log("Success!")}
+                    onSuccess={(credentialResponse) => console.log(credentialResponse)}
                     onError={() => console.log("Failed!")}
                     width='240'
                 />
@@ -52,7 +50,6 @@ const Home = () => {
                         Enter
                     </button>
                 </form>
-                
             </div>
         </div>
     );
