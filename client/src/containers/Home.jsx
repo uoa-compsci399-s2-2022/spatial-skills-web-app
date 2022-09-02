@@ -1,13 +1,13 @@
 import '../styles/Home.css';
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { GoogleLogin} from '@react-oauth/google';
+import { MdErrorOutline } from 'react-icons/md';
 import jwt_decode from "jwt-decode";
 import logo from '../assets/logo.png';
 import Profile from '../components/Profile';
 
 const Home = () => {
-    const navigate = useNavigate();
     const nameRef = useRef(null);
     const [error, setError] = useState("");
     const [userData, setUserData] = useState({
@@ -27,7 +27,6 @@ const Home = () => {
                 email: null,
                 picture: null
             })
-            // navigate('/test');     // go to test page 
         }        
     }
 
@@ -39,7 +38,6 @@ const Home = () => {
             email: payload.email,
             picture: payload.picture
         })
-        // navigate('/test');
     }
 
     return(
@@ -53,30 +51,54 @@ const Home = () => {
             />
             <img src={logo} className='home__logo' alt="" />
             <div className='home__content'>
-                <GoogleLogin 
-                    onSuccess={(credentialResponse) => handleGoogleLogin(credentialResponse.credential)}
-                    onError={() => setError("Unable to authenticate Google account!")}
-                    width='240'
-                />
-                <form onSubmit={(e) => { e.preventDefault(); handleSubmit() }} className='home__form'>
-                    <input 
-                        type="text" 
-                        placeholder="Name" 
-                        className='home__input home__input--text' 
-                        ref={nameRef} 
-                    />
-                    {
-                        error === "" ?
-                        null :
-                        <p className='home__error'>{error}</p> 
-                    }
-                    <button 
-                        className='home__input home__input--button'
-                    >
-                        Enter
-                    </button>
-                </form>
+                {
+                    userData.name === null ?
+
+                    // Authentication
+                    <>
+                        <GoogleLogin 
+                            onSuccess={(credentialResponse) => handleGoogleLogin(credentialResponse.credential)}
+                            onError={() => setError("Unable to authenticate Google account!")}
+                            width='240'
+                        />
+                        <form onSubmit={(e) => { e.preventDefault(); handleSubmit() }} className='home__form'>
+                            <input 
+                                type="text" 
+                                placeholder="Name" 
+                                className='home__input home__input--text' 
+                                ref={nameRef} 
+                            />
+                            {
+                                error === "" ?
+                                null :
+                                <div className='home__error'>
+                                    <MdErrorOutline size="1.5em" />
+                                    <p>{error}</p> 
+                                </div>
+                            }
+                            <button 
+                                className='home__input home__input--button'
+                            >
+                                Enter
+                            </button>
+                        </form>
+                    </> :
+                    
+                    // Introduction to the test
+                    <>
+                        <p>
+                            Welcome <b>{userData.name}</b> to the [untitled-project]. 
+                            You will be tested on your <i>visuospatial</i> ability. 
+                            There are [x] number of questions, you will have [x] 
+                            minutes to complete the test.<br /><br />To begin, 
+                            click on the big <b>"Start!"</b> button below. <br />
+                            <br /><b>Good Luck!</b>
+                        </p>
+                        <Link to='/test' className='home__input home__input--button'>Start!</Link>
+                    </>
+                }
             </div>
+
         </div>
     );
 }

@@ -15,7 +15,7 @@ const Profile = (props) => {
             <button onClick={() => setExpanded(expanded ? false : true)}>
             {
                 picture === null ?
-                <FaUserCircle size="2rem" color="var(--contrast-color)" /> :
+                <FaUserCircle size="2em" color="var(--contrast-color)" /> :
                 <img src={picture} alt="" className='profile__picture' />
             }
             </button>
