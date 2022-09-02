@@ -19,6 +19,9 @@ const cardImages = [
 const maxHealth = 7
 let health = maxHealth
 let matchedPair = 0
+const timeBetweenSelection = 1000
+const timeBeforeGameStart = 4000
+
 
 function CardMatching() {
   const [cards, setCards] = useState([])
@@ -30,6 +33,7 @@ function CardMatching() {
   const [gameOver, setGameOver] = useState(false)
   const [lives, setLives] = useState(maxHealth)
   const [win, setWin] = useState(false)
+  const [showCards, setShowCards] = useState(true)
 
 
   const shuffleCards = () => {
@@ -49,14 +53,9 @@ function CardMatching() {
     setGameOver(false)
     setLives(maxHealth)
     setWin(false)
+    setShowCards(prevState => !prevState)
     health = maxHealth
     matchedPair = 0
-  }
-
-  const allMatched = () => {  
-    if (matchedPair === cardImages.length){
-      setWin(true)
-    }
   }
 
   // choosing a card
@@ -68,8 +67,29 @@ function CardMatching() {
     //check if 'choiceOne' is null, if false, store choice in choiceTwo
     //if true store choice in ChoiceOne
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
-
   };
+
+  const allMatched = () => {  
+    if (matchedPair === cardImages.length){
+      setWin(true)
+    }
+  }
+
+  const showAllCards = (show) => {
+    if(show) {
+      setCards(prevCards => {
+        return(prevCards.map(card => {
+          return {...card, matched: true}
+        }))
+      })} else{
+        setCards(prevCards => {
+          return(prevCards.map(card => {
+            return {...card, matched: false}
+          }))
+        })
+      }
+  }
+
 
   // compare 2 selected cards
   // runs when components first inserted in the dependency array and when it changes
@@ -95,7 +115,7 @@ function CardMatching() {
         // wait 1000ms before resetting cards
         setLives(prevLives => prevLives - 1)
         setBothMatched(false)
-        setTimeout(() => resetTurn(), 1000)
+        setTimeout(() => resetTurn(), timeBetweenSelection)
       }
     }
   }, [choiceOne, choiceTwo])
@@ -118,14 +138,16 @@ function CardMatching() {
 
   // if game over, flip all cards (as if they are all matched)
   useEffect(() => {
-    if(gameOver) {
-      setCards(prevCards => {
-        return(prevCards.map(card => {
-          return {...card, matched: true}
-        }))
-      })
+    if(gameOver){
+      showAllCards(true)
     }
   }, [gameOver])
+
+  // show cards on game start temporarily
+  useEffect(() => {
+    showAllCards(true)
+    setTimeout(() => showAllCards(false), timeBeforeGameStart)
+  }, [showCards])
 
 
   // reset choices and increase turn by 1
