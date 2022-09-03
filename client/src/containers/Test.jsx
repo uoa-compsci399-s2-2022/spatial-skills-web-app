@@ -1,29 +1,95 @@
 import '../styles/Test.css';
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
 
-class Test extends React.Component {
-    constructor(props) {
-        super(props);
-        this.questionBank = [images, images2];
-        this.questionTimeBank = [10, 20]
-        this.state = {
-            questionNum: 1,
-            questionTime: this.questionTimeBank[0],  // Remaining time
-        };
-        this.answers = Array.apply(null, Array(this.questionBank.length));
-        this.timer = 0;
-        this.startTimer = this.startTimer.bind(this);
-        this.countDown = this.countDown.bind(this);
-    }
+// class Test extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.questionBank = [images, images2];
+//         this.questionTimeBank = [10, 120]
+//         this.state = {
+//             questionNum: 1,
+//             questionTime: this.questionTimeBank[0],  // Remaining time
+//         };
+//         this.answers = Array.apply(null, Array(this.questionBank.length));
+//         this.timer = 0;
+//         this.startTimer = this.startTimer.bind(this);
+//         this.countDown = this.countDown.bind(this);
+//     }
 
-    nextQuestion() {
-        console.log("Answers: " + this.answers);  // for debugging
-        if (this.state.questionNum < this.questionBank.length) {
-            this.setState({
-                questionNum: this.state.questionNum + 1,
-                questionTime: this.questionTimeBank[this.state.questionNum],
-            })
+//     nextQuestion() {
+//         console.log("Answers: " + this.answers);  // for debugging
+//         if (this.state.questionNum < this.questionBank.length) {
+//             this.setState({
+//                 questionNum: this.state.questionNum + 1,
+//                 questionTime: this.questionTimeBank[this.state.questionNum],
+//             })
+//             return true;
+//         } else {
+//             alert("No more questions!");
+//             return false;
+//         }
+//     }
+
+//     submitAnswer = event => {
+//         const answer = event.target;
+//         this.answers[this.state.questionNum - 1] = event.target.value;
+//     };
+
+//     getCurrentQuestion() {
+//         return this.questionBank[this.state.questionNum - 1];
+//     }
+
+//     countDown() {
+//         this.setState({
+//             questionTime: this.state.questionTime - 1,
+//         });
+//         if (this.state.questionTime <= 0) {
+//             if (this.nextQuestion()) {
+
+//             } else {
+//                 clearInterval(this.timer);
+//             }
+//         }
+//     }
+
+//     startTimer() {
+//         if (this.timer === 0 && this.state.questionTime > 0) {  // Timer === 0: timer has not been started yet
+//             this.timer = setInterval(this.countDown, 1000);
+//         }
+//     }
+
+//     render() {
+//         this.startTimer();
+
+//         return (
+//             <div className='test'>
+//                 <div className='test__content'>
+//                     <Question question={this.getCurrentQuestion()}/>
+//                     <Answer question={this.getCurrentQuestion()} submit={this.submitAnswer}/>
+//                 </div>
+//                 <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
+                
+//                 <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
+//                 <TimerDisplay seconds={this.state.questionTime}/>
+//             </div>
+//         )
+//     }
+// }
+
+const Test = (props) => {
+    const questionBank = [images, images2]      // Local questions. Use parsed props eventually
+    const questionTimeBank = [10, 120]
+    const [questionNum, setQuestionNum] = useState(1);
+    const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum]);
+    const answers = Array.apply(null, Array(questionBank.length));
+    var timer = 0;
+
+    const nextQuestion = () => {
+        console.log("Answers: " + answers);  // for debugging
+        if (questionNum < questionBank.length) {
+            setQuestionNum(questionNum + 1);
+            setQuestionTime(questionTimeBank[questionNum]);
             return true;
         } else {
             alert("No more questions!");
@@ -31,85 +97,72 @@ class Test extends React.Component {
         }
     }
 
-    submitAnswer = event => {
+    const submitAnswer = event => {
         const answer = event.target;
-        this.answers[this.state.questionNum - 1] = event.target.value;
+        answers[questionNum - 1] = event.target.value;
     };
 
-    getCurrentQuestion() {
-        return this.questionBank[this.state.questionNum - 1];
+    const getCurrentQuestion = () => {
+        return questionBank[questionNum - 1];
     }
 
-    countDown() {
-        this.setState({
-            questionTime: this.state.questionTime - 1,
-        });
-        if (this.state.questionTime <= 0) {
-            if (this.nextQuestion()) {
-
-            } else {
-                clearInterval(this.timer);
+    const timeCountDown = () => {
+        setQuestionTime(questionTime - 1);
+        if (questionTime <= 0) {
+            if (!nextQuestion()) {
+                clearInterval(timer);
             }
         }
     }
 
-    startTimer() {
-        if (this.timer === 0 && this.state.questionTime > 0) {  // Timer === 0: timer has not been started yet
-            this.timer = setInterval(this.countDown, 1000);
+    const startTimer = () => {
+        if (timer === 0 && questionTime > 0) {  // Timer === 0: timer has not been started yet
+            timer = setInterval(timeCountDown, 1000);
         }
     }
 
-    render() {
-        this.startTimer();
-
-        return (
-            <div className='test'>
-                <div className='test__content'>
-                    <Question question={this.getCurrentQuestion()}/>
-                    <Answer question={this.getCurrentQuestion()} submit={this.submitAnswer}/>
-                </div>
-                <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
-                
-                <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
-                <TimerDisplay seconds={this.state.questionTime}/>
+    // startTimer();
+    return (
+        <div className='test'>
+            <div className='test__content'>
+                <Question question={getCurrentQuestion()}/>
+                <Answer question={getCurrentQuestion()} submit={submitAnswer}/>
             </div>
-        )
-    }
+            <NextButton onClick={() => nextQuestion(questionNum)}/> 
+            
+            <TestProgress current={questionNum} total={questionBank.length}/>
+            <TimerDisplay seconds={questionTime}/>
+        </div>
+    )
+    
 }
 
 
-
-class TimerDisplay extends React.Component {
-    secondsToTime(secs) {
-        // Returns dictionary array of minutes + seconds.
+const TimerDisplay = (props) => {
+    const formatTime = (secs) => {
         let divisor_for_minutes = secs % (60 * 60);
         let minutes = Math.floor(divisor_for_minutes / 60);
         let divisor_for_seconds = divisor_for_minutes % 60;
         let seconds = Math.ceil(divisor_for_seconds);
-    
-        let time = {
-            "m": minutes,
-            "s": seconds
-        };
-        return time;
+
+        minutes = minutes > 9 ? minutes : '0' + minutes;
+        seconds = seconds > 9 ? seconds : '0' + seconds;
+        return { minutes, seconds };
     }
 
-    render() {
-        return (
-            <div>
-                Time Left: {this.props.seconds} seconds
-            </div>
-        );
-    }
+    const time = formatTime(props.seconds);
+    return (
+        <div>
+            Time Left: {time.minutes} : {time.seconds}
+        </div>
+    );
 }
-
 
 const NextButton = (props) => {
     return (
         <button onClick={props.onClick}>Next</button>
     )
 }
-
 
 const TestProgress = (props) => {
     return (
@@ -119,49 +172,43 @@ const TestProgress = (props) => {
     )
 }
 
-
-class Question extends React.Component {
-    renderQuestionImage() {
-        const image = this.props.question[this.props.question.length - 1]
+const Question = (props) => {
+    const renderQuestionImage = () => {
+        const image = props.question[props.question.length - 1]
         return image;
     }
 
-    render() {
-        // Question text doesn't change currently.
-        return (
-            <div className='test__question'>
-                <img src={this.renderQuestionImage()} className='test__image' alt=''/>
-                <p>Which of the following cubes can you make with these four pieces?</p>
-            </div>
-        )
-    }
+    // Question text doesn't change currently.
+    return (
+        <div className='test__question'>
+            <img src={renderQuestionImage()} className='test__image' alt=''/>
+            <p>Question Text Lorem Ipsum</p>
+        </div>
+    )
+
 }
 
-class Answer extends React.Component {
-    // Currently only allows multichoice answers. We should also make an entry type answer
-    renderMultiChoiceAnswers() {
+const Answer = (props) => {
+    const renderMultiChoiceAnswers = () => {
         const answerChoices = [];
         const labels = ["a", "b", "c", "d", "e"];
-        for (var i = 0; i < this.props.question.length - 1; i++) {
+        for (var i = 0; i < props.question.length - 1; i++) {
             answerChoices.push(
                 <MultichoiceAnswer 
-                    image={this.props.question[i]}
+                    image={props.question[i]}
                     label={labels[i]}
-                    submit={this.props.submit}
+                    submit={props.submit}
                 />
             );
         }
         return answerChoices;
     }
 
-    render() {  
-        return (
-            <form className='test__answers'>
-                {this.renderMultiChoiceAnswers()}
-            </form>
-                
-        )
-    }
+    return (
+        <form className='test__answers'>
+            {renderMultiChoiceAnswers()}
+        </form>
+    )
 }
 
 const MultichoiceAnswer = (props) => {
