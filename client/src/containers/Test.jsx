@@ -2,91 +2,16 @@ import '../styles/Test.css';
 import React, { useState, useRef } from 'react';
 
 
-// class Test extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.questionBank = [images, images2];
-//         this.questionTimeBank = [10, 120]
-//         this.state = {
-//             questionNum: 1,
-//             questionTime: this.questionTimeBank[0],  // Remaining time
-//         };
-//         this.answers = Array.apply(null, Array(this.questionBank.length));
-//         this.timer = 0;
-//         this.startTimer = this.startTimer.bind(this);
-//         this.countDown = this.countDown.bind(this);
-//     }
-
-//     nextQuestion() {
-//         console.log("Answers: " + this.answers);  // for debugging
-//         if (this.state.questionNum < this.questionBank.length) {
-//             this.setState({
-//                 questionNum: this.state.questionNum + 1,
-//                 questionTime: this.questionTimeBank[this.state.questionNum],
-//             })
-//             return true;
-//         } else {
-//             alert("No more questions!");
-//             return false;
-//         }
-//     }
-
-//     submitAnswer = event => {
-//         const answer = event.target;
-//         this.answers[this.state.questionNum - 1] = event.target.value;
-//     };
-
-//     getCurrentQuestion() {
-//         return this.questionBank[this.state.questionNum - 1];
-//     }
-
-//     countDown() {
-//         this.setState({
-//             questionTime: this.state.questionTime - 1,
-//         });
-//         if (this.state.questionTime <= 0) {
-//             if (this.nextQuestion()) {
-
-//             } else {
-//                 clearInterval(this.timer);
-//             }
-//         }
-//     }
-
-//     startTimer() {
-//         if (this.timer === 0 && this.state.questionTime > 0) {  // Timer === 0: timer has not been started yet
-//             this.timer = setInterval(this.countDown, 1000);
-//         }
-//     }
-
-//     render() {
-//         this.startTimer();
-
-//         return (
-//             <div className='test'>
-//                 <div className='test__content'>
-//                     <Question question={this.getCurrentQuestion()}/>
-//                     <Answer question={this.getCurrentQuestion()} submit={this.submitAnswer}/>
-//                 </div>
-//                 <NextButton onClick={() => this.nextQuestion(this.state.questionNum)}/> 
-                
-//                 <TestProgress current={this.state.questionNum} total={this.questionBank.length}/>
-//                 <TimerDisplay seconds={this.state.questionTime}/>
-//             </div>
-//         )
-//     }
-// }
-
 const Test = (props) => {
-    const questionBank = [images, images2]      // Local questions. Use parsed props eventually
-    const questionTimeBank = [10, 120]
+    const Ref = useRef(null);   // Used for timer
+    const questionBank = [images, images2]  // Local questions. Use parsed props eventually
+    const questionTimeBank = [5, 10]
     const [questionNum, setQuestionNum] = useState(1);
-    const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum]);
-    const answers = Array.apply(null, Array(questionBank.length));
-    var timer = 0;
+    const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum - 1]);
+    const [userAnswers, setUserAnswers] = useState(Array.apply(null, Array(questionBank.length)));
 
     const nextQuestion = () => {
-        console.log("Answers: " + answers);  // for debugging
+        console.log("Answers: " + userAnswers);  // for debugging
         if (questionNum < questionBank.length) {
             setQuestionNum(questionNum + 1);
             setQuestionTime(questionTimeBank[questionNum]);
@@ -98,8 +23,9 @@ const Test = (props) => {
     }
 
     const submitAnswer = event => {
-        const answer = event.target;
+        let answers = userAnswers;
         answers[questionNum - 1] = event.target.value;
+        setUserAnswers(answers);
     };
 
     const getCurrentQuestion = () => {
@@ -107,21 +33,25 @@ const Test = (props) => {
     }
 
     const timeCountDown = () => {
-        setQuestionTime(questionTime - 1);
         if (questionTime <= 0) {
             if (!nextQuestion()) {
-                clearInterval(timer);
+                clearInterval(Ref.current);
             }
+        } else {
+            setQuestionTime(questionTime - 1);
         }
     }
 
     const startTimer = () => {
-        if (timer === 0 && questionTime > 0) {  // Timer === 0: timer has not been started yet
-            timer = setInterval(timeCountDown, 1000);
+        if (Ref.current) {
+            clearInterval(Ref.current);
         }
+        const id = setInterval(() => {timeCountDown()}, 1000);
+        Ref.current = id;
     }
+ 
+    startTimer();
 
-    // startTimer();
     return (
         <div className='test'>
             <div className='test__content'>
@@ -134,7 +64,6 @@ const Test = (props) => {
             <TimerDisplay seconds={questionTime}/>
         </div>
     )
-    
 }
 
 
@@ -225,7 +154,6 @@ export default Test;
 
 
 // ----------- Local Question Importing
-
 
 // Function to get all images from a folder as an array.
 // Array order corresponds to folder order (question is last).
