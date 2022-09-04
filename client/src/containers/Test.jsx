@@ -5,7 +5,7 @@ import React, { useState, useRef } from 'react';
 const Test = (props) => {
     const Ref = useRef(null);   // Used for timer
     const questionBank = [images, images2]  // Local questions. Use parsed props eventually
-    const questionTimeBank = [5, 10]
+    const questionTimeBank = [60, 120]
     const [questionNum, setQuestionNum] = useState(1);
     const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum - 1]);
     const [userAnswers, setUserAnswers] = useState(Array.apply(null, Array(questionBank.length)));
@@ -54,18 +54,25 @@ const Test = (props) => {
 
     return (
         <div className='test'>
+            <div className='test__left__bar'>
+                <TimerDisplay seconds={questionTime}/>      
+            </div>
+
             <div className='test__content'>
                 <Question question={getCurrentQuestion()}/>
+                <h2>Question Text Lorem Ipsum</h2>
                 <Answer question={getCurrentQuestion()} submit={submitAnswer}/>
             </div>
-            <NextButton onClick={() => nextQuestion(questionNum)}/> 
-            
-            <TestProgress current={questionNum} total={questionBank.length}/>
-            <TimerDisplay seconds={questionTime}/>
+
+            <div className='test__right__bar'>
+                <TestProgress current={questionNum} total={questionBank.length}/>
+                <NextButton onClick={() => nextQuestion(questionNum)}/>
+                <div></div>
+            </div>
+
         </div>
     )
 }
-
 
 const TimerDisplay = (props) => {
     const formatTime = (secs) => {
@@ -81,22 +88,28 @@ const TimerDisplay = (props) => {
 
     const time = formatTime(props.seconds);
     return (
-        <div>
+        <div className='test__timer'>
+            <p>
             Time Left: {time.minutes} : {time.seconds}
+            </p>
         </div>
     );
 }
 
 const NextButton = (props) => {
     return (
-        <button onClick={props.onClick}>Next</button>
+        // <div className='test__next'>
+            <button className='test__next' onClick={props.onClick}>Next</button>
+        // </div>
     )
 }
 
 const TestProgress = (props) => {
     return (
         <div>
-            Question {props.current} / {props.total}
+            <p>
+                Question {props.current} / {props.total}
+            </p>
         </div>
     )
 }
@@ -111,10 +124,8 @@ const Question = (props) => {
     return (
         <div className='test__question'>
             <img src={renderQuestionImage()} className='test__image' alt=''/>
-            <p>Question Text Lorem Ipsum</p>
         </div>
     )
-
 }
 
 const Answer = (props) => {
@@ -143,7 +154,7 @@ const Answer = (props) => {
 const MultichoiceAnswer = (props) => {
     return (
         <div className='answer__option'>
-            <label for={props.label}><img src={props.image} alt=''/></label>
+            <label htmlFor={props.label}><img src={props.image} alt=''/></label>
             <input type="radio" id={props.label} value={props.label} name="answer" onChange={props.submit}/>
         </div>
     )
