@@ -1,11 +1,12 @@
 import '../styles/Test.css';
 import React, { useState, useRef } from 'react';
-
+import { FaCaretRight } from 'react-icons/fa';  // https://react-icons.github.io/react-icons
+// npm install react-icons --save
 
 const Test = (props) => {
     const Ref = useRef(null);   // Used for timer
     const questionBank = [images, images2]  // Local questions. Use parsed props eventually
-    const questionTimeBank = [60, 120]
+    const questionTimeBank = [13, 120]
     const [questionNum, setQuestionNum] = useState(1);
     const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum - 1]);
     const [userAnswers, setUserAnswers] = useState(Array.apply(null, Array(questionBank.length)));
@@ -88,28 +89,26 @@ const TimerDisplay = (props) => {
 
     const time = formatTime(props.seconds);
     return (
-        <div className='test__timer'>
-            <p>
-            Time Left: {time.minutes} : {time.seconds}
-            </p>
+        <div className='test__timer' title='Time Left' style={{
+            color: props.seconds > 10 ? null : "red",
+        }}>
+            {time.minutes} : {time.seconds} 
         </div>
     );
 }
 
 const NextButton = (props) => {
     return (
-        // <div className='test__next'>
-            <button className='test__next' onClick={props.onClick}>Next</button>
-        // </div>
+        <button className='test__next' onClick={props.onClick} title="Next Question">
+            <FaCaretRight size={60}/>
+        </button>
     )
 }
 
 const TestProgress = (props) => {
     return (
-        <div>
-            <p>
-                Question {props.current} / {props.total}
-            </p>
+        <div className='test__progress' title='Progress'>
+            {props.current} / {props.total}
         </div>
     )
 }
@@ -134,10 +133,11 @@ const Answer = (props) => {
         const labels = ["a", "b", "c", "d", "e"];
         for (var i = 0; i < props.question.length - 1; i++) {
             answerChoices.push(
-                <MultichoiceAnswer 
+                <MultichoiceAnswer
                     image={props.question[i]}
                     label={labels[i]}
                     submit={props.submit}
+                    key={labels[i]}
                 />
             );
         }
