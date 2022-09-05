@@ -6,8 +6,15 @@
     display: block;
     border: 2px solid black;
     border-radius: 6px;
-    height: fit-content;
+    width: 170px;
+    height: 244.5px;
+    
+}
 
+.not-flipped:hover{
+  transition: transform .2s; /* Animation */
+  transform: scale(1.05);
+  margin: 0 auto;
 }
 
 /* front of card */
@@ -15,6 +22,7 @@
     transform: rotateY(90deg);
     transition: all ease-in 0.2s;
     position: absolute;
+    
 }
 
 .flipped .card-front {

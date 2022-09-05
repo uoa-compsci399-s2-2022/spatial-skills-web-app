@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import "./MatchingGame.css";
-import SingleCard from "./SingleCard";
-import LivesCounter from "./LivesCounter";
-import GameOver from "./GameOver";
+import { useEffect, useState } from 'react';
+import '../../styles/MatchingGameStyles/./MatchingGame.css';
+import SingleCard from './SingleCard';
+import LivesCounter from './LivesCounter';
+import GameOver from './GameOver';
 
 // sources of card images
 const cardImages = [
@@ -16,14 +16,15 @@ const cardImages = [
   { src: "/cardImages/3_of_spades.png", matched: false }
 ];
 
-const maxHealth = 7
-let health = maxHealth
-let matchedPair = 0
+const maxHealth = 3
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
+const timeAllowed = 15
 
+let health = maxHealth
+let matchedPair = 0
 
-function CardMatching() {
+function MatchingGame() {
   const [cards, setCards] = useState([])
   // const [turns, setTurns] = useState(0) // add later if turns need to be recorded
   const [choiceOne, setChoiceOne] = useState(null)
@@ -34,9 +35,14 @@ function CardMatching() {
   const [lives, setLives] = useState(maxHealth)
   const [win, setWin] = useState(false)
   const [showCards, setShowCards] = useState(true)
+  const [started, setStarted] = useState(false)
+  const [firstVisit, setFirstvisit] = useState(true)
+  const [time, setTime] = useState(timeAllowed)
+  const [timerOn, setTimerOn] = useState(false)
 
 
   const shuffleCards = () => {
+
     // make double amount of cards
     const shuffledCards = [...cardImages, ...cardImages]
       // sort the cards array in random order
@@ -47,6 +53,8 @@ function CardMatching() {
     // store shuffled cards in state and reset turns to 0 (new game)
     setCards(shuffledCards)
     // setTurns(0)
+    setTimerOn(true)
+    setTime(timeAllowed)
     setChoiceOne(null)
     setChoiceTwo(null)
     setBothMatched(true)
@@ -54,6 +62,8 @@ function CardMatching() {
     setLives(maxHealth)
     setWin(false)
     setShowCards(prevState => !prevState)
+    setStarted(true)
+    setFirstvisit(false)
     health = maxHealth
     matchedPair = 0
   }
@@ -90,6 +100,28 @@ function CardMatching() {
       }
   }
 
+  // timer
+  useEffect(() => {
+    let interval = null
+
+    if (timerOn) {
+      interval = setInterval(() => {
+        setTime(prevTime => prevTime - 1)
+      }, 1000)
+    } else {
+      clearInterval(interval)
+    }
+    return () => clearInterval(interval)
+  }, [timerOn])
+
+  useEffect(() => {
+    console.log(time)
+    if (time === 0){
+      setTimerOn(false)
+      setGameOver(true)
+    }
+  }, [time])
+
 
   // compare 2 selected cards
   // runs when components first inserted in the dependency array and when it changes
@@ -122,7 +154,8 @@ function CardMatching() {
 
   // start game on launch
   useEffect(() => {
-    shuffleCards()
+    setFirstvisit(true)
+    setStarted(false)
   }, [])
 
   // detect whether lives need to be reduced
@@ -140,6 +173,7 @@ function CardMatching() {
   useEffect(() => {
     if(gameOver){
       showAllCards(true)
+      setTimerOn(false)
     }
   }, [gameOver])
 
@@ -157,19 +191,44 @@ function CardMatching() {
     setdisAbled(false)
     setBothMatched(true)
     // setTurns(prevTurns => prevTurns + 1)
+  }
 
+  // display timer when game starts
+  const DisplayTime = () => {
+    if (started){
+      return(
+        <p className="timerText">{time}</p>
+      )
+    }
+  }
+
+  const Instructions = () => {
+    if (firstVisit){
+      return (
+        <div className="instructions">
+          <h1>Spatial Memory Test 1</h1>
+          <p>Match those cards in pairs before time runs out!</p>
+          <p>You will lose a life for each mismatch.</p>
+          <p>Click start to begin.</p>
+          <button onClick={shuffleCards}>Start</button>
+        </div>
+      )
+    }
   }
 
   return (
     <div className="game-start">
-      <h1>Card Matching Game</h1>
-      <button onClick={shuffleCards}>Start</button>
+      <Instructions></Instructions>
+      <div>
+        <button onClick={shuffleCards}>Restart</button>
+      </div>
       <div className="lives-div">
-        <LivesCounter numLives={lives}></LivesCounter>
+        <LivesCounter numLives={lives} onLaunch={firstVisit}></LivesCounter>
       </div>
       <div>
-        <GameOver defeat={gameOver} victory={win}></GameOver>
+        <DisplayTime></DisplayTime>
       </div>
+      <GameOver defeat={gameOver} victory={win}></GameOver>
       <div className="card-grid">
         {cards.map((card) => (
           <SingleCard 
@@ -187,4 +246,4 @@ function CardMatching() {
   );
 }
 
-export default CardMatching;
+export default MatchingGame

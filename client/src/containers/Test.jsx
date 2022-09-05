@@ -1,4 +1,4 @@
-import MatchingGame from '../components/MatchingGame';
+import MatchingGame from '../components/MatchingGame/MatchingGame'
 import '../styles/Home.css';
 
 
@@ -7,7 +7,6 @@ const Test = () => {
     return(
         <div>
             <MatchingGame />
-
         </div>
     );
 }
