@@ -3,31 +3,31 @@ import '../styles/Timer.css';
 import {useState, useEffect, useRef} from 'react';
 import pointer from '../assets/pointer.png';
 
-
 function Timer({maxRange}) {
-    const [counter,setCounter] = useState(maxRange);
+    const [counter,setCounter] = useState(0);
     const [maxCounter] = useState(maxRange);
     const ref = useRef(null);
+    var result = 0;
 
-    
-
-    useEffect(()=>{
-        
+    useEffect((percentage)=>{
         const resizeableElement = ref.current;
-        const styles = window.getComputedStyle(resizeableElement);
-        let width = parseInt(styles.width);
-        
-        resizeableElement.style.width = "100";
-
-
-        if(counter>0){
-            setTimeout(()=>setCounter(counter-.01),10);
-        }
-        if(counter > -1){
-            width = width - 16.55 / maxCounter;
-            resizeableElement.style.width = `${width}px`;
+        if(counter<maxCounter){
+            //Resize the slider bar's width.
+            resizeableElement.style.width = `${counter*(100/maxCounter)}%`;
+            /*
+            The timer counts up to the specified value. The output will still count downwards,
+            this is just a convienient way to calculate the necessary width of the slider.
+            */
+            setTimeout(()=>setCounter(counter+.01),10);
         }
     },[counter, maxCounter])
+
+    //Ensure the output does not portray as negative.
+    if (maxCounter-counter<0) {
+        result = 0;
+    } else {
+        result = maxCounter-counter;
+    }
 
     return(
         <div>
@@ -36,7 +36,7 @@ function Timer({maxRange}) {
             <div className = "slider-pointer">
             <img src={pointer} ref={ref} alt = "pointer"/>
             <div className = "timer">
-                {parseInt(counter)}s
+                {parseInt(result)}s
             </div>
             </div>
             </div>
