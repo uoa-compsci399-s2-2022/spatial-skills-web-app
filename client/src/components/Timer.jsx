@@ -10,10 +10,10 @@ function Timer({maxRange}) {
     var result = 0;
 
     useEffect((percentage)=>{
-        const resizeableElement = ref.current;
+        const slider = ref.current;
         if(counter<maxCounter){
             //Resize the slider bar's width.
-            resizeableElement.style.width = `${counter*(100/maxCounter)}%`;
+            slider.style.width = `${counter*(100/maxCounter)}%`;
             /*
             The timer counts up to the specified value. The output will still count downwards,
             this is just a convienient way to calculate the necessary width of the slider.
