@@ -21,7 +21,7 @@ const deleteQuestionById = async(req,res,next) => {
     res.json({message: "Successfully deleted question."});
 };
 
-const getQuestions = async(req,res,next) => {
+const getAllQuestions = async(req,res,next) => {
     const questions = await Question.find().exec();
     res.json(questions);
 };
@@ -32,4 +32,4 @@ const getQuestionById = async(req,res,next) => {
     res.json(questionOut);
 };
 
-export {createQuestion,getQuestions,getQuestionById,deleteQuestionById};
+export {createQuestion,getAllQuestions,getQuestionById,deleteQuestionById};

@@ -1,7 +1,10 @@
 import express from "express";
 
-import { createQuestion,getQuestions, getQuestionById, deleteQuestionById } from "../controllers/questions-controller.mjs";
+import { createQuestion,getAllQuestions, getQuestionById, deleteQuestionById } from "../controllers/questions-controller.mjs";
 const questionRouter = express.Router();
+
+//get all NOTE SHOULD ADD AUTH SO ONLY ADMINS CAN SEE
+questionRouter.get("/all",getAllQuestions);
 
 //get question by id
 questionRouter.get("/:qid",getQuestionById);
@@ -11,8 +14,5 @@ questionRouter.delete("/:qid",deleteQuestionById);
 
 //add question
 questionRouter.post("/",createQuestion);
-
-//get all NOTE SHOULD ADD AUTH SO ONLY ADMINS CAN SEE
-questionRouter.get("/",getQuestions);
 
 export default questionRouter;
