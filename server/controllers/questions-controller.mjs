@@ -8,7 +8,8 @@ const createQuestion = async (req, res, next) => {
         title: req.body.title,
         description: req.body.description,
         image: req.body.image,
-        answer: req.body.answer
+        answer: req.body.answer,
+        category: req.body.category
     });
 
     const result = await createdQuestion.save();

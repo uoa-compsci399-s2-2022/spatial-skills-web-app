@@ -6,7 +6,8 @@ class QuestionOut {
         this.description = question.description;
         this.image = question.image;
         this.answer = question.answer.map((a)=>({id: a.id, 
-            image: a.image}))
+            image: a.image}));
+        this.categroy = question.categroy;
     }
 }
 

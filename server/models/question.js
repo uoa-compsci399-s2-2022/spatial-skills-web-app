@@ -7,7 +7,8 @@ const questionSchema = new mongoose.Schema({
     answer: [new mongoose.Schema({
         image: {type: String, required:true},
         trueAnswer: {type: Boolean, required:true}
-    })]
+    })],
+    category: {type: String, required:true}
 });
 
 //Check if question already a model before exporting
