@@ -8,6 +8,8 @@ const Test = (props) => {
     const questionBank = [images, images2, images3];  // Local questions. Use parsed props eventually
     const questionTimeBank = [13, 120, 120];
     const questionTypeBank = ['multichoice', 'multichoice', 'entry'];
+    const questionTextBank = ['Which of the following cubes can you make with these four pieces?',
+                            'What comes next in the pattern?', 'How many triangles are there in this picture?'];
 
     const [questionNum, setQuestionNum] = useState(1);
     const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum - 1]);
@@ -60,17 +62,17 @@ const Test = (props) => {
 
     return (
         <div className='test'>
-            <div className='test__left__bar'>
+            <div className='test__left-bar'>
                 <TimerDisplay seconds={questionTime}/>      
             </div>
 
             <div className='test__content'>
-                <Question question={getCurrentQuestion()}/>
-                <h2>Question Text Lorem Ipsum</h2>
+                <Question question={getCurrentQuestion()} />
+                <h2>{questionTextBank[questionNum - 1]}</h2>
                 <Answer question={getCurrentQuestion()} type={questionTypeBank[questionNum - 1]} submit={submitAnswer}/>
             </div>
 
-            <div className='test__right__bar'>
+            <div className='test__right-bar'>
                 <TestProgress current={questionNum} total={questionBank.length}/>
                 <NextButton onClick={() => nextQuestion(questionNum)}/>
                 <div></div>
@@ -181,7 +183,7 @@ const MultichoiceAnswer = (props) => {
 
 const TextEntryAnswer = (props) => {
     return (
-        <div className='answer__textentry'>
+        <div className='answer__text-entry'>
             <label htmlFor={props.label}></label>
             <input 
                 type="text" 
