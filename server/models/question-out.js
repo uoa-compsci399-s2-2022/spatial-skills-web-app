@@ -1,6 +1,7 @@
 
 class QuestionOut {
     constructor(question){
+        this.id = question.id;
         this.title = question.title;
         this.description = question.description;
         this.image = question.image;
