@@ -12,7 +12,7 @@ const createQuestion = async (req, res, next) => {
     });
 
     const result = await createdQuestion.save();
-    res.json(result);
+    res.status(201).json(result);
 };
 
 const deleteQuestionById = async(req,res,next) => {
