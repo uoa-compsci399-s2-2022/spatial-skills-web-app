@@ -5,8 +5,10 @@ import { FaCaretRight } from 'react-icons/fa';  // https://react-icons.github.io
 
 const Test = (props) => {
     const Ref = useRef(null);   // Used for timer
-    const questionBank = [images, images2]  // Local questions. Use parsed props eventually
-    const questionTimeBank = [13, 120]
+    const questionBank = [images, images2, images3];  // Local questions. Use parsed props eventually
+    const questionTimeBank = [13, 120, 120];
+    const questionTypeBank = ['multichoice', 'multichoice', 'entry'];
+
     const [questionNum, setQuestionNum] = useState(1);
     const [questionTime, setQuestionTime] = useState(questionTimeBank[questionNum - 1]);
     const [userAnswers, setUserAnswers] = useState(Array.apply(null, Array(questionBank.length)));
@@ -24,6 +26,9 @@ const Test = (props) => {
     }
 
     const submitAnswer = event => {
+        if (questionTypeBank[questionNum - 1] === 'entry') {
+            event.preventDefault();  // Prevent form entry submission when pressing enter
+        }
         let answers = userAnswers;
         answers[questionNum - 1] = event.target.value;
         setUserAnswers(answers);
@@ -62,7 +67,7 @@ const Test = (props) => {
             <div className='test__content'>
                 <Question question={getCurrentQuestion()}/>
                 <h2>Question Text Lorem Ipsum</h2>
-                <Answer question={getCurrentQuestion()} submit={submitAnswer}/>
+                <Answer question={getCurrentQuestion()} type={questionTypeBank[questionNum - 1]} submit={submitAnswer}/>
             </div>
 
             <div className='test__right__bar'>
@@ -115,7 +120,7 @@ const TestProgress = (props) => {
 
 const Question = (props) => {
     const renderQuestionImage = () => {
-        const image = props.question[props.question.length - 1]
+        const image = props.question.at(-1);
         return image;
     }
 
@@ -144,18 +149,45 @@ const Answer = (props) => {
         return answerChoices;
     }
 
+    const renderTextEntryAnswer = () => {
+        return <TextEntryAnswer 
+                    label={"answer"}
+                    submit={props.submit}
+                />
+    }
+
+    let answers;
+    if (props.type === "multichoice") {
+        answers = renderMultiChoiceAnswers();
+    } else if (props.type === "entry") {
+        answers = renderTextEntryAnswer();
+    }
+
     return (
-        <form className='test__answers'>
-            {renderMultiChoiceAnswers()}
+        <form className='test__answers' onSubmit={props.submit} autoComplete="off">
+            {answers}
         </form>
     )
 }
 
 const MultichoiceAnswer = (props) => {
     return (
-        <div className='answer__option'>
+        <div className='answer__choice'>
             <label htmlFor={props.label}><img src={props.image} alt=''/></label>
             <input type="radio" id={props.label} value={props.label} name="answer" onChange={props.submit}/>
+        </div>
+    )
+}
+
+const TextEntryAnswer = (props) => {
+    return (
+        <div className='answer__textentry'>
+            <label htmlFor={props.label}></label>
+            <input 
+                type="text" 
+                id={props.label} 
+                placeholder="Enter Answer" 
+                autoComplete="off" name="answer" onChange={props.submit}/>
         </div>
     )
 }
@@ -177,5 +209,6 @@ function importAll(r) {
     //let images = {};
     //r.keys().map((item, index) => { images[item.replace('./','')] = r(item); });
 }
-const images = importAll(require.context('../assets/questions/perception1', false, /\.(png|jpe?g|svg)$/));  // ans = c
+const images = importAll(require.context('../assets/questions/perception1', false, /\.(png|jpe?g|svg)$/));
 const images2 = importAll(require.context('../assets/questions/perception4', false, /\.(png|jpe?g|svg)$/));
+const images3 = importAll(require.context('../assets/questions/perception12', false, /\.(png|jpe?g|svg)$/));
