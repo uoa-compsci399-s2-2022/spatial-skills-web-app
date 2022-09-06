@@ -1,7 +1,7 @@
 import '../styles/Test.css';
 import React, { useState, useRef } from 'react';
 import { FaCaretRight } from 'react-icons/fa';  // https://react-icons.github.io/react-icons
-// npm install react-icons --save
+import TimerDisplay from '../components/TimerDisplay';
 
 const Test = (props) => {
     const Ref = useRef(null);   // Used for timer
@@ -73,8 +73,12 @@ const Test = (props) => {
             </div>
 
             <div className='test__right-bar'>
-                <TestProgress current={questionNum} total={questionBank.length}/>
-                <NextButton onClick={() => nextQuestion(questionNum)}/>
+                <div className='test__progress' title='Progress'>
+                    {questionNum} / {questionBank.length}
+                </div>
+                <button className='test__next' onClick={() => nextQuestion()} title="Next Question">
+                    <FaCaretRight size={60}/>
+                </button>
                 <div></div>
             </div>
 
@@ -82,43 +86,6 @@ const Test = (props) => {
     )
 }
 
-const TimerDisplay = (props) => {
-    const formatTime = (secs) => {
-        let divisor_for_minutes = secs % (60 * 60);
-        let minutes = Math.floor(divisor_for_minutes / 60);
-        let divisor_for_seconds = divisor_for_minutes % 60;
-        let seconds = Math.ceil(divisor_for_seconds);
-
-        minutes = minutes > 9 ? minutes : '0' + minutes;
-        seconds = seconds > 9 ? seconds : '0' + seconds;
-        return { minutes, seconds };
-    }
-
-    const time = formatTime(props.seconds);
-    return (
-        <div className='test__timer' title='Time Left' style={{
-            color: props.seconds > 10 ? null : "red",
-        }}>
-            {time.minutes} : {time.seconds} 
-        </div>
-    );
-}
-
-const NextButton = (props) => {
-    return (
-        <button className='test__next' onClick={props.onClick} title="Next Question">
-            <FaCaretRight size={60}/>
-        </button>
-    )
-}
-
-const TestProgress = (props) => {
-    return (
-        <div className='test__progress' title='Progress'>
-            {props.current} / {props.total}
-        </div>
-    )
-}
 
 const Question = (props) => {
     const renderQuestionImage = () => {
@@ -126,7 +93,6 @@ const Question = (props) => {
         return image;
     }
 
-    // Question text doesn't change currently.
     return (
         <div className='test__question'>
             <img src={renderQuestionImage()} className='test__image' alt=''/>
@@ -150,6 +116,18 @@ const Answer = (props) => {
         }
         return answerChoices;
     }
+
+    // const renderMultiChoiceAnswers = () => {
+    //     const labels = ["a", "b", "c", "d", "e"];
+    //     return labels.map((index) =>
+    //     <MultichoiceAnswer 
+    //            image={props.question[index]} 
+    //            label={labels[index]} 
+    //            submit={props.submit} 
+    //            key={labels[index]} 
+    //        />
+    //    )
+    // }
 
     const renderTextEntryAnswer = () => {
         return <TextEntryAnswer 
