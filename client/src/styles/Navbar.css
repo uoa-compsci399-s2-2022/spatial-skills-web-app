@@ -8,14 +8,14 @@
   left: 0;
 }
 
-.logo {
+.navbar__logo {
     width: 141px;
     height: 48px;
     margin: 16px;
     float: left;
 }
 
-.button{
+.navbar__button{
   margin: 13px;
   display:inline-flex;
   padding: 0;
@@ -28,7 +28,7 @@
   float: right;
 }
 
-.button__icon{
+.navbar__button__icon{
   display:inline-flex;
   align-items: center;
   padding: 0px;
@@ -71,4 +71,19 @@
   position: absolute;
   top: 16px;
   right: 16px
+}
+
+.popup-header{
+  color: #28CFA7;
+  font-size: 32px;
+}
+
+.popup-sub-title{
+  color: #28CFA7;
+  font-size: 24px;
+}
+
+.popup-content{
+  color: #54757C;
+  font-size: 16px;
 }
