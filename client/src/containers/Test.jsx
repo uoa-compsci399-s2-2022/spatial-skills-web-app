@@ -2,6 +2,7 @@ import '../styles/Test.css';
 import React, { useState, useRef } from 'react';
 import { FaCaretRight } from 'react-icons/fa';  // https://react-icons.github.io/react-icons
 import TimerDisplay from '../components/TimerDisplay';
+import Question from '../components/Question';
 
 const Test = (props) => {
     const Ref = useRef(null);   // Used for timer
@@ -36,7 +37,7 @@ const Test = (props) => {
         setUserAnswers(answers);
     };
 
-    const getCurrentQuestion = () => {
+    const getCurrentQuestionImages = () => {
         return questionBank[questionNum - 1];
     }
 
@@ -66,11 +67,13 @@ const Test = (props) => {
                 <TimerDisplay seconds={questionTime}/>      
             </div>
 
-            <div className='test__content'>
-                <Question question={getCurrentQuestion()} />
-                <h2>{questionTextBank[questionNum - 1]}</h2>
-                <Answer question={getCurrentQuestion()} type={questionTypeBank[questionNum - 1]} submit={submitAnswer}/>
-            </div>
+            <Question
+                type={questionTypeBank[questionNum - 1]} 
+                questionImage={getCurrentQuestionImages().at(-1)}
+                text={questionTextBank[questionNum - 1]}
+                answerImages={getCurrentQuestionImages().slice(0, getCurrentQuestionImages().length - 1)}
+                submit={submitAnswer}
+            />
 
             <div className='test__right-bar'>
                 <div className='test__progress' title='Progress'>
@@ -82,92 +85,6 @@ const Test = (props) => {
                 <div></div>
             </div>
 
-        </div>
-    )
-}
-
-
-const Question = (props) => {
-    const renderQuestionImage = () => {
-        const image = props.question.at(-1);
-        return image;
-    }
-
-    return (
-        <div className='test__question'>
-            <img src={renderQuestionImage()} className='test__image' alt=''/>
-        </div>
-    )
-}
-
-const Answer = (props) => {
-    const renderMultiChoiceAnswers = () => {
-        const answerChoices = [];
-        const labels = ["a", "b", "c", "d", "e"];
-        for (var i = 0; i < props.question.length - 1; i++) {
-            answerChoices.push(
-                <MultichoiceAnswer
-                    image={props.question[i]}
-                    label={labels[i]}
-                    submit={props.submit}
-                    key={labels[i]}
-                />
-            );
-        }
-        return answerChoices;
-    }
-
-    // const renderMultiChoiceAnswers = () => {
-    //     const labels = ["a", "b", "c", "d", "e"];
-    //     return labels.map((index) =>
-    //     <MultichoiceAnswer 
-    //            image={props.question[index]} 
-    //            label={labels[index]} 
-    //            submit={props.submit} 
-    //            key={labels[index]} 
-    //        />
-    //    )
-    // }
-
-    const renderTextEntryAnswer = () => {
-        return <TextEntryAnswer 
-                    label={"answer"}
-                    submit={props.submit}
-                />
-    }
-
-    let answers;
-    if (props.type === "multichoice") {
-        answers = renderMultiChoiceAnswers();
-    } else if (props.type === "entry") {
-        answers = renderTextEntryAnswer();
-    }
-
-    return (
-        <form className='test__answers' onSubmit={props.submit} autoComplete="off">
-            {answers}
-        </form>
-    )
-}
-
-const MultichoiceAnswer = (props) => {
-    return (
-        <div className='answer__choice'>
-            <label htmlFor={props.label}><img src={props.image} alt=''/></label>
-            <input type="radio" id={props.label} value={props.label} name="answer" onChange={props.submit}/>
-        </div>
-    )
-}
-
-const TextEntryAnswer = (props) => {
-    return (
-        <div className='answer__text-entry'>
-            <label htmlFor={props.label}></label>
-            <input 
-                type="text" 
-                id={props.label} 
-                placeholder="Enter Answer" 
-                autoComplete="off" name="answer" onChange={props.submit}/>
         </div>
     )
 }
