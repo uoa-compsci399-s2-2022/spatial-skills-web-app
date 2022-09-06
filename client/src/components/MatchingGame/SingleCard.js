@@ -1,6 +1,6 @@
 import '../../styles/MatchingGameStyles/SingleCard.css'
 
-function SingleCard({ card, handleChoice, flipped, disabled }) {
+const SingleCard = ({ card, handleChoice, flipped, disabled }) => {
 
     const handleClick = () => {
         if (!disabled){

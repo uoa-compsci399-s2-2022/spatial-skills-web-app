@@ -1,6 +1,6 @@
 import '../../styles/MatchingGameStyles/GameOver.css'
 
-function GameOverString({ defeat, victory}) {
+const GameOverString = ({ defeat, victory}) => {
     if (victory) {
         return (<h2 className='gameOver-text'>Good job, You won!</h2>)
     } 

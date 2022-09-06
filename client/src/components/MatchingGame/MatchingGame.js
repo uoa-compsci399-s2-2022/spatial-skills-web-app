@@ -19,12 +19,12 @@ const cardImages = [
 const maxHealth = 3
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
-const timeAllowed = 15
+const timeAllowed = 40
 
 let health = maxHealth
 let matchedPair = 0
 
-function MatchingGame() {
+const MatchingGame = () => {
   const [cards, setCards] = useState([])
   // const [turns, setTurns] = useState(0) // add later if turns need to be recorded
   const [choiceOne, setChoiceOne] = useState(null)
@@ -82,6 +82,7 @@ function MatchingGame() {
   const allMatched = () => {  
     if (matchedPair === cardImages.length){
       setWin(true)
+      setGameOver(true)
     }
   }
 
