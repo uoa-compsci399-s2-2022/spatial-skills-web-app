@@ -2,34 +2,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    text-align: center;
+    flex-direction: column;
+    gap: 2rem;
     width: 100vw;
     gap: 1rem;
-}
-
-.test__content {
-    flex: 1 1 0%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    animation: fadeIn 1s;
-}
- 
-.test__left-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     height: 100vh;
-}
-
-.test__right-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-direction: column;
-    height: 100vh;
+    background-color: var(--contrast-color);
 }
 
 .test__question {
@@ -57,12 +36,12 @@
     flex-direction: column;
     justify-content: center;
     transition: background-color .25s;
-    padding: 6px;
+    padding: .5rem 1rem;
     border-radius: 12px;
 }
 
 .answer__choice:hover {
-    background-color: var(--accent-color);
+    outline: 1px solid var(--accent-color);
 }
 
 .answer__choice img {
@@ -78,6 +57,8 @@
 }
 
 .answer__text-entry input {
+    color: var(--accent-color);
+    border: 1px solid var(--contrast-color-hover);
     border-radius: 8px;
     font-size: 24px;
     text-align: center;
@@ -88,9 +69,8 @@
 
 .answer__text-entry input:focus,
 .answer__text-entry input:hover {
-    /* outline: none;
-    border: 2px solid var(--accent-color); */
-    background-color: #98c8ff9a;
+    outline: none;
+    border: 1px solid var(--accent-color);
 }
 
 .answer__text-entry input::placeholder {
@@ -105,6 +85,9 @@
 .test__next {
     display: flex;
     border: none;
+    position: absolute;
+    padding: 0;
+    right: 1rem;
     background-color: transparent;
     color: var(--accent-color);
     fill: var(--accent-color);
@@ -117,8 +100,10 @@
 }
 
 .test__progress {
+    position: absolute;
+    right: 1rem;
+    top: 4.5rem;
     font-size: 32px;
-    padding: 24px;
     color: var(--accent-color);
 }
 
@@ -127,9 +112,11 @@
 }
 
 .test__timer {
+    position: absolute;
+    top: 4.5rem;
+    left: 1rem;
     font-size: 32px;
     color: var(--accent-color);
-    padding: 24px;
 }
 
 .test__timer:hover {
