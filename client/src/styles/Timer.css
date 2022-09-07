@@ -1,0 +1,39 @@
+.timer {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 32px;
+    line-height: 24px;
+    position: absolute;
+    width: 40px;
+    bottom: 20px;
+    right: -60%;
+    text-align: center;
+    color: var(--accent-color);
+}
+
+.slider{
+    position: fixed;
+    width: 0%;
+    height: 16px;
+    bottom: 0;
+    background-color: var(--accent-color);
+}
+
+.slider-background{
+    position: fixed;
+    width: 100%;
+    height: 16px;
+    bottom: 0;
+    background-color: #DAE8E8
+}
+
+.slider-pointer{
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    bottom: 25px;
+    margin-right: -8px;
+    right: 0%;
+}
+

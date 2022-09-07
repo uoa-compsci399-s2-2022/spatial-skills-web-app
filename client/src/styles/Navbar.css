@@ -1,0 +1,89 @@
+.navbar {
+  background-color: var(--accent-color);
+  overflow: hidden;
+  width: 100%;
+  height: 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.navbar__logo {
+    width: 141px;
+    height: 48px;
+    margin: 16px;
+    float: left;
+}
+
+.navbar__button{
+  margin: 13px;
+  display:inline-flex;
+  padding: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  float: right;
+}
+
+.navbar__button__icon{
+  display:inline-flex;
+  align-items: center;
+  padding: 0px;
+  margin: 3px;
+  color: white;
+  height:100%;
+}
+
+.popup{
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.popup-inner{
+  border-radius: 15px;
+  position: absolute;
+  right: 15px;
+  top: 75px;
+  padding: 32px;
+  width: 383px;
+  height: 582px;
+  max-width: 640px;
+  background-color: #FFF;
+  box-shadow: 0 0 25px rgba(0,0,0,0.25);
+}
+
+.popup-inner .close-btn{
+  color: white;
+  background-color: #28CFA7;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 10px 13px 10px 13px;
+  position: absolute;
+  top: 16px;
+  right: 16px
+}
+
+.popup-header{
+  color: #28CFA7;
+  font-size: 32px;
+}
+
+.popup-sub-title{
+  color: #28CFA7;
+  font-size: 24px;
+}
+
+.popup-content{
+  color: #54757C;
+  font-size: 16px;
+}
