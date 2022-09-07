@@ -19,5 +19,8 @@
   "homepage": "https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app#readme",
   "devDependencies": {
     "concurrently": "^7.3.0"
+  },
+  "dependencies": {
+    "react-icons": "^4.4.0"
   }
 }
