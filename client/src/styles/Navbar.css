@@ -1,89 +1,73 @@
 .navbar {
-  background-color: var(--accent-color);
-  overflow: hidden;
+  z-index: 5;
   width: 100%;
-  height: 80px;
   position: fixed;
   top: 0;
   left: 0;
-}
-
-.navbar__logo {
-    width: 141px;
-    height: 48px;
-    margin: 16px;
-    float: left;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 1rem;
+  color: var(--contrast-color);
 }
 
 .navbar__button{
-  margin: 13px;
-  display:inline-flex;
-  padding: 0;
   background: transparent;
   border: none;
   outline: none;
-  border-radius: 5px;
-  overflow: hidden;
   cursor: pointer;
-  float: right;
+  color: inherit;
 }
 
-.navbar__button__icon{
-  display:inline-flex;
-  align-items: center;
-  padding: 0px;
-  margin: 3px;
-  color: white;
-  height:100%;
+.navbar__icon{
+  color: inherit;
+  max-height: 2rem; 
 }
 
 .popup{
+  outline: 2px solid var(--accent-color);
   position: fixed;
-  width: 100%;
-  height: 100vh;
-  display:flex;
-  justify-content: center;
-  align-items: center;
-  
+  padding: 2rem;
+  width: 20rem;
+  right: 1rem;
+  top: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--contrast-color);
+  border-radius: 1rem;
 }
 
-.popup-inner{
-  border-radius: 15px;
+.popup__close {
   position: absolute;
-  right: 15px;
-  top: 75px;
-  padding: 32px;
-  width: 383px;
-  height: 582px;
-  max-width: 640px;
-  background-color: #FFF;
-  box-shadow: 0 0 25px rgba(0,0,0,0.25);
+  right: 1rem;
+  top: 1rem;
+  color: var(--accent-color);
 }
 
-.popup-inner .close-btn{
-  color: white;
-  background-color: #28CFA7;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  border-radius: 20px;
-  padding: 10px 13px 10px 13px;
-  position: absolute;
-  top: 16px;
-  right: 16px
+.popup h2 {
+  color: var(--accent-color);
+  font-size: 1.5rem;
 }
 
-.popup-header{
-  color: #28CFA7;
-  font-size: 32px;
+.popup h3 {
+  color: var(--accent-color);
+  font-size: 1.25rem;
 }
 
-.popup-sub-title{
-  color: #28CFA7;
-  font-size: 24px;
-}
-
-.popup-content{
+.popup p {
   color: #54757C;
-  font-size: 16px;
+  font-size: 1rem;
+}
+
+.navbar__signout {
+  border: 1px solid var(--error-color);
+  padding: 1rem;
+  border-radius: .5rem;
+  color: var(--error-color);
+}
+
+.navbar__signout:hover {
+  background-color: var(--error-color);
+  color: var(--contrast-color);
 }

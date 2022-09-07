@@ -2,7 +2,8 @@
   box-sizing: border-box;
   --accent-color: #4895EF;
   --contrast-color: #ffffff;
-  --mid-color: #dadce0;
+  --contrast-color-hover: #dadce0;
+  --mid-color: #323944;
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
   --error-color: #f51d24;
@@ -26,6 +27,7 @@ h1, h2, h3, h4, h5 {
 }
 
 body {
+  color: var(--mid-color);
   margin: 0;
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
