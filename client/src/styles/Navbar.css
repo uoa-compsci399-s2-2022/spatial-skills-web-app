@@ -71,3 +71,16 @@
   background-color: var(--error-color);
   color: var(--contrast-color);
 }
+
+.navbar__dashboard {
+  background-color: var(--accent-color);
+  padding: 1rem;
+  border-radius: .5rem;
+  text-align: center;
+  font-weight: bold;
+  transition: transform .25s;
+}
+
+.navbar__dashboard:hover {
+  transform: translateY(-5px);
+}

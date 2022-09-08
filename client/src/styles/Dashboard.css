@@ -1,0 +1,14 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5rem;
+}
+
+.dashboard__editor {
+    padding: 1rem;
+    background-color: var(--contrast-color);
+    color: var(--accent-color);
+    font-weight: bold;
+    border-radius: .5rem;
+}

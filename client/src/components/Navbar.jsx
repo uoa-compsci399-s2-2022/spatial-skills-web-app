@@ -24,6 +24,9 @@ const Navbar = (props) => {
       <p>Signed in as</p>
       <h3>{userData.name}</h3>
       <p>{userData.email}</p>
+      <Link to="/dashboard" className="navbar__dashboard">
+        Dashboard
+      </Link>
       <button
         className="navbar__signout"
         onClick={() => {
