@@ -10,6 +10,7 @@ const studentAnswerSchema = new mongoose.Schema({
       correct: { type: Boolean, required: true },
     }),
   ],
+  grade: {type: Number, required: true}
 });
 
 export default mongoose.models?.StudentAnswer ||

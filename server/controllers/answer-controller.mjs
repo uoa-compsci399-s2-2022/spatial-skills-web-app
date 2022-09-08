@@ -8,6 +8,17 @@ const checkAnswer = async (qId, aId) => {
   return trueAnswer.id == aId ? true : false;
 };
 
+const calcGrade = async (answers, tId) => {
+  let grade = 0;
+  const test = await Test.findById(tId).exec();
+  for (let i = 0; i < answers.length; i++) {
+    grade += (await checkAnswer(answers[i].qId, answers[i].aId))
+      ? test.questions.find((q) => q.qId === answers[i].qId).grade
+      : 0;
+  }
+  return grade;
+};
+
 const createStudentAnswer = async (req, res, next) => {
   const test = await Test.findById(req.body.tId).exec();
 
@@ -30,6 +41,7 @@ const createStudentAnswer = async (req, res, next) => {
         correct: await checkAnswer(sa.qId, sa.aId),
       }))
     ),
+    grade: await calcGrade(req.body.answers, req.body.tId),
   });
   const result = await createdStudentAnswer.save();
   // Save in test object

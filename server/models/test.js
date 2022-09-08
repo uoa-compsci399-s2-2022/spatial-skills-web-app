@@ -5,9 +5,11 @@ import StudentAnswer from "./student-answer.js";
 const testSchema = new mongoose.Schema({
   title: { type: String, required: true },
   creator: { type: String, required: true },
-  questions: [{
+  questions: [
+    {
       qId: { type: String, required: true },
       time: { type: Number, required: true },
+      grade: { type: Number, required: true },
     },
   ],
   studentAnswers: [StudentAnswer.schema],

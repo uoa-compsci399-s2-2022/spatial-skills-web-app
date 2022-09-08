@@ -17,6 +17,7 @@ const createTest = async (req, res, next) => {
     questions: req.body.questions.map((q) => ({
       qId: q.qId,
       time: q.time,
+      grade: q.grade
     })),
     studentAnswers: [],
     published: req.body.published,
