@@ -39,7 +39,7 @@
 }
 
 .home__input--text {
-    outline: 1px solid var(--mid-color);
+    outline: 1px solid var(--contrast-color-hover);
 }
 
 .home__input--text:focus {
