@@ -31,4 +31,10 @@ const getAllTests = async (req, res, next) => {
   res.json(tests);
 };
 
-export { createTest, getAllTests };
+const getTestById = async (req, res, next) => {
+  const test = await Test.findById(req.params.tid).exec();
+  const testOut = new TestOut(test);
+  res.json(testOut);
+};
+
+export { createTest, getAllTests, getTestById };
