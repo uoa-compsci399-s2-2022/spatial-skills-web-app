@@ -1,12 +1,19 @@
 import express from "express";
-import { createStudentAnswer, getAllStudentAnswers } from "../controllers/answer-controller.mjs";
+import {
+  createStudentAnswer,
+  getAllStudentAnswers,
+  getStudentAnswerBytIdsId,
+} from "../controllers/answer-controller.mjs";
 
 const answerRouter = express.Router();
 
 //get all
-answerRouter.get("/all",getAllStudentAnswers);
+answerRouter.get("/all", getAllStudentAnswers);
 
-//add question
-answerRouter.post("/",createStudentAnswer);
+//add student answer
+answerRouter.post("/", createStudentAnswer);
+
+//get student answer by test id and student id
+answerRouter.get("/", getStudentAnswerBytIdsId);
 
 export default answerRouter;

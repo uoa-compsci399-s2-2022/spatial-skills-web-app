@@ -44,4 +44,16 @@ const getAllStudentAnswers = async (req, res, next) => {
   res.json(studentAnswers);
 };
 
-export { createStudentAnswer, getAllStudentAnswers };
+const getStudentAnswerBytIdsId = async (req, res, next) => {
+  const studentAnswer = await StudentAnswer.findOne({
+    tId: req.body.tId,
+    sId: req.body.sId,
+  }).exec();
+  if (!studentAnswer) {
+    res.status(400).json({ message: "Could not find student answer" });
+    return;
+  }
+  res.status(200).json(studentAnswer);
+};
+
+export { createStudentAnswer, getAllStudentAnswers, getStudentAnswerBytIdsId };
