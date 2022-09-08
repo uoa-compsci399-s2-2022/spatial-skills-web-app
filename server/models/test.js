@@ -5,13 +5,12 @@ import StudentAnswer from "./student-answer.js";
 const testSchema = new mongoose.Schema({
   title: { type: String, required: true },
   creator: { type: String, required: true },
-  questions: [
-    new mongoose.Schema({
-      question: { type: QuestionOut, required: true },
+  questions: [{
+      qId: { type: String, required: true },
       time: { type: Number, required: true },
-    }),
+    },
   ],
-  studentAnswers: [StudentAnswer],
+  studentAnswers: [StudentAnswer.schema],
   published: { type: Boolean, required: true },
   code: { type: String, required: true },
 });
