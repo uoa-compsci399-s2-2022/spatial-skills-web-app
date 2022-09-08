@@ -4,6 +4,7 @@ import cors from "cors";  // https://www.npmjs.com/package/cors
 import connectDB from './db/db.js';
 import questionRouter from './routes/question-routes.js';
 import testRouter from './routes/test-routes.js';
+import answerRouter from './routes/answer-routes.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -20,6 +21,9 @@ app.use('/api/question',questionRouter);
 
 //test APIs
 app.use('/api/test',testRouter);
+
+//answer APIs
+app.use('/api/answer',answerRouter);
 
 app.get('/', (req, res) => res.send("Hello world!"));
 
