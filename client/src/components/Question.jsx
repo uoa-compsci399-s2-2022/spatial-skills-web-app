@@ -1,20 +1,20 @@
 const Question = (props) => {
-  const { type, questionImage, text, answerImages } = props;
+  const { type, questionImage, text, answers } = props;
 
   const renderMultiChoiceAnswers = () => {
     const labels = ["a", "b", "c", "d", "e"];
     const answerChoices = [];
     // The images cannot be retrieved through their filename (array, not object)
-    for (var i = 0; i < answerImages.length; i++) {
+    for (var i = 0; i < answers.length; i++) {
       answerChoices.push(
         <div className="answer__choice" key={labels[i]}>
           <label htmlFor={labels[i]}>
-            <img src={answerImages[i]} alt="" />
+            <img src={answers[i].image} alt="" />
           </label>
           <input
             type="radio"
             id={labels[i]}
-            value={labels[i]}
+            value={answers[i]._id}
             name="answer"
             onChange={props.submit}
           />
