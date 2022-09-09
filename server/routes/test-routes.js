@@ -11,7 +11,7 @@ const testRouter = express.Router();
 
 testRouter.get("/all", getAllTests);
 
-testRouter.get("/getquestions", getQuestionsBytId);
+testRouter.post("/getquestions", getQuestionsBytId);
 
 testRouter.get("/:tid", getTestById);
 
