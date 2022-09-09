@@ -3,25 +3,33 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaCaretRight } from "react-icons/fa"; // https://react-icons.github.io/react-icons
 import TimerDisplay from "../components/TimerDisplay";
 import Question from "../components/Question";
-
+import axios from "axios";
 
 const Test = (props) => {
-  const Ref = useRef(null); // Used for timer
-
+  const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
+  const [questionTimeBank, setQuestionTimeBank] = useState([]);
   const [questionNum, setQuestionNum] = useState(1);
-  const [questionTime, setQuestionTime] = useState(60);  // Change this once you can access time from DB
+  const [questionTime, setQuestionTime] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const url = 'http://localhost:3001/api/test/getquestions';
+  const data = {
+    tId: "6319abdf2d143b5bfa3de54a",
+    shuffle: true
+  };
+
+  // Get test question data from backend API.
   useEffect(() => {
-    fetch('http://localhost:3001/api/question/all')
-    .then(res => res.json())
-    .then(
-      (result) => {
-        setQuestionBank(result);
-        setUserAnswers(Array.apply(null, Array(result.length)));
+    axios.post(url, data)
+    .then((res) => {
+        console.log(res);
+        setQuestionBank(res.data.questions);
+        setQuestionTimeBank(res.data.times);
+        setQuestionTime(res.data.times[0]);
+        setUserAnswers(Array.apply(null, Array(res.data.questions.length)));
         setIsLoaded(true);
       },
       (error) => {
@@ -35,7 +43,7 @@ const Test = (props) => {
     console.log(userAnswers); // for debugging
     if (questionNum < questionBank.length) {
       setQuestionNum(questionNum + 1);
-      setQuestionTime(60);  // Change this once you can access time from DB
+      setQuestionTime(questionTimeBank[questionNum - 1]);  // Change this once you can access time from DB
       return true;
     } else {
       alert("No more questions!");
