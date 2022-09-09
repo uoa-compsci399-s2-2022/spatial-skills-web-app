@@ -1,13 +1,4 @@
 version: 1
-backend:
-  phases:
-    preBuild:
-      commands:
-        - cd server
-        - npm ci
-    build:
-      commands:
-        - amplifyPush --simple
 frontend:
   phases:
     preBuild:
