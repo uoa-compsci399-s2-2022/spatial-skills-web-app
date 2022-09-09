@@ -1,5 +1,7 @@
 import Test from "../models/test.js";
 import TestOut from "../models/test-out.js";
+import QuestionOut from "../models/question-out.js";
+import Question from "../models/question.js";
 
 const createCode = async () => {
   //Creates alphanumeric code of length 6
@@ -10,6 +12,21 @@ const createCode = async () => {
   return c;
 };
 
+const FisherYatesShuffle = (questions) => {
+  let i = questions.length - 1;
+  let ri, temp;
+
+  while (i > 0) {
+    ri = Math.floor(Math.random() * i);
+    temp = questions[i];
+    questions[i] = questions[ri];
+    questions[ri] = temp;
+    i--;
+  }
+
+  return questions;
+};
+
 const createTest = async (req, res, next) => {
   const createdTest = new Test({
     title: req.body.title,
@@ -17,7 +34,7 @@ const createTest = async (req, res, next) => {
     questions: req.body.questions.map((q) => ({
       qId: q.qId,
       time: q.time,
-      grade: q.grade
+      grade: q.grade,
     })),
     studentAnswers: [],
     published: req.body.published,
@@ -38,4 +55,19 @@ const getTestById = async (req, res, next) => {
   res.json(testOut);
 };
 
-export { createTest, getAllTests, getTestById };
+const getQuestionsBytId = async (req, res, next) => {
+  const test = await Test.findById(req.body.tId).exec();
+  const qidArr = test.questions.map((q) => q.qId);
+  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
+  let questionsOut = questions.map((q) => new QuestionOut(q));
+  if (req.body.shuffle) {
+    questionsOut = FisherYatesShuffle(questionsOut);
+  }
+  const timeOut = questionsOut.map(
+    (qo) => test.questions.find((q) => q.qId === qo.id).time
+  );
+  const combined = { questions: questionsOut, times: timeOut };
+  res.json(combined);
+};
+
+export { createTest, getAllTests, getTestById, getQuestionsBytId };
