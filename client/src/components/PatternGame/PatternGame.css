@@ -1,10 +1,14 @@
+h2{
+  font-size: 27px;
+}
 
-.game {
+.pattern-game {
     text-align: center;
     color: #19e0b2;
     background-color: var(--accent-color);
     color: var(--contrast-color);
-    height: 100vh;
+    height: 1249px
+
 
 }
 
@@ -34,13 +38,127 @@ button:hover {
   transform: scale(1.05) rotate(-1deg);
 }
 
-  .game__blocks-grid {
-    margin: auto;
-    width:fit-content;
-    margin-top: 50px;
-    display: grid;
-    grid-template-columns: 165px 165px 165px 165px 165px 165px;
-    column-gap: 20px;
-    row-gap: 20px;
-    justify-items: center;
-  }
+.pattern-game__blocks-grid {
+  margin: auto;
+  width:fit-content;
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 165px 165px 165px 165px 165px 165px;
+  column-gap: 20px;
+  row-gap: 20px;
+  justify-items: center;
+
+}
+
+.heart {
+  background-color: red;
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+  margin: 0 10px;
+  transform: rotate(-45deg); 
+}
+
+.heart:before,
+.heart:after {
+  content: "";
+  background-color: red;
+  border-radius: 50%;
+  height: 15px;
+  position: absolute;
+  width: 15px;
+}
+
+.heart:before {
+  top: -8px;
+  left: 0;
+}
+
+.heart:after {
+  left: 8px;
+  top: 0;
+}
+
+.lives-div__hearts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pattern-game__lives-number {
+  margin-left: 50%;
+}
+
+.pattern-game__lives-div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: fit-content;
+  position: sticky;
+  column-gap: 0px;
+}
+
+.pattern-game__information-div {
+
+  width: fit-content;
+  margin: auto;
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+
+
+}
+
+.black-heart {
+  background-color: grey;
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+  margin: 0 10px;
+  transform: rotate(-45deg); 
+}
+
+.black-heart:before,
+.black-heart:after {
+  content: "";
+  background-color: grey;
+  border-radius: 50%;
+  height: 15px;
+  position: absolute;
+  width: 15px;
+}
+
+.black-heart:before {
+  top: -8px;
+  left: 0;
+}
+
+.black-heart:after {
+  left: 8px;
+  top: 0;
+}
+
+
+
+.game-over-div {
+  background: white;
+  border-radius: 0.5em;
+  box-shadow: 0 10px 20px rgba(black, 0.2);
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  text-align: center;
+  height: 200px;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.game-over-text {
+    border-top: 1px solid #e0e0e0;
+    padding: 2em;
+    pointer-events: all;
+    overflow: auto;
+    font-size: 30px;
+    color: black;
+}

@@ -1,10 +1,10 @@
 import './SingleBlock.css'
 
 
-const SingleBlock = ({ block, handleChoice, blockState }) => {
+const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled }) => {
 
     const handleClick = () => {
-        if (!block.clicked){
+        if (!block.clicked && !gameOver && !disabled){
             handleChoice(block)
         }
     }
@@ -21,7 +21,7 @@ const SingleBlock = ({ block, handleChoice, blockState }) => {
 
     return(
         <div>
-            <div className={generateClassName()} onClick={handleClick}>{block.id}</div>
+            <div className={generateClassName()} onClick={handleClick}></div>
         </div>
     )
 }
