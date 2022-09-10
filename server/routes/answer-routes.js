@@ -14,6 +14,6 @@ answerRouter.get("/all", getAllStudentAnswers);
 answerRouter.post("/", createStudentAnswer);
 
 //get student answer by test id and student id
-answerRouter.get("/", getStudentAnswerBytIdsId);
+answerRouter.post("/getStudentAnswer/", getStudentAnswerBytIdsId);
 
 export default answerRouter;
