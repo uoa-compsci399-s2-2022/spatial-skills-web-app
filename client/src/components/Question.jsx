@@ -1,5 +1,5 @@
 const Question = (props) => {
-  const { type, questionImage, text, answers } = props;
+  const { type, questionImage, text, answers, selected } = props;
 
   const renderMultiChoiceAnswers = () => {
     const labels = ["a", "b", "c", "d", "e"];
@@ -14,9 +14,10 @@ const Question = (props) => {
           <input
             type="radio"
             id={labels[i]}
-            value={answers[i]._id}
+            value={answers[i].id}
             name="answer"
             onChange={props.submit}
+            checked={selected === answers[i].id}
           />
         </div>
       );
