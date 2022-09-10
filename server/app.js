@@ -5,6 +5,7 @@ import connectDB from './db/db.js';
 import questionRouter from './routes/question-routes.js';
 import testRouter from './routes/test-routes.js';
 import answerRouter from './routes/answer-routes.js';
+import errorHandler from './handlers/error-handler.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -26,5 +27,8 @@ app.use('/api/test',testRouter);
 app.use('/api/answer',answerRouter);
 
 app.get('/', (req, res) => res.send("Hello world!"));
+
+//error handler 
+app.use(errorHandler);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
