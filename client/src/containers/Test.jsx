@@ -2,6 +2,7 @@ import "../styles/Test.css";
 import React, { useState, useRef, useEffect } from "react";
 import { FaCaretRight } from "react-icons/fa"; // https://react-icons.github.io/react-icons
 import TimerDisplay from "../components/TimerDisplay";
+import Timer from "../components/Timer";
 import Question from "../components/Question";
 import axios from "axios";
 
@@ -19,7 +20,7 @@ const Test = (props) => {
   const url = 'http://localhost:3001/api/test/getquestions';
   const data = {
     tId: "6319abdf2d143b5bfa3de54a",
-    shuffle: true
+    shuffle: false
   };
 
   // Get test question data from backend API.
@@ -53,10 +54,10 @@ const Test = (props) => {
     setSelectedAnswer(null);
     if (currentQuestion < questionBank.length) {
       setCurrentQuestion(currentQuestion + 1);
-      setTimeLeft(questionTimeBank[currentQuestion - 1]);  // Change this once you can access time from DB
+      setTimeLeft(questionTimeBank[currentQuestion]);
       return true;
     } else {
-      alert("No more questions!");
+      // alert("No more questions!");
       return false;
     }
   };
@@ -128,6 +129,10 @@ const Test = (props) => {
             <FaCaretRight size={60} />
           </button>
         }
+
+        <Timer questionTime={questionTimeBank[currentQuestion - 1]}
+          timeLeft={timeLeft}
+        />
 
       </div>
     );
