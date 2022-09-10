@@ -2,6 +2,7 @@ import Test from "../models/test.js";
 import TestOut from "../models/test-out.js";
 import QuestionOut from "../models/question-out.js";
 import Question from "../models/question.js";
+import APIError from "../handlers/APIError.js";
 
 const createCode = async () => {
   //Creates alphanumeric code of length 6
@@ -40,7 +41,20 @@ const createTest = async (req, res, next) => {
     published: req.body.published,
     code: await createCode(),
   });
-  const result = await createdTest.save();
+
+  try {
+    await createdTest.validate();
+  } catch (e) {
+    return next(new APIError("Invalid or missing inputs.", 400));
+  }
+
+  let result;
+  try {
+    result = await createdTest.save();
+  } catch (e) {
+    return next(new APIError("Could not save test.", 500));
+  }
+
   res.status(201).json(result);
 };
 
@@ -50,15 +64,34 @@ const getAllTests = async (req, res, next) => {
 };
 
 const getTestById = async (req, res, next) => {
-  const test = await Test.findById(req.params.tid).exec();
+  let test;
+  try{
+    test = await Test.findById(req.body.tId).exec();
+    if (!test){
+      throw new Error;
+    }
+  } catch(e) {
+    return next(new APIError("Test not found.", 404));
+  }
   const testOut = new TestOut(test);
   res.json(testOut);
 };
 
 const getQuestionsBytId = async (req, res, next) => {
-  const test = await Test.findById(req.body.tId).exec();
+  let test;
+  try{
+    test = await Test.findById(req.body.tId).exec();
+  } catch(e) {
+    return next(new APIError("Test not found.", 404));
+  }
+
   const qidArr = test.questions.map((q) => q.qId);
+
   const questions = await Question.find({ _id: { $in: qidArr } }).exec();
+  if (questions.length < qidArr.length){
+    return next(new APIError("Could not find all test questions.", 404));
+  }
+
   let questionsOut = questions.map((q) => new QuestionOut(q));
   if (req.body.shuffle) {
     questionsOut = FisherYatesShuffle(questionsOut);

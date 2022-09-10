@@ -9,12 +9,12 @@ import {
 
 const testRouter = express.Router();
 
+testRouter.post("/", createTest);
+
 testRouter.get("/all", getAllTests);
 
 testRouter.post("/getquestions", getQuestionsBytId);
 
 testRouter.get("/:tid", getTestById);
-
-testRouter.post("/", createTest);
 
 export default testRouter;
