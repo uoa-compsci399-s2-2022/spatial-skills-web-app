@@ -1,12 +1,14 @@
 import "../styles/Test.css";
 import React, { useState, useRef, useEffect } from "react";
-import { FaCaretRight } from "react-icons/fa"; // https://react-icons.github.io/react-icons
+import { Link } from "react-router-dom";
+import { FaCaretRight } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
 import axios from "axios";
 
 const Test = (props) => {
+  const { userData } = props;
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
   const [questionTimeBank, setQuestionTimeBank] = useState([]);
@@ -18,8 +20,9 @@ const Test = (props) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);  // For radio button reset on question change
 
   const url = 'http://localhost:3001/api/test/getquestions';
+  const testId = "6319abdf2d143b5bfa3de54a";  // Use values from props later.
   const data = {
-    tId: "6319abdf2d143b5bfa3de54a",
+    tId: testId,
     shuffle: false
   };
 
@@ -27,23 +30,22 @@ const Test = (props) => {
   useEffect(() => {
     axios.post(url, data)
     .then((res) => {
-        console.log(res);
-        setQuestionBank(res.data.questions);
-        setQuestionTimeBank(res.data.times);
-        setTimeLeft(res.data.times[0]);
+      console.log(res);
+      setQuestionBank(res.data.questions);
+      setQuestionTimeBank(res.data.times);
+      setTimeLeft(res.data.times[0]);
 
-        let defaultAns = [];
-        for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.id, aId: null});
-        }
-        setUserAnswers(defaultAns);
-        setIsLoaded(true);
-      },
-      (error) => {
-        setIsLoaded(true);
-        setError(error);
+      let defaultAns = [];
+      for (const q of res.data.questions) {
+        defaultAns.push({ qId: q.id, aId: null});
       }
-    )
+      setUserAnswers(defaultAns);
+      setIsLoaded(true);
+    },
+    (error) => {
+      setIsLoaded(true);
+      setError(error);
+    })
   }, [])
 
   const nextQuestion = () => {
@@ -57,7 +59,14 @@ const Test = (props) => {
       setTimeLeft(questionTimeBank[currentQuestion]);
       return true;
     } else {
-      // alert("No more questions!");
+      if (userData.name) {  // Create answer in DB if user logged in
+        let testData = { tId: testId, sId: userData.email, answers: userAnswers }
+
+        axios.post("http://localhost:3001/api/answer", testData)
+        .then(
+          window.location.replace(`http://localhost:3000/results/${testId}/${userData.email}`)
+        )
+      }
       return false;
     }
   };
@@ -120,7 +129,7 @@ const Test = (props) => {
         </div>
 
         {
-          selectedAnswer === null ? null : 
+          selectedAnswer === null ? null : // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}

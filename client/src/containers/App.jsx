@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Home from "./Home";
 import Test from "./Test";
+import TestResult from "./TestResult";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Splash from "../components/Splash";
@@ -25,7 +26,8 @@ function App() {
             path="/"
             element={<Home userData={userData} setUserData={setUserData} />}
           />
-          <Route path="/test" element={<Test />} />
+          <Route path="/test" element={<Test userData={userData}/>} />
+          <Route path="/results/:tId/:sId" element={<TestResult />} />
         </Routes>
         <Footer />
         <Splash />
