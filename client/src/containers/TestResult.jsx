@@ -51,7 +51,8 @@ const TestResult = () => {
       <div className='results'>
         <div>
           <h1>Test Result Page</h1>
-          <h1>Test {tId} by {sId}</h1>
+          <h1>Test {tId}</h1>
+          <h1>Taken by {sId}</h1>
           <h1>Grade: {grade}</h1>
           <ol type="1">
             {renderAnswers()}

@@ -1,6 +1,5 @@
 import "../styles/Test.css";
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { FaCaretRight } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
@@ -60,11 +59,11 @@ const Test = (props) => {
       return true;
     } else {
       if (userData.name) {  // Create answer in DB if user logged in
-        let testData = { tId: testId, sId: userData.email, answers: userAnswers }
+        let testData = { tId: testId, sId: userData.name, answers: userAnswers }
 
         axios.post("http://localhost:3001/api/answer", testData)
         .then(
-          window.location.replace(`http://localhost:3000/results/${testId}/${userData.email}`)
+          window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
         )
       }
       return false;
