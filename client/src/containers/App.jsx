@@ -4,7 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Home from "./Home";
 import Test from "./Test";
 import Dashboard from "./Dashboard";
-import Statistics from "./Statistics";
+import Stats from "./Stats";
 import Editor from "./Editor";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -29,7 +29,7 @@ function App() {
           />
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="dashboard/test/:testId" element={<Statistics />} />
+          <Route path="dashboard/test/:testId" element={<Stats />} />
           <Route path="dashboard/editor" element={<Editor />} />
         </Routes>
         <Footer />

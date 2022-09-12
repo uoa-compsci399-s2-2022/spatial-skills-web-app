@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import dummyData from "../db/dummyTest.json";
 import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 
-const iconSize = "1.5em";
+const iconSize = "1.25em";
 const Dashboard = () => {
   // we'll need to authenticate users below this route, maybe check
   // their email with db for admin privilege?
@@ -11,7 +11,7 @@ const Dashboard = () => {
     <>
       <div className="dashboard">
         {dummyData.map((test) => (
-          <div className="dashboard__test" key={test._id + test.code}>
+          <div className="dashboard__test section" key={test._id + test.code}>
             <h3>{test.title}</h3>
             <p>{test.code}</p>
             <div className="dashboard__action-container">
