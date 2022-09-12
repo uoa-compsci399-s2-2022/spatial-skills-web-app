@@ -1,13 +1,15 @@
 * {
   box-sizing: border-box;
   --accent-color: #4895EF;
+  --accent-color-hover: #deeefc;
   --contrast-color: #ffffff;
   --contrast-color-hover: #dadce0;
+  --base-300: #e6e8ec;
   --mid-color: #323944;
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
   --error-color: #f51d24;
-  --shadow-color: rgba(49, 50, 53, 0.26);
+  --shadow-color: rgba(159, 162, 172, 0.26);
   --font: 'Quicksand';
   --font-cta: 'Montserrat';
 }
