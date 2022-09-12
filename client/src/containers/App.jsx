@@ -4,10 +4,10 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Home from "./Home";
 import Test from "./Test";
 import Dashboard from "./Dashboard";
+import Statistics from "./Statistics";
 import Editor from "./Editor";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import Splash from "../components/Splash";
 
 const GOOGLE_CLIENT_ID =
   "126878629767-elluidkp4g3iost84sgh5spapdq30su7.apps.googleusercontent.com";
@@ -29,10 +29,10 @@ function App() {
           />
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard/test/:testId" element={<Statistics />} />
           <Route path="dashboard/editor" element={<Editor />} />
         </Routes>
         <Footer />
-        <Splash />
       </BrowserRouter>
     </GoogleOAuthProvider>
   );
