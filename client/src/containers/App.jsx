@@ -6,6 +6,8 @@ import Test from "./Test";
 import Dashboard from "./Dashboard";
 import Stats from "./Stats";
 import Editor from "./Editor";
+import EditorTest from "./EditorTest";
+import EditorQuestion from "./EditorQuestion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -31,6 +33,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId" element={<Stats />} />
           <Route path="dashboard/editor" element={<Editor />} />
+          <Route path="dashboard/editor/test" element={<EditorTest />} />
+          <Route path="dashboard/editor/question" element={<EditorQuestion />} />
         </Routes>
         <Footer />
       </BrowserRouter>
