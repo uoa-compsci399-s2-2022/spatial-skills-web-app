@@ -21,6 +21,8 @@
     "concurrently": "^7.3.0"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
     "react-icons": "^4.4.0"
   }
 }
