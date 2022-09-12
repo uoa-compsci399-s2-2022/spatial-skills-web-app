@@ -39,26 +39,30 @@ const Stats = () => {
             <h2>Questions</h2>
             <div className="divider" />
             <table>
-              <tr>
-                <th>Preview</th>
-                <th>Name</th>
-                <th>Time</th>
-                <th>Grade</th>
-                <th>Edit</th>
-              </tr>
-              {test.questions.map((question) => (
+              <thead>
                 <tr>
-                  <td>Image to identify question</td>
-                  <td>{question.qId}</td>
-                  <td>{`${question.time}s`}</td>
-                  <td>{question.grade.toFixed(1)}</td>
-                  <td>
-                    <Link to={`/question/${question.qId}`}>
-                      <FaEdit size={iconSize} />
-                    </Link>
-                  </td>
+                  <th>Preview</th>
+                  <th>Name</th>
+                  <th>Time</th>
+                  <th>Grade</th>
+                  <th>Edit</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {test.questions.map((question) => (
+                  <tr key={question._id}>
+                    <td>Image to identify question</td>
+                    <td>{question.qId}</td>
+                    <td>{`${question.time}s`}</td>
+                    <td>{question.grade.toFixed(1)}</td>
+                    <td>
+                      <Link to={`/question/${question.qId}`}>
+                        <FaEdit size={iconSize} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
             <div className="stats__action-container">
               <button className="button button--outlined" title="Edit">
@@ -74,16 +78,20 @@ const Stats = () => {
             <h2>Scores</h2>
             <div className="divider" />
             <table>
-              <tr>
-                <th>Name</th>
-                <th>Score</th>
-              </tr>
-              {test.studentAnswers.map((student) => (
+              <thead>
                 <tr>
-                  <td>{student.sId}</td>
-                  <td>{student.grade}</td>
+                  <th>Name</th>
+                  <th>Score</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {test.studentAnswers.map((student) => (
+                  <tr key={student._id}>
+                    <td>{student.sId}</td>
+                    <td>{student.grade}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
             <button className="button button--outlined">
               Download as .csv

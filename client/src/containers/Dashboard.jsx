@@ -10,6 +10,7 @@ const Dashboard = () => {
   return (
     <>
       <div className="dashboard">
+        <Link to="/dashboard/bank">Question Bank</Link>
         {dummyData.map((test) => (
           <div className="dashboard__test section" key={test._id + test.code}>
             <h3>{test.title}</h3>
