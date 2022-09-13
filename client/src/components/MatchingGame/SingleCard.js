@@ -1,14 +1,6 @@
 import '../../styles/MatchingGameStyles/SingleCard.css'
 
 const SingleCard = ({ card, handleChoice, flipped, disabled}) => {
-
-    const handleClick = () => {
-        if (!disabled){
-          handleChoice(card)
-        }
-    }
-
-
   return (
     <div>
       <div className="card">
@@ -17,7 +9,7 @@ const SingleCard = ({ card, handleChoice, flipped, disabled}) => {
           <img
             className="card-back"
             src="/cardImages/cover.png"
-            onClick={handleClick}
+            onClick={() => !disabled ? handleChoice(card) : null}
             alt="back of card"
           ></img>
         </div>

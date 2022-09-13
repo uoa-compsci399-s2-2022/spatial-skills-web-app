@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import '../../styles/MatchingGameStyles/./MatchingGame.css';
 import SingleCard from './SingleCard';
 
-
 // sources of card images
 const cardImages = [
   { src: "/cardImages/2_of_clubs.png", matched: false },
@@ -31,9 +30,6 @@ const MatchingGame = () => {
   const [disabled, setdisAbled] = useState(false)
   const [bothMatched, setBothMatched] = useState(true)
   const [gameOver, setGameOver] = useState(false)
-  const [lives, setLives] = useState(maxHealth)
-  const [win, setWin] = useState(false)
-  const [showCards, setShowCards] = useState(true)
   const [started, setStarted] = useState(false)
   const [firstVisit, setFirstvisit] = useState(true)
   const [time, setTime] = useState(timeAllowed)
@@ -57,8 +53,6 @@ const MatchingGame = () => {
     setChoiceTwo(null)
     setBothMatched(true)
     setGameOver(false)
-    setLives(maxHealth)
-    setWin(false)
     showAllCards(true)
     setTimeout(() => {
       showAllCards(false)
@@ -80,13 +74,11 @@ const MatchingGame = () => {
     //if true store choice in ChoiceOne
     
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
-    
-
   };
 
+  // check if all cards matched
   const allMatched = () => {  
     if (matchedPair === cardImages.length){
-      setWin(true)
       setGameOver(true)
     }
   }
@@ -127,11 +119,9 @@ const MatchingGame = () => {
     }
   }, [time])
 
-
   // compare 2 selected cards
   // runs when components first inserted in the dependency array and when it changes
   useEffect(() => {
-
     if (choiceOne && choiceTwo){ 
       setdisAbled(true)
       
@@ -151,21 +141,15 @@ const MatchingGame = () => {
         resetTurn()
       } else {
         // wait 1000ms before resetting cards
-        setLives(prevLives => prevLives - 1)
+        health -= 1
         setBothMatched(false)
         setTimeout(() => resetTurn(), timeBetweenSelection + 500)
       }
     }
-
   }, [choiceOne, choiceTwo])
-
 
   // detect whether lives need to be reduced
   useEffect(() => {
-    if (!bothMatched && health >= 1) {
-      health -= 1
-    }
-
     if (!bothMatched && health === 0){
       setGameOver(true)
     }
@@ -179,10 +163,6 @@ const MatchingGame = () => {
     }
   }, [gameOver])
 
-  // show cards on game start temporarily
-
-
-
   // reset choices
   const resetTurn = () => {
     setChoiceOne(null)
@@ -193,25 +173,18 @@ const MatchingGame = () => {
     // setTurns(prevTurns => prevTurns + 1)
   }
 
-  // display timer when game starts
-  const DisplayTime = () => {
-    if (started){
-      return(
-        <h2 className="timer-text">{time}</h2>
-      )
-    }
-  }
-
-  const showInfoDiv = () => {
-    if(started){
-      return('matching-game__information-div-show')
-    } else {
-      return ('matching-game__information-div-hide')
-    }
-  }
-
-  const LivesCounter = () => {
-    return(
+  return (
+    <div className="matching-game">
+      {firstVisit ? 
+        <div className="matching-game__instructions">
+          <h1>Spatial Memory Test 1</h1>
+          <h3>Match those cards in pairs before time runs out!</h3>
+          <h3>You will lose a life for each mismatch.</h3>
+          <h3>Click start to begin.</h3>
+          <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
+        </div> : null}
+      <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
+      
       <div className='matching-game__lives-div'>
           <h2 className='matching-game__lives-text'>lives:</h2>
           <div className='matching-game__lives-div__hearts'>
@@ -219,41 +192,15 @@ const MatchingGame = () => {
           {[...Array(maxHealth - health)].map((e, i) => <span className="matching-game__black-heart" key={i}></span>)}
           </div>         
       </div>
-    )
-  }
-
-  const GameOverText = () => {
-    if (gameOver){
-      return (
-        <div className='game-over-div'>
-          <h2 className="game-over-text">Your score: {matchedPair}</h2>
-        </div>
-      )}
-  }
-
-  const Instructions = () => {
-    if (firstVisit){
-      return (
-        <div className="matching-game__instructions">
-          <h1>Spatial Memory Test 1</h1>
-          <p>Match those cards in pairs before time runs out!</p>
-          <p>You will lose a life for each mismatch.</p>
-          <p>Click start to begin.</p>
-          <button onClick={shuffleCards}>Start</button>
-        </div>
-      )
-    }
-  }
-
-  return (
-    <div className="matching-game">
-      <Instructions></Instructions>
-      <div className={showInfoDiv()}>
-        <LivesCounter />
-        <DisplayTime />
+        {started ? <h2 className="timer-text">{time}</h2> : null}
         <h2>Score: {matchedPair}</h2>
       </div>
-      <GameOverText />
+
+      {gameOver ? 
+        <div className='game-over-div'>
+          <h2 className="game-over-text">Your score: {matchedPair}</h2>
+        </div> : null}
+
       <div className="card-grid">
         {cards.map((card) => (
           <SingleCard 

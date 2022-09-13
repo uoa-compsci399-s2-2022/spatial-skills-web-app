@@ -247,7 +247,7 @@ function PatternGame() {
           <p>You will lose a life for each mismatch.</p>
           <p>Progress as far as you can!</p>
           <p>Click start to begin.</p>
-          <button onClick={startGame}>Start</button>
+          <button className='pattern-game__start-button' onClick={startGame}>Start</button>
         </div>
       )
     }

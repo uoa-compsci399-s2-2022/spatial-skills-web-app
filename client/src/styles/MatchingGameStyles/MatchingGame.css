@@ -1,5 +1,9 @@
-h2{
-  font-size: 27px;
+.matching-game__instructions h1{
+  font-size: 40px;
+}
+
+.matching-game__instructions h3 {
+  font-size: 20px;
 }
 
 .matching-game {
@@ -11,8 +15,7 @@ h2{
   border: 2px solid var(--accent-color);
 }
 
-button {
-  margin-top: 80px;
+.matching-game_start-button{
   background-color: #c2fbd7;
   border-radius: 100px;
   box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
@@ -20,7 +23,7 @@ button {
   cursor: pointer;
   display: inline-block;
   font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
-  padding: 7px 20px;
+  padding: 7px 21px;
   text-align: center;
   text-decoration: none;
   transition: all 250ms;
@@ -32,7 +35,7 @@ button {
   font-weight: bold;
 }
 
-button:hover {
+.matching-game_start-button:hover {
   box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
   transform: scale(1.05) rotate(-1deg);
 }
