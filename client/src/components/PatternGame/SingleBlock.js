@@ -1,4 +1,4 @@
-import './SingleBlock.css'
+import '../../styles/SingleBlock.css'
 
 
 const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled }) => {

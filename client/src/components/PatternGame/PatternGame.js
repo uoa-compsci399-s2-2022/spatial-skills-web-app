@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import "./PatternGame.css";
+import "../../styles/PatternGame.css";
 import SingleBlock from './SingleBlock';
 
 
@@ -7,7 +7,7 @@ const endLevel = Array(20).fill(10)
 const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
 const levelList = easyLevel.concat(endLevel)
 const maxHealth = 5
-const timeAllowed = 20
+const timeAllowed = 40
 const gameDim = 6
 
 // create blocks array
@@ -39,7 +39,6 @@ function PatternGame() {
   const numberOfPatternBlocks = levelList[level]
 
   // get an random array of IDs
-
   // create pattern array marked by its key
   const generatePattern = () => {
     const generatePatternIDs = (length, numPatternBlocks) => {
@@ -57,7 +56,6 @@ function PatternGame() {
       block.clicked = false
       return(null)
     })
-    
     
     // update block property if it's chosen to be the question pattern
     for(let i = 0; i < totalNumberOfBlocks; i++){
@@ -180,19 +178,6 @@ function PatternGame() {
       )}
   }
 
-  // lives counter
-  const LivesCounter = () => {
-    return(
-      <div className='pattern-game__lives-div'>
-          <h2 className='pattern-game__lives-number'>lives:</h2>
-          <div className='pattern-game__lives-div__hearts'>
-          {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
-          {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
-          </div>         
-      </div>
-    )
-  }
-
   // timer
   useEffect(() => {
     let interval = null
@@ -215,13 +200,6 @@ function PatternGame() {
     }
   }, [time])
 
-  // time display
-  const DisplayTime = () => {
-    return(
-      <h2 className="pattern-game__timerText">{time}</h2>
-    )
-  }
-
   const startGame = () => {
     setStarted(true)
     setTimeout(() => {
@@ -230,17 +208,9 @@ function PatternGame() {
     }, 300);
   }
 
-  const showInfoDiv = () => {
-    if(started){
-      return('pattern-game__information-div-show')
-    } else {
-      return ('pattern-game__information-div-hide')
-    }
-  }
-
-  const Instructions = () => {
-    if (!started){
-      return (
+  return (
+    <div className={"pattern-game"}>
+      {!started ? 
         <div className="pattern-game__instructions">
           <h1>Spatial Memory Test 2</h1>
           <p>Click on the pattern shown at the start of the game</p>
@@ -248,23 +218,22 @@ function PatternGame() {
           <p>Progress as far as you can!</p>
           <p>Click start to begin.</p>
           <button className='pattern-game__start-button' onClick={startGame}>Start</button>
-        </div>
-      )
-    }
-  
-  }
-  if (started){
-    
-  }
-  return (
-    <div className={"pattern-game"}>
-      <Instructions></Instructions>
-      <div className={showInfoDiv()}>
-        <LivesCounter />
-        <DisplayTime />
+        </div> : null}
+      <div className={started ? 'pattern-game__information-div-show' : 'pattern-game__information-div-hide'}>
+      <div className='pattern-game__lives-div'>
+          <h2 className='pattern-game__lives-number'>lives:</h2>
+          <div className='pattern-game__lives-div__hearts'>
+          {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
+          {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
+          </div>         
+      </div>
+        <h2 className="pattern-game__timerText">{time}</h2>
         <h2>Score: {level}</h2>
       </div>
-      <GameOverText />
+      {gameOver ? 
+        <div className='game-over-div'>
+          <h2 className="game-over-text">Your score: {level}</h2>
+        </div> : null}
       <div className='pattern-game__blocks-grid'>
         {blocks.map(block => (
           <SingleBlock 
@@ -277,7 +246,6 @@ function PatternGame() {
             />
         ))}
       </div>
-
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import '../../styles/MatchingGameStyles/SingleCard.css'
+import '../../styles/SingleCard.css'
+
 
 const SingleCard = ({ card, handleChoice, flipped, disabled}) => {
   return (

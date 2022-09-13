@@ -7,7 +7,7 @@ import '../styles/Home.css';
 const Test = () => {
     return(
         <div>
-            <MatchingGame />
+            <PatternGame />
         </div>
     );
 }

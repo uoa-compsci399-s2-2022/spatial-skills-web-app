@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import '../../styles/MatchingGameStyles/./MatchingGame.css';
+import '../../styles/MatchingGame.css';
 import SingleCard from './SingleCard';
 
 // sources of card images
@@ -178,9 +178,9 @@ const MatchingGame = () => {
       {firstVisit ? 
         <div className="matching-game__instructions">
           <h1>Spatial Memory Test 1</h1>
-          <h3>Match those cards in pairs before time runs out!</h3>
-          <h3>You will lose a life for each mismatch.</h3>
-          <h3>Click start to begin.</h3>
+          <p>Match those cards in pairs before time runs out!</p>
+          <p>You will lose a life for each mismatch.</p>
+          <p>Click start to begin.</p>
           <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
         </div> : null}
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
