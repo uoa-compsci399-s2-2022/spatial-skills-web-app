@@ -11,12 +11,6 @@
     
 }
 
-.not-flipped:hover{
-  transition: transform .2s; /* Animation */
-  transform: scale(1.05);
-  margin: 0 auto;
-}
-
 /* front of card */
 .card .card-front {
     transform: rotateY(90deg);

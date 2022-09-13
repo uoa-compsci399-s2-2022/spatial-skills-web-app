@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../../styles/MatchingGameStyles/./MatchingGame.css';
 import SingleCard from './SingleCard';
-import LivesCounter from './LivesCounter';
-import GameOver from './GameOver';
+
 
 // sources of card images
 const cardImages = [
@@ -16,7 +15,7 @@ const cardImages = [
   { src: "/cardImages/3_of_spades.png", matched: false }
 ];
 
-const maxHealth = 3
+const maxHealth = 5
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
 const timeAllowed = 40
@@ -53,7 +52,6 @@ const MatchingGame = () => {
     // store shuffled cards in state and reset turns to 0 (new game)
     setCards(shuffledCards)
     // setTurns(0)
-    setTimerOn(true)
     setTime(timeAllowed)
     setChoiceOne(null)
     setChoiceTwo(null)
@@ -61,7 +59,11 @@ const MatchingGame = () => {
     setGameOver(false)
     setLives(maxHealth)
     setWin(false)
-    setShowCards(prevState => !prevState)
+    showAllCards(true)
+    setTimeout(() => {
+      showAllCards(false)
+      setTimerOn(true)
+    }, timeBeforeGameStart)
     setStarted(true)
     setFirstvisit(false)
     health = maxHealth
@@ -76,7 +78,10 @@ const MatchingGame = () => {
     }
     //check if 'choiceOne' is null, if false, store choice in choiceTwo
     //if true store choice in ChoiceOne
+    
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
+    
+
   };
 
   const allMatched = () => {  
@@ -116,7 +121,6 @@ const MatchingGame = () => {
   }, [timerOn])
 
   useEffect(() => {
-    console.log(time)
     if (time === 0){
       setTimerOn(false)
       setGameOver(true)
@@ -127,6 +131,7 @@ const MatchingGame = () => {
   // compare 2 selected cards
   // runs when components first inserted in the dependency array and when it changes
   useEffect(() => {
+
     if (choiceOne && choiceTwo){ 
       setdisAbled(true)
       
@@ -148,16 +153,12 @@ const MatchingGame = () => {
         // wait 1000ms before resetting cards
         setLives(prevLives => prevLives - 1)
         setBothMatched(false)
-        setTimeout(() => resetTurn(), timeBetweenSelection)
+        setTimeout(() => resetTurn(), timeBetweenSelection + 500)
       }
     }
+
   }, [choiceOne, choiceTwo])
 
-  // start game on launch
-  useEffect(() => {
-    setFirstvisit(true)
-    setStarted(false)
-  }, [])
 
   // detect whether lives need to be reduced
   useEffect(() => {
@@ -179,18 +180,16 @@ const MatchingGame = () => {
   }, [gameOver])
 
   // show cards on game start temporarily
-  useEffect(() => {
-    showAllCards(true)
-    setTimeout(() => showAllCards(false), timeBeforeGameStart)
-  }, [showCards])
 
 
-  // reset choices and increase turn by 1
+
+  // reset choices
   const resetTurn = () => {
     setChoiceOne(null)
     setChoiceTwo(null)
-    setdisAbled(false)
     setBothMatched(true)
+    setdisAbled(false)
+
     // setTurns(prevTurns => prevTurns + 1)
   }
 
@@ -198,15 +197,44 @@ const MatchingGame = () => {
   const DisplayTime = () => {
     if (started){
       return(
-        <p className="timerText">{time}</p>
+        <h2 className="timer-text">{time}</h2>
       )
     }
+  }
+
+  const showInfoDiv = () => {
+    if(started){
+      return('matching-game__information-div-show')
+    } else {
+      return ('matching-game__information-div-hide')
+    }
+  }
+
+  const LivesCounter = () => {
+    return(
+      <div className='matching-game__lives-div'>
+          <h2 className='matching-game__lives-text'>lives:</h2>
+          <div className='matching-game__lives-div__hearts'>
+          {[...Array(health)].map((e, i) => <span className="matching-game__heart" key={i}></span>)}
+          {[...Array(maxHealth - health)].map((e, i) => <span className="matching-game__black-heart" key={i}></span>)}
+          </div>         
+      </div>
+    )
+  }
+
+  const GameOverText = () => {
+    if (gameOver){
+      return (
+        <div className='game-over-div'>
+          <h2 className="game-over-text">Your score: {matchedPair}</h2>
+        </div>
+      )}
   }
 
   const Instructions = () => {
     if (firstVisit){
       return (
-        <div className="instructions">
+        <div className="matching-game__instructions">
           <h1>Spatial Memory Test 1</h1>
           <p>Match those cards in pairs before time runs out!</p>
           <p>You will lose a life for each mismatch.</p>
@@ -218,18 +246,14 @@ const MatchingGame = () => {
   }
 
   return (
-    <div className="game-start">
+    <div className="matching-game">
       <Instructions></Instructions>
-      <div>
-        <button onClick={shuffleCards}>Restart</button>
+      <div className={showInfoDiv()}>
+        <LivesCounter />
+        <DisplayTime />
+        <h2>Score: {matchedPair}</h2>
       </div>
-      <div className="lives-div">
-        <LivesCounter numLives={lives} onLaunch={firstVisit}></LivesCounter>
-      </div>
-      <div>
-        <DisplayTime></DisplayTime>
-      </div>
-      <GameOver defeat={gameOver} victory={win}></GameOver>
+      <GameOverText />
       <div className="card-grid">
         {cards.map((card) => (
           <SingleCard 

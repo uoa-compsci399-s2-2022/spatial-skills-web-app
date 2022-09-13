@@ -3,9 +3,12 @@ import "./PatternGame.css";
 import SingleBlock from './SingleBlock';
 
 
-const gameDim = 6
-const levelList = [3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+const endLevel = Array(20).fill(10)
+const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
+const levelList = easyLevel.concat(endLevel)
 const maxHealth = 5
+const timeAllowed = 20
+const gameDim = 6
 
 // create blocks array
 const CreateBlockArray = (dimension) => {
@@ -18,7 +21,6 @@ const CreateBlockArray = (dimension) => {
 const blocksArray = CreateBlockArray(gameDim)
 let numMatched = 0
 let health = maxHealth
-let diffculty = 1
 
 
 function PatternGame() {
@@ -28,7 +30,10 @@ function PatternGame() {
   const [vicotry, setVictory] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [disabled, setDisabled] = useState(false)
-  const [level, setLevel] = useState(1)
+  const [level, setLevel] = useState(0)
+  const [time, setTime] = useState(timeAllowed)
+  const [timerOn, setTimerOn] = useState(false)
+  const [started, setStarted] = useState(false)
 
   const totalNumberOfBlocks = gameDim * gameDim
   const numberOfPatternBlocks = levelList[level]
@@ -37,7 +42,6 @@ function PatternGame() {
 
   // create pattern array marked by its key
   const generatePattern = () => {
-
     const generatePatternIDs = (length, numPatternBlocks) => {
       let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
       .sort(() => Math.random() - 0.5)
@@ -46,6 +50,7 @@ function PatternGame() {
     
     const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
 
+    // reset blocks status
     blocks.map(block => {
       block.pattern = false
       block.matched = false
@@ -80,12 +85,15 @@ function PatternGame() {
 
   // decide the color of a block
   const currentBlockState = (block) => {
+    if (!started) {
+      return ("")
+    }
     if (block.pattern && block.matched) {
       return ("correct")
     } else if (block.clicked === true && block.matched === false) {
       return ("incorrect")
     } else {
-      return ("nothing")
+      return ("grey")
     }
   }
 
@@ -105,8 +113,6 @@ function PatternGame() {
         )})
     }
   }
-
-
 
   const resetTurn = () => {
     setUserCurrentChoice(null)
@@ -133,6 +139,7 @@ function PatternGame() {
             if (userCurrentChoice.id === block.id) {
               health = health - 1
               if (health === 0) {
+                setTimerOn(false)
                 setGameOver(true)
               }
               return ({...block, clicked: true})
@@ -149,9 +156,9 @@ function PatternGame() {
     if (numMatched === numberOfPatternBlocks) {
       setDisabled(true)
       setVictory(true)
-      diffculty = diffculty + 1
       setLevel(prevLevel => prevLevel + 1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCurrentChoice])
 
   useEffect(() => {
@@ -160,19 +167,15 @@ function PatternGame() {
         generatePattern()
       }, 500);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vicotry])
-
-  // start game on launch
-  useEffect(() => {
-    generatePattern()
-  }, [])
 
   // alert game over
   const GameOverText = () => {
     if (gameOver){
       return (
         <div className='game-over-div'>
-          <h2 className="game-over-text">Your score: {diffculty}</h2>
+          <h2 className="game-over-text">Your score: {level}</h2>
         </div>
       )}
   }
@@ -182,30 +185,84 @@ function PatternGame() {
     return(
       <div className='pattern-game__lives-div'>
           <h2 className='pattern-game__lives-number'>lives:</h2>
-          <div className='lives-div__hearts'>
-          {[...Array(health)].map((e, i) => <span className="heart" key={i}></span>)}
-          {[...Array(maxHealth - health)].map((e, i) => <span className="black-heart" key={i}></span>)}
+          <div className='pattern-game__lives-div__hearts'>
+          {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
+          {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
           </div>         
       </div>
     )
   }
 
   // timer
+  useEffect(() => {
+    let interval = null
+
+    if (timerOn) {
+      interval = setInterval(() => {
+        setTime(prevTime => prevTime - 1)
+      }, 1000)
+    } else {
+      clearInterval(interval)
+    }
+    return () => clearInterval(interval)
+  }, [timerOn])
+
+  // time up
+  useEffect(() => {
+    if (time === 0){
+      setTimerOn(false)
+      setGameOver(true)
+    }
+  }, [time])
+
+  // time display
   const DisplayTime = () => {
-    return (
-      <div>
-        <h2>Time left: 60</h2>
-      </div>
+    return(
+      <h2 className="pattern-game__timerText">{time}</h2>
     )
   }
 
-  return (
-    <div className="pattern-game">
-      <div className='pattern-game__information-div'>
-      <LivesCounter />
-      <DisplayTime />
-      <h2>Level: {level}</h2>
+  const startGame = () => {
+    setStarted(true)
+    setTimeout(() => {
+      setTimerOn(true)
+      generatePattern()
+    }, 300);
+  }
 
+  const showInfoDiv = () => {
+    if(started){
+      return('pattern-game__information-div-show')
+    } else {
+      return ('pattern-game__information-div-hide')
+    }
+  }
+
+  const Instructions = () => {
+    if (!started){
+      return (
+        <div className="pattern-game__instructions">
+          <h1>Spatial Memory Test 2</h1>
+          <p>Click on the pattern shown at the start of the game</p>
+          <p>You will lose a life for each mismatch.</p>
+          <p>Progress as far as you can!</p>
+          <p>Click start to begin.</p>
+          <button onClick={startGame}>Start</button>
+        </div>
+      )
+    }
+  
+  }
+  if (started){
+    
+  }
+  return (
+    <div className={"pattern-game"}>
+      <Instructions></Instructions>
+      <div className={showInfoDiv()}>
+        <LivesCounter />
+        <DisplayTime />
+        <h2>Score: {level}</h2>
       </div>
       <GameOverText />
       <div className='pattern-game__blocks-grid'>

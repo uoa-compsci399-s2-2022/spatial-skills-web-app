@@ -7,9 +7,8 @@ h2{
     color: #19e0b2;
     background-color: var(--accent-color);
     color: var(--contrast-color);
-    height: 1249px
-
-
+    height: 100vh;
+    border: 2px solid var(--accent-color);
 }
 
 button {
@@ -41,7 +40,7 @@ button:hover {
 .pattern-game__blocks-grid {
   margin: auto;
   width:fit-content;
-  margin-top: 30px;
+  margin-top: 15px;
   display: grid;
   grid-template-columns: 165px 165px 165px 165px 165px 165px;
   column-gap: 20px;
@@ -50,7 +49,7 @@ button:hover {
 
 }
 
-.heart {
+.pattern-game__heart {
   background-color: red;
   display: inline-block;
   height: 15px;
@@ -59,8 +58,8 @@ button:hover {
   transform: rotate(-45deg); 
 }
 
-.heart:before,
-.heart:after {
+.pattern-game__heart:before,
+.pattern-game__heart:after {
   content: "";
   background-color: red;
   border-radius: 50%;
@@ -69,17 +68,17 @@ button:hover {
   width: 15px;
 }
 
-.heart:before {
+.pattern-game__heart:before {
   top: -8px;
   left: 0;
 }
 
-.heart:after {
+.pattern-game__heart:after {
   left: 8px;
   top: 0;
 }
 
-.lives-div__hearts {
+.pattern-game__lives-div__hearts {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -93,22 +92,23 @@ button:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: fit-content;
-  position: sticky;
-  column-gap: 0px;
 }
 
-.pattern-game__information-div {
-
+.pattern-game__information-div-show {
   width: fit-content;
   margin: auto;
   margin-top: 80px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-
-
+  border: 3px solid black
+  
 }
 
-.black-heart {
+.pattern-game__information-div-hide {
+  display: none;
+}
+
+.pattern-game__black-heart {
   background-color: grey;
   display: inline-block;
   height: 15px;
@@ -117,8 +117,8 @@ button:hover {
   transform: rotate(-45deg); 
 }
 
-.black-heart:before,
-.black-heart:after {
+.pattern-game__black-heart:before,
+.pattern-game__black-heart:after {
   content: "";
   background-color: grey;
   border-radius: 50%;
@@ -127,12 +127,12 @@ button:hover {
   width: 15px;
 }
 
-.black-heart:before {
+.pattern-game__black-heart:before {
   top: -8px;
   left: 0;
 }
 
-.black-heart:after {
+.pattern-game__black-heart:after {
   left: 8px;
   top: 0;
 }
@@ -152,6 +152,7 @@ button:hover {
   height: 200px;
   flex-direction: column;
   z-index: 1;
+  
 }
 
 .game-over-text {
@@ -161,4 +162,11 @@ button:hover {
     overflow: auto;
     font-size: 30px;
     color: black;
+}
+
+.pattern-game__instructions{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 40%;
 }

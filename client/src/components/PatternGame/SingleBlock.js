@@ -14,7 +14,7 @@ const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled }) =>
             return ("block__correct-match")
         } else if (blockState === "incorrect") {
             return ("block__incorrect-match")
-        } else {
+        } else if (blockState === "grey") {
             return ("block__standard")
         }
     }
