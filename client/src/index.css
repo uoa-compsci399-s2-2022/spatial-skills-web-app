@@ -2,9 +2,14 @@
   box-sizing: border-box;
   --accent-color: #4895EF;
   --contrast-color: #ffffff;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-  sans-serif;
+  --contrast-color-hover: #dadce0;
+  --mid-color: #323944;
+  --dark-color: #262631;
+  --dark-color-hover: #2b2e3a;
+  --error-color: #f51d24;
+  --shadow-color: rgba(49, 50, 53, 0.26);
+  --font: 'Quicksand';
+  --font-cta: 'Montserrat';
 }
 
 a {
@@ -16,9 +21,37 @@ p {
   margin: 0;
 }
 
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-cta);
+  margin: 0;
+}
+
 body {
+  color: var(--mid-color);
   margin: 0;
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+input {
+  outline: none;
+  border: none;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  font-family: var(--font-cta);
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./fonts/Quicksand.ttf');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat.ttf');
 }

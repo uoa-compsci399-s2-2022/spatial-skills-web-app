@@ -1,0 +1,130 @@
+.test {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100vw;
+    gap: 1rem;
+    height: 100vh;
+    background-color: var(--contrast-color);
+}
+
+.test__question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    object-fit: contain;
+}
+
+.test__question img {
+    max-width: 40vw;
+    max-height: 40vh;
+    padding: 20px;
+}
+
+.test__answers {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+}
+
+.answer__choice {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: background-color .25s;
+    padding: .5rem 1rem;
+    border-radius: 12px;
+}
+
+.answer__choice:hover {
+    outline: 1px solid var(--accent-color);
+}
+
+.answer__choice img {
+    max-width: 10vw;
+    max-height: 10vh;
+}
+
+.answer__text-entry {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.answer__text-entry input {
+    color: var(--accent-color);
+    border: 1px solid var(--contrast-color-hover);
+    border-radius: 8px;
+    font-size: 24px;
+    text-align: center;
+    transition: background-color .25s;
+    height: 50px;
+    width: 200px;
+}
+
+.answer__text-entry input:focus,
+.answer__text-entry input:hover {
+    outline: none;
+    border: 1px solid var(--accent-color);
+}
+
+.answer__text-entry input::placeholder {
+    color: rgba(129, 129, 129, 0.5);
+    font-family: var(--font);
+}
+
+.answer__text-entry input:focus::placeholder {
+    color: transparent;
+}
+
+.test__next {
+    display: flex;
+    border: none;
+    position: absolute;
+    padding: 0;
+    right: 1rem;
+    background-color: transparent;
+    color: var(--accent-color);
+    fill: var(--accent-color);
+    cursor: pointer;
+    transition: color .25s;
+    animation: fadeIn 1s;
+}
+
+.test__next:hover {
+    color: #1b7be9;
+}
+
+.test__progress {
+    position: absolute;
+    right: 1rem;
+    top: 4.5rem;
+    font-size: 32px;
+    color: var(--accent-color);
+}
+
+.test__progress:hover {
+    cursor: default;
+}
+
+.test__timer {
+    position: absolute;
+    top: 4.5rem;
+    left: 1rem;
+    font-size: 32px;
+    color: var(--accent-color);
+}
+
+.test__timer:hover {
+    cursor: default;
+}
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
