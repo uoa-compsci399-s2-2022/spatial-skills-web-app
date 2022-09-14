@@ -26,7 +26,7 @@ function App() {
             path="/"
             element={<Home userData={userData} setUserData={setUserData} />}
           />
-          <Route path="/test" element={<Test userData={userData}/>} />
+          <Route path="/test" element={<Test userData={userData} />} />
           <Route path="/results/:tId/:sId" element={<TestResult />} />
         </Routes>
         <Footer />

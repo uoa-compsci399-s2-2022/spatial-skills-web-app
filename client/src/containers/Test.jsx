@@ -4,6 +4,8 @@ import { FaCaretRight } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
+import MatchingGame from "../components/MatchingGame/MatchingGame";
+import PatternGame from "../components/PatternGame/PatternGame";
 import axios from "axios";
 
 const Test = (props) => {
@@ -16,40 +18,41 @@ const Test = (props) => {
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);  // For radio button reset on question change
+  const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
 
-  const url = 'http://localhost:3001/api/test/getquestions';
-  const testId = "6319abdf2d143b5bfa3de54a";  // Use values from props later.
+  const url = "http://localhost:3001/api/test/getquestions";
+  const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
   const data = {
     tId: testId,
-    shuffle: false
+    shuffle: false,
   };
 
   // Get test question data from backend API.
   useEffect(() => {
-    axios.post(url, data)
-    .then((res) => {
-      console.log(res);
-      setQuestionBank(res.data.questions);
-      setQuestionTimeBank(res.data.times);
-      setTimeLeft(res.data.times[0]);
+    axios.post(url, data).then(
+      (res) => {
+        console.log(res);
+        setQuestionBank(res.data.questions);
+        setQuestionTimeBank(res.data.times);
+        setTimeLeft(res.data.times[0]);
 
-      let defaultAns = [];
-      for (const q of res.data.questions) {
-        defaultAns.push({ qId: q.id, aId: null});
+        let defaultAns = [];
+        for (const q of res.data.questions) {
+          defaultAns.push({ qId: q.id, aId: null });
+        }
+        setUserAnswers(defaultAns);
+        setIsLoaded(true);
+      },
+      (error) => {
+        setIsLoaded(true);
+        setError(error);
       }
-      setUserAnswers(defaultAns);
-      setIsLoaded(true);
-    },
-    (error) => {
-      setIsLoaded(true);
-      setError(error);
-    })
-  }, [])
+    );
+  }, []);
 
   const nextQuestion = () => {
     if (userAnswers[currentQuestion - 1].aId === null && timeLeft > 0) {
-      return;  // Prevent user from proceeding if no answer selected
+      return; // Prevent user from proceeding if no answer selected
     }
     console.log(userAnswers); // for debugging
     setSelectedAnswer(null);
@@ -58,13 +61,21 @@ const Test = (props) => {
       setTimeLeft(questionTimeBank[currentQuestion]);
       return true;
     } else {
-      if (userData.name) {  // Create answer in DB if user logged in
-        let testData = { tId: testId, sId: userData.name, answers: userAnswers }
+      if (userData.name) {
+        // Create answer in DB if user logged in
+        let testData = {
+          tId: testId,
+          sId: userData.name,
+          answers: userAnswers,
+        };
 
-        axios.post("http://localhost:3001/api/answer", testData)
-        .then(
-          window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
-        )
+        axios
+          .post("http://localhost:3001/api/answer", testData)
+          .then(
+            window.location.replace(
+              `http://localhost:3000/results/${testId}/${userData.name}`
+            )
+          );
       }
       return false;
     }
@@ -115,7 +126,7 @@ const Test = (props) => {
         <TimerDisplay seconds={timeLeft} />
 
         <Question
-          type={'multichoice'}  // Change when the DB has question type.
+          type={"multichoice"} // Change when the DB has question type.
           questionImage={getCurrentQuestion().image}
           text={getCurrentQuestion().description}
           answers={getCurrentQuestion().answer}
@@ -127,8 +138,7 @@ const Test = (props) => {
           {currentQuestion} / {questionBank.length}
         </div>
 
-        {
-          selectedAnswer === null ? null : // Hide next button if no answer selected
+        {selectedAnswer === null ? null : ( // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
@@ -136,12 +146,12 @@ const Test = (props) => {
           >
             <FaCaretRight size={60} />
           </button>
-        }
+        )}
 
-        <Timer questionTime={questionTimeBank[currentQuestion - 1]}
+        <Timer
+          questionTime={questionTimeBank[currentQuestion - 1]}
           timeLeft={timeLeft}
         />
-
       </div>
     );
   }
