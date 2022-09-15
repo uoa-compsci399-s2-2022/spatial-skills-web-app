@@ -1,99 +1,85 @@
 import React, { useState } from "react";
 import "../styles/Bank.css";
-import Tests from "./tests.json";
 import Questions from "./questions.json";
-import { useLocation, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { FaPlus } from "react-icons/fa"
 
 const Bank = () => {
-  const location = useLocation();
-  const id = location.search.slice(1, location.search.length);
-
-  const [optionValue, setOptionValue] = useState("");
+  const [optionValue, setOptionValue] = useState("All");
+  const [data, setData] = useState("");
   const handleSelect = (e) => {
     setOptionValue(e.target.value);
   };
+  function getInput(val){
+    setData(val.target.value)
+  }
 
   return (
     <div>
-      <div className="editor-left-panel">
-        <h2>All Tests</h2>
+      <div className="bank-left-panel">
+        <h2>Questions</h2>
+        <select
+          name="Category"
+          id="category"
+          onChange={handleSelect}
+          className="bank-input-select"
+          >
+          <option value="All">All</option>
+          <option value="Spatial Memory">Spatial Memory</option>
+          <option value="Visuospatial Perception">Visuospatial Perception</option>
+          <option value="Mental Rotation">Mental Rotation</option>
+          <option value="Spatial Visualisation">Spatial Visualisation</option>
+          </select>
+          <input type="text" className="bank-input" onChange={getInput}></input>
       </div>
-      <div className="editor-right-panel">
-        {Tests &&
-          Tests.map((test) => {
-            if (test._id === id) {
+
+      <div className="bank-right-panel">
+        <h1>Question Bank</h1>
+        <hr />
+        {
+          Questions &&
+          Questions.map((question) => {
+            if((question.category === optionValue || optionValue === "All") && (question.title.toLowerCase().includes(data.toLowerCase()))){
               return (
-                <div>
-                  <h1>{test.title}</h1>
-                  <hr />
-                  <h2>Questions</h2>
-                  <br></br>
+                <div className = "bank-test-elements">
+                  <Link to={{
+                    pathname: "/dashboard/bank", // this would be assigned to the path of the editor
+                    search: question._id // passes the id of the question being selected.
+                  }}>
+                  <button onClick={() => console.log(`EDIT "${question.title}"`)}>
+                  <img
+                  className="bank-test-button"
+                  alt="QuestionImage"
+                  src={question.image}
+                  ></img>
+                  </button>
+                  </Link>
+                  <div className="bank-test-text">
+                    <h4>{question.title}</h4>
+                    <h5>{question.category}</h5>
+                    <button
+                      className="bank-remove-button"
+                      title="Remove"
+                      onClick={() => console.log(`REMOVE "${question.title}"`)}
+                    >X
+                    </button>
+                  </div>
                 </div>
               );
             }
-          })}
+          })
+        }
 
-        {Tests &&
-          Tests.map((test) => {
-            var count = 0;
-            if (test._id === id) {
-              const question_list = test.questions;
-              return Questions.map((question) => {
-                for (const obj of question_list) {
-                  if (question._id === obj.qId) {
-                    count = count + 1;
-                    console.log({ optionValue });
-                    return (
-                      <div>
-                        <div>
-                          <h1>{count}</h1>
-                        </div>
-                        <div className="editor__question">
-                          Category:&nbsp;&nbsp;
-                          <select
-                            name="Category"
-                            id="category"
-                            onChange={handleSelect}
-                            className="editor__input"
-                          >
-                            <option value="1">Spatial Memory</option>
-                            <option value="2">Visuospatial Perception</option>
-                            <option value="3">Mental Rotation</option>
-                            <option value="4">Spatial Visualisation</option>
-                          </select>
-                          <br></br>
-                          <br></br>
-                          <form>
-                            <label>
-                              Question:&nbsp;&nbsp;
-                              <input
-                                type="text"
-                                name="name"
-                                className="editor__input-text"
-                              />
-                            </label>
-                          </form>
-                          <img
-                            alt="QuestionImage"
-                            src={question.image}
-                            className="editor__question-image"
-                          ></img>
-                        </div>
-                        <Link
-                          to={{
-                            pathname: "/dashboard/editor/test",
-                            search: test._id,
-                          }}
-                        >
-                          <button>Edit Question</button>
-                        </Link>
-                      </div>
-                    );
-                  }
-                }
-              });
-            }
-          })}
+        <div className = "bank-test-elements">
+          <Link to="/dashboard/bank">
+          <div className="bank-test-button">
+            <FaPlus size="5rem" />
+          </div>
+          </Link>
+          <div className="bank-test-text">
+            <h4>Create Question</h4>
+          </div>
+        </div>
       </div>
     </div>
   );
