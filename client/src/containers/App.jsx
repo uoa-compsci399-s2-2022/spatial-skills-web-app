@@ -31,9 +31,9 @@ function App() {
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId" element={<Stats />} />
-          <Route path="dashboard/bank" element={<Bank />} />
+          <Route path="dashboard/test/:testId/question" element={<Bank />} />
           <Route
-            path="dashboard/bank/editor/:questionId"
+            path="dashboard/test/:testId/question/:questionId"
             element={<Editor />}
           />
         </Routes>

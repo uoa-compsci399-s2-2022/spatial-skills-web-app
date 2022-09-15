@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import "../styles/Bank.css";
 import Questions from "./questions.json";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 const iconSize = "1.25em";
 const Bank = () => {
+  const { testId } = useParams();
   const [optionValue, setOptionValue] = useState("All");
   const [data, setData] = useState("");
   const handleSelect = (e) => {
@@ -52,7 +53,7 @@ const Bank = () => {
                 return (
                   <Link
                     className="dashboard__test section"
-                    to={`/dashboard/bank/editor/${question._id}`}
+                    to={`/dashboard/test/${testId}/question/${question._id}`}
                   >
                     <img
                       alt=""
@@ -67,7 +68,10 @@ const Bank = () => {
                 );
               }
             })}
-          <Link to="/dashboard/bank" className="dashboard__create">
+          <Link
+            to={`/dashboard/test/${testId}/question/create`}
+            className="dashboard__create"
+          >
             <FaPlus size={iconSize} />
           </Link>
         </div>

@@ -21,12 +21,7 @@ const Stats = () => {
   return (
     <div className="stats">
       <h1>{test.title}</h1>
-      <h3>Author: {test.creator}</h3>
-      <p>
-        Feel like we should have a description field for tests. Would be useful
-        in identifying differences between tests. Oh, and it would be placed
-        here
-      </p>
+      <h3>{test.creator}</h3>
       <h3 className="stats__test-code" title="Copy to clipboard">
         {test.code}
       </h3>
@@ -45,7 +40,6 @@ const Stats = () => {
                   <th>Name</th>
                   <th>Time</th>
                   <th>Grade</th>
-                  <th>Edit</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,20 +49,19 @@ const Stats = () => {
                     <td>{question.qId}</td>
                     <td>{`${question.time}s`}</td>
                     <td>{question.grade.toFixed(1)}</td>
-                    <td>
-                      <Link to={`/question/${question.qId}`}>
-                        <FaEdit size={iconSize} />
-                      </Link>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="stats__action-container">
-              <button className="button button--outlined" title="Edit">
+              <Link
+                className="button button--outlined"
+                title="Edit"
+                to={`/dashboard/test/${testId}/question`}
+              >
                 Edit
                 <FaEdit size={iconSize} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
