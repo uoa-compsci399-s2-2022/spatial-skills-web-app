@@ -1,23 +1,22 @@
 
 
 .block__standard {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: grey;
     border-radius: 25px;
 }
 
 .block__correct-match {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: #28CFA7;
     border-radius: 25px;
-
   }
 
 .block__incorrect-match {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: rgb(65, 62, 62);
     border-radius: 25px;
     animation: shake 0.2s;

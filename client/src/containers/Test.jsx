@@ -13,7 +13,7 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
   const [questionTimeBank, setQuestionTimeBank] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(3);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ const Test = (props) => {
         console.log(res);
         setQuestionBank(res.data.questions);
         setQuestionTimeBank(res.data.times);
-        setTimeLeft(res.data.times[0]);
+        setTimeLeft(res.data.times[currentQuestion]);
 
         let defaultAns = [];
         for (const q of res.data.questions) {
@@ -132,7 +132,6 @@ const Test = (props) => {
   } else {  
     // Test loaded successfully
     
-
     let testQuestion;
     if (getCurrentQuestion().category === "Memory") {
       clearInterval(Ref.current)  // Stop timer

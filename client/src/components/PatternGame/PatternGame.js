@@ -7,7 +7,7 @@ const endLevel = Array(20).fill(10)
 const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
 const levelList = easyLevel.concat(endLevel)
 const maxHealth = 5
-const timeAllowed = 40
+const timeAllowed = 120
 const gameDim = 6
 
 // create blocks array
@@ -212,7 +212,7 @@ function PatternGame() {
     <div className={"pattern-game"}>
       {!started ? 
         <div className="pattern-game__instructions">
-          <h1>Spatial Memory Test 2</h1>
+          <h1>Memory Test: Block Patterns</h1>
           <p>Click on the pattern shown at the start of the game</p>
           <p>You will lose a life for each mismatch.</p>
           <p>Progress as far as you can!</p>
@@ -221,7 +221,7 @@ function PatternGame() {
         </div> : null}
       <div className={started ? 'pattern-game__information-div-show' : 'pattern-game__information-div-hide'}>
       <div className='pattern-game__lives-div'>
-          <h2 className='pattern-game__lives-number'>lives:</h2>
+          <h2 className='pattern-game__lives-number'>Lives:</h2>
           <div className='pattern-game__lives-div__hearts'>
           {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
           {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}

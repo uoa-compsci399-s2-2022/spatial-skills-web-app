@@ -14,7 +14,7 @@ const cardImages = [
   { src: "/cardImages/3_of_spades.png", matched: false }
 ];
 
-const maxHealth = 2
+const maxHealth = 3
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
 const timeAllowed = 40

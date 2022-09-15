@@ -87,9 +87,9 @@
 
 }
 
-.matching-game__lives-text {
+/* .matching-game__lives-text {
   margin-left: 50%;
-}
+} */
 
 .matching-game__lives-div {
   display: grid;
