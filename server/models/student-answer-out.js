@@ -5,7 +5,8 @@ class StudentAnswerOut {
     this.sId = studentAnswer.sId;
     this.answers = studentAnswer.answers.map((sa) => ({
       qId: sa.qId,
-      aId: a.saId,
+      aId: sa.aId,
+      value: sa.value,
       correct: sa.correct,
     }));
   }

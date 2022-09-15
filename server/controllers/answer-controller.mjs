@@ -67,6 +67,7 @@ const createStudentAnswer = async (req, res, next) => {
         req.body.answers.map(async (sa) => ({
           qId: sa.qId,
           aId: sa.aId,
+          value: sa.value,
           correct: await checkAnswer(sa.qId, sa.aId),
         }))
       ),
