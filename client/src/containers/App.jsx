@@ -6,6 +6,7 @@ import Test from "./Test";
 import Dashboard from "./Dashboard";
 import Stats from "./Stats";
 import Bank from "./Bank";
+import Editor from "./Editor";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -31,6 +32,10 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId" element={<Stats />} />
           <Route path="dashboard/bank" element={<Bank />} />
+          <Route
+            path="dashboard/bank/editor/:questionId"
+            element={<Editor />}
+          />
         </Routes>
         <Footer />
       </BrowserRouter>
