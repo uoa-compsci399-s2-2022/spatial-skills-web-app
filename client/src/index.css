@@ -41,6 +41,15 @@ body {
 input {
   outline: none;
   border: none;
+  font-family: var(--font);
+  font-size: .8rem;
+}
+
+textarea {
+  outline: none;
+  border: none;
+  font-family: var(--font);
+  font-size: .8rem;
 }
 
 button {
