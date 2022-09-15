@@ -14,7 +14,7 @@ const cardImages = [
   { src: "/cardImages/3_of_spades.png", matched: false }
 ];
 
-const maxHealth = 5
+const maxHealth = 2
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
 const timeAllowed = 40
@@ -22,7 +22,7 @@ const timeAllowed = 40
 let health = maxHealth
 let matchedPair = 0
 
-const MatchingGame = () => {
+const MatchingGame = (props) => {
   const [cards, setCards] = useState([])
   // const [turns, setTurns] = useState(0) // add later if turns need to be recorded
   const [choiceOne, setChoiceOne] = useState(null)
@@ -32,7 +32,7 @@ const MatchingGame = () => {
   const [gameOver, setGameOver] = useState(false)
   const [started, setStarted] = useState(false)
   const [firstVisit, setFirstvisit] = useState(true)
-  const [time, setTime] = useState(timeAllowed)
+  const [time, setTime] = useState(props.timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
 
 
@@ -48,7 +48,7 @@ const MatchingGame = () => {
     // store shuffled cards in state and reset turns to 0 (new game)
     setCards(shuffledCards)
     // setTurns(0)
-    setTime(timeAllowed)
+    setTime(props.timeAllowed)
     setChoiceOne(null)
     setChoiceTwo(null)
     setBothMatched(true)
@@ -160,6 +160,7 @@ const MatchingGame = () => {
     if(gameOver){
       showAllCards(true)
       setTimerOn(false)
+      props.submit(matchedPair)
     }
   }, [gameOver])
 
@@ -177,7 +178,7 @@ const MatchingGame = () => {
     <div className="matching-game">
       {firstVisit ? 
         <div className="matching-game__instructions">
-          <h1>Spatial Memory Test 1</h1>
+          <h1>Memory Test: Card Matching</h1>
           <p>Match those cards in pairs before time runs out!</p>
           <p>You will lose a life for each mismatch.</p>
           <p>Click start to begin.</p>
@@ -199,6 +200,7 @@ const MatchingGame = () => {
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {matchedPair}</h2>
+          <button onClick={props.next}>Next Question</button>
         </div> : null}
 
       <div className="card-grid">

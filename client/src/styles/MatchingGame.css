@@ -12,7 +12,6 @@
   background-color: var(--contrast-color);
   color: var(--accent-color);
   height: 100vh;
-  border: 2px solid var(--accent-color);
 }
 
 .matching-game_start-button{

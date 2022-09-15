@@ -39,7 +39,7 @@ const Test = (props) => {
 
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.id, aId: null });
+          defaultAns.push({ qId: q.id, aId: null, value: null });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
@@ -52,9 +52,9 @@ const Test = (props) => {
   }, []);
 
   const nextQuestion = () => {
-    if (userAnswers[currentQuestion - 1].aId === null && timeLeft > 0) {
-      return; // Prevent user from proceeding if no answer selected
-    }
+    // if (userAnswers[currentQuestion - 1].aId === null && timeLeft > 0) {
+    //   return; // Prevent user from proceeding if no answer given
+    // }
     console.log(userAnswers); // for debugging
     setSelectedAnswer(null);
     if (currentQuestion < questionBank.length) {
@@ -92,12 +92,20 @@ const Test = (props) => {
     setUserAnswers(answers);
   };
 
+  const submitAnswerValue = (value) => {
+    // For memory game
+    let answers = userAnswers;
+    answers[currentQuestion - 1].value = value;
+    setSelectedAnswer(true);
+    setUserAnswers(answers);
+  }
+
   const getCurrentQuestion = () => {
     return questionBank[currentQuestion - 1];
   };
 
   const timeCountDown = () => {
-    console.log(timeLeft);
+    // console.log(timeLeft);  // for debugging
     if (timeLeft <= 0) {
       if (!nextQuestion()) {
         clearInterval(Ref.current);
@@ -121,31 +129,25 @@ const Test = (props) => {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
-  } else {
+  } else {  
+    // Test loaded successfully
+    
 
+    let testQuestion;
     if (getCurrentQuestion().category === "Memory") {
+      clearInterval(Ref.current)  // Stop timer
       if (getCurrentQuestion().title === "MatchingGame") {
-        return (
-
-            <MatchingGame />
-          
-        )
+        testQuestion = <MatchingGame
+            timeAllowed={questionTimeBank[currentQuestion - 1]}
+            submit={submitAnswerValue}
+            next={nextQuestion}
+          />
       }
       else if (getCurrentQuestion().title === "PatternGame") {
-        return (
-          <div className="test">
-            <PatternGame />
-          </div>
-        )
+        testQuestion = <PatternGame />
       }
-    }
-
-    startTimer();
-    return (
-      <div className="test">
-        <TimerDisplay seconds={timeLeft} />
-
-        <Question
+    } else {
+      testQuestion = <Question
           type={"multichoice"} // Change when the DB has question type.
           questionImage={getCurrentQuestion().image}
           text={getCurrentQuestion().description}
@@ -153,6 +155,16 @@ const Test = (props) => {
           submit={submitAnswer}
           selected={selectedAnswer}
         />
+      startTimer();
+    }
+    
+    return (
+      <div className="test">
+        { getCurrentQuestion().category === "Memory" ? null : 
+          <TimerDisplay seconds={timeLeft} />
+        }
+        
+        {testQuestion}
 
         <div className="test__progress" title="Progress">
           {currentQuestion} / {questionBank.length}
