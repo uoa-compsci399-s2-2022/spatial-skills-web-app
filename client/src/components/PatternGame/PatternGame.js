@@ -7,7 +7,7 @@ const endLevel = Array(20).fill(10)
 const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
 const levelList = easyLevel.concat(endLevel)
 const maxHealth = 5
-const timeAllowed = 120
+// const timeAllowed = 120
 const gameDim = 6
 
 // create blocks array
@@ -23,15 +23,15 @@ let numMatched = 0
 let health = maxHealth
 
 
-function PatternGame() {
+function PatternGame(props) {
   const [blocks, setBlocks] = useState(blocksArray)
   const [patternBlocks, setPatternBlocks] = useState([])
   const [userCurrentChoice, setUserCurrentChoice] = useState(null)
-  const [vicotry, setVictory] = useState(false)
+  const [victory, setVictory] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [level, setLevel] = useState(0)
-  const [time, setTime] = useState(timeAllowed)
+  const [time, setTime] = useState(props.timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
   const [started, setStarted] = useState(false)
 
@@ -139,6 +139,7 @@ function PatternGame() {
               if (health === 0) {
                 setTimerOn(false)
                 setGameOver(true)
+                props.submit(level)
               }
               return ({...block, clicked: true})
             } else {
@@ -160,23 +161,13 @@ function PatternGame() {
   }, [userCurrentChoice])
 
   useEffect(() => {
-    if (vicotry){
+    if (victory){
       setTimeout(() => {
         generatePattern()
       }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vicotry])
-
-  // alert game over
-  const GameOverText = () => {
-    if (gameOver){
-      return (
-        <div className='game-over-div'>
-          <h2 className="game-over-text">Your score: {level}</h2>
-        </div>
-      )}
-  }
+  }, [victory])
 
   // timer
   useEffect(() => {
@@ -233,7 +224,9 @@ function PatternGame() {
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {level}</h2>
-        </div> : null}
+          <button onClick={props.next}>Next Question</button>
+        </div> : null
+      }
       <div className='pattern-game__blocks-grid'>
         {blocks.map(block => (
           <SingleBlock 

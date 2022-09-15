@@ -12,7 +12,8 @@
     background-color: var(--contrast-color);
     color: var(--accent-color);
     height: 100vh;
-    /* border: 2px solid var(--accent-color); */
+    display: flex;
+    flex-direction: column;
 }
 
 .pattern-game__start-button {

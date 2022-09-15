@@ -17,7 +17,7 @@ const cardImages = [
 const maxHealth = 3
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
-const timeAllowed = 40
+// const timeAllowed = 40
 
 let health = maxHealth
 let matchedPair = 0

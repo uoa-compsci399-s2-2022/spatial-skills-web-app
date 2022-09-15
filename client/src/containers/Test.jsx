@@ -13,7 +13,7 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
   const [questionTimeBank, setQuestionTimeBank] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(3);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ const Test = (props) => {
         console.log(res);
         setQuestionBank(res.data.questions);
         setQuestionTimeBank(res.data.times);
-        setTimeLeft(res.data.times[currentQuestion]);
+        setTimeLeft(res.data.times[currentQuestion - 1]);
 
         let defaultAns = [];
         for (const q of res.data.questions) {
@@ -143,7 +143,11 @@ const Test = (props) => {
           />
       }
       else if (getCurrentQuestion().title === "PatternGame") {
-        testQuestion = <PatternGame />
+        testQuestion = <PatternGame 
+          timeAllowed={questionTimeBank[currentQuestion - 1]}
+          submit={submitAnswerValue}
+          next={nextQuestion}
+        />
       }
     } else {
       testQuestion = <Question
