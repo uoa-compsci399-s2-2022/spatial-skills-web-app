@@ -1,5 +1,5 @@
 import "../styles/Editor.css";
-import { FaSave } from "react-icons/fa";
+import { FaSave, FaTrash } from "react-icons/fa";
 import { useState } from "react";
 const iconSize = "1.25em";
 const Editor = () => {
@@ -98,11 +98,19 @@ const Editor = () => {
           />
         </div>
       )}
+      <div className="divider" />
 
-      <button className="button button--outlined" style={{ marginTop: "3rem" }}>
-        Save
-        <FaSave size={iconSize} />
-      </button>
+      <div className="editor__action-container">
+        <button className="button button--caution">
+          Delete
+          <FaTrash size={iconSize} />
+        </button>
+
+        <button className="button button--filled">
+          Save
+          <FaSave size={iconSize} />
+        </button>
+      </div>
     </form>
   );
 };

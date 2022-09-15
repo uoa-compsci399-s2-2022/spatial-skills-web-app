@@ -44,3 +44,9 @@
     grid-template-rows: 1fr 1fr;
     gap: 2rem;
 }
+
+.editor__action-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

@@ -3,26 +3,24 @@ import "../styles/Bank.css";
 import Questions from "./questions.json";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-
+const iconSize = "1.25em";
 const Bank = () => {
   const [optionValue, setOptionValue] = useState("All");
   const [data, setData] = useState("");
   const handleSelect = (e) => {
     setOptionValue(e.target.value);
   };
-  function getInput(val) {
-    setData(val.target.value);
-  }
 
   return (
-    <div>
-      <div className="bank-left-panel">
-        <h2>Questions</h2>
+    <div className="bank">
+      <div className="bank__side">
+        <h3>Filter by</h3>
+        <label>Category</label>
         <select
           name="Category"
           id="category"
           onChange={handleSelect}
-          className="bank-input-select"
+          style={{ width: "100%" }}
         >
           <option value="All">All</option>
           <option value="Spatial Memory">Spatial Memory</option>
@@ -32,56 +30,46 @@ const Bank = () => {
           <option value="Mental Rotation">Mental Rotation</option>
           <option value="Spatial Visualisation">Spatial Visualisation</option>
         </select>
-        <input type="text" className="bank-input" onChange={getInput}></input>
+        <label>Name</label>
+        <input
+          type="text"
+          className="bank__search"
+          onChange={(e) => setData(e.target.value)}
+          placeholder="Search"
+        />
       </div>
 
-      <div className="bank-right-panel">
-        <h1>Question Bank</h1>
-        <hr />
-        {Questions &&
-          Questions.map((question) => {
-            if (
-              (question.category === optionValue || optionValue === "All") &&
-              question.title.toLowerCase().includes(data.toLowerCase())
-            ) {
-              return (
-                <div className="bank-test-elements">
-                  <Link to={`/dashboard/bank/editor/${question._id}`}>
-                    <button
-                      onClick={() => console.log(`EDIT "${question.title}"`)}
-                    >
-                      <img
-                        className="bank-test-button"
-                        alt="QuestionImage"
-                        src={question.image}
-                      ></img>
-                    </button>
+      <div className="bank__main">
+        <h1>Bank</h1>
+        <div className="divider" />
+        <div className="bank__question-grid">
+          {Questions &&
+            Questions.map((question) => {
+              if (
+                (question.category === optionValue || optionValue === "All") &&
+                question.title.toLowerCase().includes(data.toLowerCase())
+              ) {
+                return (
+                  <Link
+                    className="dashboard__test section"
+                    to={`/dashboard/bank/editor/${question._id}`}
+                  >
+                    <img
+                      alt=""
+                      src={question.image}
+                      className="bank__question"
+                    />
+                    <div className="bank__test-text">
+                      <h4>{question.title}</h4>
+                      <p>{question.category}</p>
+                    </div>
                   </Link>
-                  <div className="bank-test-text">
-                    <h4>{question.title}</h4>
-                    <h5>{question.category}</h5>
-                    <button
-                      className="bank-remove-button"
-                      title="Remove"
-                      onClick={() => console.log(`REMOVE "${question.title}"`)}
-                    >
-                      X
-                    </button>
-                  </div>
-                </div>
-              );
-            }
-          })}
-
-        <div className="bank-test-elements">
-          <Link to="/dashboard/bank">
-            <div className="bank-test-button">
-              <FaPlus size="5rem" />
-            </div>
+                );
+              }
+            })}
+          <Link to="/dashboard/bank" className="dashboard__create">
+            <FaPlus size={iconSize} />
           </Link>
-          <div className="bank-test-text">
-            <h4>Create Question</h4>
-          </div>
         </div>
       </div>
     </div>

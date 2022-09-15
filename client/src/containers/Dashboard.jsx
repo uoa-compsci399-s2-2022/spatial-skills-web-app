@@ -1,7 +1,7 @@
 import "../styles/Dashboard.css";
 import { Link, Outlet } from "react-router-dom";
 import dummyData from "../db/dummyTest.json";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 
 const iconSize = "1.25em";
 const Dashboard = () => {
@@ -10,35 +10,26 @@ const Dashboard = () => {
   return (
     <>
       <div className="dashboard">
-        <Link to="/dashboard/bank">Question Bank</Link>
+        <Link to="/dashboard/bank" className="button button--outlined">
+          Question Bank
+        </Link>
         {dummyData.map((test) => (
-          <div className="dashboard__test section" key={test._id + test.code}>
+          <Link
+            className="dashboard__test section"
+            key={test._id + test.code}
+            to={`test/${test._id}`}
+            title="Edit/View"
+          >
             <h3>{test.title}</h3>
             <p>{test.code}</p>
-            <div className="dashboard__action-container">
-              <Link
-                to={`test/${test._id}`}
-                title="Edit/View"
-                className="dashboard__view-edit"
-              >
-                <FaEdit size={iconSize} />
-              </Link>
-              <button
-                title="Delete"
-                className="dashboard__delete"
-                onClick={() => console.log(`DELETE "${test.title}"`)}
-              >
-                <FaTrash size={iconSize} />
-              </button>
-            </div>
-          </div>
+          </Link>
         ))}
         <button
           className="dashboard__create"
           title="Create"
           onClick={() => console.log("POST new test")}
         >
-          <FaPlus size="2em" />
+          <FaPlus size={iconSize} />
         </button>
       </div>
       <Outlet />

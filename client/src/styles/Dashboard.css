@@ -10,8 +10,11 @@
 }
 
 .dashboard__test {
+    position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 15rem;
     height: 15rem;
     transition: transform .25s;
@@ -27,24 +30,15 @@
     border-radius: 1rem;
     width: 15rem;
     height: 15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .25s;
 }
 
 .dashboard__create:hover {
+    transform: translateY(-1rem);
     border: 2px dashed var(--accent-color);
-}
-
-.dashboard__delete:hover {
-    color: var(--error-color);
-}
-
-.dashboard__view-edit:hover {
-    color: var(--accent-color);
-}
-
-.dashboard__action-container {
-    display: flex;
-    margin-top: auto;
-    justify-content: flex-end;
 }
 
 .section {
