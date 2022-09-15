@@ -186,7 +186,7 @@ const MatchingGame = () => {
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
       
       <div className='matching-game__lives-div'>
-          <h2 className='matching-game__lives-text'>lives:</h2>
+          <h2 className='matching-game__lives-text'>Lives:</h2>
           <div className='matching-game__lives-div__hearts'>
           {[...Array(health)].map((e, i) => <span className="matching-game__heart" key={i}></span>)}
           {[...Array(maxHealth - health)].map((e, i) => <span className="matching-game__black-heart" key={i}></span>)}

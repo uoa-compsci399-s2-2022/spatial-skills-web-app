@@ -21,7 +21,8 @@ const Test = (props) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
 
   const url = "http://localhost:3001/api/test/getquestions";
-  const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
+  // const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
+  const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
   const data = {
     tId: testId,
     shuffle: false,
@@ -96,6 +97,7 @@ const Test = (props) => {
   };
 
   const timeCountDown = () => {
+    console.log(timeLeft);
     if (timeLeft <= 0) {
       if (!nextQuestion()) {
         clearInterval(Ref.current);
@@ -120,6 +122,24 @@ const Test = (props) => {
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
   } else {
+
+    if (getCurrentQuestion().category === "Memory") {
+      if (getCurrentQuestion().title === "MatchingGame") {
+        return (
+
+            <MatchingGame />
+          
+        )
+      }
+      else if (getCurrentQuestion().title === "PatternGame") {
+        return (
+          <div className="test">
+            <PatternGame />
+          </div>
+        )
+      }
+    }
+
     startTimer();
     return (
       <div className="test">
