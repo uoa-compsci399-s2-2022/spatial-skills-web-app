@@ -5,6 +5,7 @@ import connectDB from './db/db.js';
 import questionRouter from './routes/question-routes.js';
 import testRouter from './routes/test-routes.js';
 import answerRouter from './routes/answer-routes.js';
+import userRouter from './routes/user-routes.js';
 import errorHandler from './handlers/error-handler.js';
 
 const app = express();
@@ -25,6 +26,9 @@ app.use('/api/test',testRouter);
 
 //answer APIs
 app.use('/api/answer',answerRouter);
+
+//user APIs
+app.use('/api/user',userRouter);
 
 app.get('/', (req, res) => res.send("Hello world!"));
 
