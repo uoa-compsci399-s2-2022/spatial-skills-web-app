@@ -104,7 +104,15 @@ const Stats = () => {
           Delete
           <FaTrash size={iconSize} />
         </button>
-        <button className="button button--outlined" title="Share">
+        <button
+          className="button button--outlined"
+          title="Share"
+          onClick={() => {
+            navigator.clipboard.writeText(
+              `https://www.spatialskills.com?code=${test.code}`
+            );
+          }}
+        >
           Share
           <FaShareAlt size={iconSize} />
         </button>
