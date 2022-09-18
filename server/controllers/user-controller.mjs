@@ -2,19 +2,30 @@ import User from "../models/user.js";
 import APIError from "../handlers/APIError.js";
 import bcrypt from "bcrypt";
 
-const createSignInUser = async (req, res, next) => {
-  if (req.body.usertype == "signin" && !req.body.password) {
-    return next(new APIError("Invalid or missing inputs.", 400));
+const createUser = async (req, res, next) => {
+  // Check if user already exists
+  const exists = await User.findOne({ username: req.body.username }).exec();
+  if (exists) {
+    return next(new APIError("User already exists.", 400));
   }
 
-  const hashedPass = await bcrypt.hash(req.body.password, 10);
-
-  const createdUser = new User({
-    username: req.body.username,
-    password: hashedPass,
-    usertype: req.body.usertype,
-    roles: req.body.roles,
-  });
+  let createdUser;
+  if (req.body.sub) {
+    // Google sign in user
+    //Hash google unique identifier (need to decrypt when used)
+    const hashedSub = await bcrypt.hash(req.body.sub, 10);
+    createdUser = new User({
+      username: req.body.username,
+      sub: hashedSub,
+      permissions: req.body.permissions,
+    });
+  } else {
+    // Other user
+    createdUser = new User({
+      username: req.body.username,
+      permissions: req.body.permissions,
+    });
+  }
 
   try {
     await createdUser.validate();
@@ -32,4 +43,4 @@ const createSignInUser = async (req, res, next) => {
   res.status(201).json(result);
 };
 
-export { createSignInUser };
+export { createUser };

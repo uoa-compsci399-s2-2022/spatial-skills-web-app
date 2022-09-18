@@ -5,19 +5,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  password: {
+  sub: {
     type: String,
+    required: false,
   },
-  usertype: {
-    type: String,
-    required: true,
-    enum: ["google", "signin"],
-  },
-  roles: [
+  permissions: [
     {
       type: String,
-      default: "student",
-      enum: ["student", "admin"],
     },
   ],
 });
