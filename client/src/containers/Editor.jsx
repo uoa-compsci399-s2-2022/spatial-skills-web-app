@@ -1,16 +1,18 @@
 import "../styles/Editor.css";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 const iconSize = "1.25em";
 const Editor = () => {
   const [type, setType] = useState(null);
-
+  const location = useLocation().pathname;
   const handleSubmit = (e) => {
     e.preventDefault();
   };
+
   return (
     <form className="editor" onSubmit={(e) => handleSubmit(e)}>
-      <h1>Create / Edit Question</h1>
+      <h1>Create / Edit + Question</h1>
       <div className="divider" />
       <div className="editor__grid">
         <label for="category">Category</label>

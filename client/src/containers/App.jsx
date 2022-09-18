@@ -30,12 +30,13 @@ function App() {
           />
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="dashboard/test/:testId" element={<Stats />} />
+          <Route path="dashboard/test/:testId/stats" element={<Stats />} />
           <Route path="dashboard/test/:testId/question" element={<Bank />} />
           <Route
             path="dashboard/test/:testId/question/:questionId"
             element={<Editor />}
           />
+          <Route path="dashboard/test/:testId" element={<Editor />} />
         </Routes>
         <Footer />
       </BrowserRouter>

@@ -13,7 +13,7 @@ const Dashboard = () => {
         <Link
           className="dashboard__test section"
           key={test._id + test.code}
-          to={`/dashboard/test/${test._id}`}
+          to={`/dashboard/test/${test._id}/stats`}
           title="Edit/View"
         >
           <h3>{test.title}</h3>
