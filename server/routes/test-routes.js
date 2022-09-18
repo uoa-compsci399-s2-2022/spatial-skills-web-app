@@ -6,8 +6,12 @@ import {
   getTestById,
   getQuestionsBytId,
 } from "../controllers/test-controller.mjs";
+import jwtHandler from "../handlers/jwt-handler.js";
 
 const testRouter = express.Router();
+
+//apply JWT handler to all endpoints in this route
+testRouter.use(jwtHandler);
 
 testRouter.post("/", createTest);
 

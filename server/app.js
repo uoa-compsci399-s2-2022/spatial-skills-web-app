@@ -1,7 +1,9 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from "cors";  // https://www.npmjs.com/package/cors
 
 import connectDB from './db/db.js';
+import authRouter from './routes/auth-routes.js'
 import questionRouter from './routes/question-routes.js';
 import testRouter from './routes/test-routes.js';
 import answerRouter from './routes/answer-routes.js';
@@ -17,6 +19,11 @@ connectDB();
 app.use(cors());    // Allows fetch api to access localhost endpoints
 //parse json requests
 app.use(express.json());
+//parse cookies
+app.use(cookieParser());
+
+//authentication APIs
+app.use('/api/auth',authRouter);
 
 //question APIs
 app.use('/api/question',questionRouter);
