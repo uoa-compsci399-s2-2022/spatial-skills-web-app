@@ -35,7 +35,7 @@ const TestResult = () => {
     const answers = userAnswers.map((ans) => {
       return (
         <li key={ans.qId}>
-          {ans.correct ? 'Correct' : 'Wrong'}
+          {ans.correct ? 'Correct' : 'Wrong'} Value: {ans.value}
         </li>
       )
     })

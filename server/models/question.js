@@ -6,8 +6,8 @@ const questionSchema = new mongoose.Schema({
   image: { type: String, required: true },
   answer: [
     new mongoose.Schema({
-      image: { type: String, required: true },
-      trueAnswer: { type: Boolean, required: true },
+      image: { type: String, required: false },
+      trueAnswer: { type: Boolean, required: false },
     }),
   ],
   category: { type: String, required: true },

@@ -13,7 +13,7 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
   const [questionTimeBank, setQuestionTimeBank] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(4);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
@@ -133,7 +133,7 @@ const Test = (props) => {
     // Test loaded successfully
     
     let testQuestion;
-    if (getCurrentQuestion().category === "Memory") {
+    if (getCurrentQuestion().category === "Spatial Memory") {
       clearInterval(Ref.current)  // Stop timer
       if (getCurrentQuestion().title === "MatchingGame") {
         testQuestion = <MatchingGame
@@ -163,7 +163,7 @@ const Test = (props) => {
     
     return (
       <div className="test">
-        { getCurrentQuestion().category === "Memory" ? null : 
+        { getCurrentQuestion().category === "Spatial Memory" ? null : 
           <TimerDisplay seconds={timeLeft} />
         }
         

@@ -6,6 +6,11 @@ import APIError from "../handlers/APIError.js";
 const checkAnswer = async (qId, aId) => {
   const query = await Question.findById(qId).exec();
 
+  if (query.category === "Spatial Memory") {
+    return true;
+  } else if (aId === null) {
+    return false;
+  }
   //Check if actual answer in question
   const aCheck = await query.answer.find((c) => c._id == aId);
   if (!aCheck) {
