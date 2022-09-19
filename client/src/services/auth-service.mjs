@@ -2,7 +2,7 @@ import axios from "axios";
 
 const url = "http://localhost:3001/api/auth/";
 
-const login = (username, sub) => {
+const login = async (username, sub) => {
   // Handle google log in
   if (sub) {
     return axios
@@ -13,6 +13,7 @@ const login = (username, sub) => {
           sub,
         },
         {
+          withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
       )
@@ -29,6 +30,7 @@ const login = (username, sub) => {
           username,
         },
         {
+          withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
       )
@@ -39,4 +41,19 @@ const login = (username, sub) => {
   }
 };
 
-export default login ;
+const logout = async () => {
+  return axios
+    .post(
+      url + "logout",
+      {},
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+    .then((res) => {
+      localStorage.removeItem("accessToken");
+    });
+};
+
+export { login, logout };

@@ -6,7 +6,7 @@ import { MdErrorOutline } from "react-icons/md";
 import jwt_decode from "jwt-decode";
 import logo from "../assets/logo.png";
 
-import login from "../services/auth-service.mjs"
+import { login } from "../services/auth-service.mjs"
 
 const Home = (props) => {
   const { userData, setUserData } = props;

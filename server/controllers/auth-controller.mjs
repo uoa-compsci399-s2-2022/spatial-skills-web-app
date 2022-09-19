@@ -57,7 +57,7 @@ const login = async (req, res, next) => {
   // Creating securing cookie using refresh token named jwt
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    secure: false, // ***************SET TRUE IN DEPLOYEMENT*****************
+    secure: false, // ***************SET TRUE IN DEPLOYEMENT NEED HTTPS*****************
     sameSite: "None", //allow cross-site as server and client stored in different hosts
     maxAge: 24 * 60 * 60 * 1000, //match cookie expiry to refresh token
   });
@@ -110,7 +110,8 @@ const logout = async (req, res, next) => {
   if (!req.cookies?.jwt) {
     return next(new APIError("Missing cookie.", 400));
   }
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  // ***************SET secure: TRUE IN DEPLOYEMENT NEED HTTPS*****************
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false }); 
   res.json({ message: "Logged out" });
 };
 
