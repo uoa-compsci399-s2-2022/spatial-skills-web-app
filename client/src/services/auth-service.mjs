@@ -56,4 +56,20 @@ const logout = async () => {
     });
 };
 
-export { login, logout };
+const refreshToken = async () => {
+  return axios
+  .get(
+    url + "refresh",
+    {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    }
+  )
+  .then((res) => {
+    localStorage.setItem("accessToken", res.data.accessToken);
+    return res.data.accessToken;
+  });
+  
+}
+
+export { login, logout, refreshToken };
