@@ -14,6 +14,7 @@ const Home = (props) => {
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
+    // Handles name login
     setError("");
     const name = nameRef.current.value;
     if (name.length === 0) {
@@ -34,12 +35,18 @@ const Home = (props) => {
   const handleGoogleLogin = (credentials) => {
     setError("");
     const payload = jwt_decode(credentials);
-    console.log(payload);
-    setUserData({
-      name: payload.given_name + " " + payload.family_name,
-      email: payload.email,
-      picture: payload.picture,
-    });
+    // username = email for google sign in
+    // sub = identifier 
+    login(payload.email,payload.sub).then((res)=>{
+      setUserData({
+        name: payload.given_name + " " + payload.family_name,
+        email: payload.email,
+        picture: payload.picture,
+      })},
+      (error)=>{
+        setError(error.response.data.message);
+      }
+    )
   };
 
   return (
