@@ -29,7 +29,9 @@ const Test = (props) => {
 
   // Get test question data from backend API.
   useEffect(() => {
-    axios.post(url, data).then(
+    axios.post(url, data, {
+      headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`}
+    }).then(
       (res) => {
         console.log(res);
         setQuestionBank(res.data.questions);
