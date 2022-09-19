@@ -57,7 +57,7 @@ const login = async (req, res, next) => {
   // Creating securing cookie using refresh token named jwt
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: false, // ***************SET TRUE IN DEPLOYEMENT*****************
     sameSite: "None", //allow cross-site as server and client stored in different hosts
     maxAge: 24 * 60 * 60 * 1000, //match cookie expiry to refresh token
   });
@@ -98,7 +98,7 @@ const refresh = async (req, res, next) => {
       { expiresIn: accessTokenTime } // Set to 15min+ after dev
     );
   } catch (e) {
-    return next(new APIError("Failed to verify.", 403));
+    return next(new APIError("Forbidden.", 403));
   }
   res.json({ accessToken });
 };
