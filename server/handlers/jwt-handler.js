@@ -22,7 +22,7 @@ const jwtHandler = async (req,res,next) => {
         req.permissions = decoded.UserInfo.permissions;
 
     } catch (e){
-        return next(new APIError("Forbidden.", 403));
+        return next(new APIError("Unauthorised.", 401));
     }
 
     next(); //call next middleware
