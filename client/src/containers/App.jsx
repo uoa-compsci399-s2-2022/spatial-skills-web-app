@@ -8,6 +8,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Splash from "../components/Splash";
 
+import PatternGame from "../components/PatternGame/PatternGame";
+
 const GOOGLE_CLIENT_ID =
   "126878629767-elluidkp4g3iost84sgh5spapdq30su7.apps.googleusercontent.com";
 
@@ -28,6 +30,7 @@ function App() {
           />
           <Route path="/test" element={<Test userData={userData} />} />
           <Route path="/results/:tId/:sId" element={<TestResult />} />
+          <Route path="/pattern" element={<PatternGame timeAllowed="60"/>} />
         </Routes>
         <Footer />
         <Splash />

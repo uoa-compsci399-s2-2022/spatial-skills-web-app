@@ -25,7 +25,7 @@ let health = maxHealth
 
 function PatternGame(props) {
   const [blocks, setBlocks] = useState(blocksArray)
-  const [patternBlocks, setPatternBlocks] = useState([])
+  const [patternBlockID, setPatternBlockIDs] = useState([])
   const [userCurrentChoice, setUserCurrentChoice] = useState(null)
   const [victory, setVictory] = useState(false)
   const [gameOver, setGameOver] = useState(false)
@@ -38,6 +38,10 @@ function PatternGame(props) {
   const totalNumberOfBlocks = gameDim * gameDim
   const numberOfPatternBlocks = levelList[level]
 
+
+  // if order of clicking pattern matters
+  const orderMatters = false
+
   // get an random array of IDs
   // create pattern array marked by its key
   const generatePattern = () => {
@@ -48,6 +52,7 @@ function PatternGame(props) {
     }
     
     const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
+    console.log(patternIDs)
 
     // reset blocks status
     blocks.map(block => {
@@ -71,7 +76,7 @@ function PatternGame(props) {
     setTimeout(() => {
       showPattern(false)
     }, 1000);
-    setPatternBlocks(patternIDs)
+    setPatternBlockIDs(patternIDs)
     setDisabled(false)
     setVictory(false)
   }
@@ -95,20 +100,28 @@ function PatternGame(props) {
     }
   }
 
+  const reveal = () => {
+    setBlocks(prevBlocks => {
+      return (prevBlocks.map(block => {
+        return ({...block, matched: true, clicked: true})
+        })
+      )})
+  }
+
+  const unreveal = () => {
+    setBlocks(prevBlocks => {
+      return (prevBlocks.map(block => {
+          return ({...block, matched: false, clicked: false})
+        })
+      )})
+  }
+
   // show pattern
   const showPattern = (show) => {
     if (show){
-      setBlocks(prevBlocks => {
-        return (prevBlocks.map(block => {
-            return ({...block, matched: true, clicked: true})
-          })
-        )})
+      reveal()
     } else {
-      setBlocks(prevBlocks => {
-        return (prevBlocks.map(block => {
-            return ({...block, matched: false, clicked: false})
-          })
-        )})
+      unreveal()
     }
   }
 
@@ -119,12 +132,21 @@ function PatternGame(props) {
   // compare user's choice with pattern
   useEffect(() => {
     if (userCurrentChoice){
-      if (patternBlocks.includes(userCurrentChoice.id)) {
+      if (patternBlockID.includes(userCurrentChoice.id)) {
         setBlocks(prevBlocks => {
           return (prevBlocks.map(block => {
             if (userCurrentChoice.id === block.id) {
-              numMatched = numMatched + 1
-              return ({...block, matched: true, clicked: true})
+              if(orderMatters) {
+                if(userCurrentChoice.id === patternBlockID[numMatched]){
+                  numMatched = numMatched + 1
+                  return ({...block, matched: true, clicked: true})
+                } else {
+                  return (block)
+                }
+              } else {
+                numMatched = numMatched + 1
+                return ({...block, matched: true, clicked: true})
+              }
             } else {
               return (block)
             }
