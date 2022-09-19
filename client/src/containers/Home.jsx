@@ -6,6 +6,8 @@ import { MdErrorOutline } from "react-icons/md";
 import jwt_decode from "jwt-decode";
 import logo from "../assets/logo.png";
 
+import login from "../services/auth-service.mjs"
+
 const Home = (props) => {
   const { userData, setUserData } = props;
   const nameRef = useRef(null);
@@ -17,17 +19,22 @@ const Home = (props) => {
     if (name.length === 0) {
       setError("Invalid name!");
     } else {
-      setUserData({
+      login(name).then((res)=>{setUserData({
         name: name,
         email: null,
         picture: null,
-      });
+      })},
+      (error)=>{
+        setError(error.response.data.message);
+      }
+      );
     }
   };
 
   const handleGoogleLogin = (credentials) => {
     setError("");
     const payload = jwt_decode(credentials);
+    console.log(payload);
     setUserData({
       name: payload.given_name + " " + payload.family_name,
       email: payload.email,
