@@ -1,32 +1,19 @@
 import "../styles/Editor.css";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 const iconSize = "1.25em";
-const Editor = () => {
+const Editor = (props) => {
+  const { isTest } = props;
   const [type, setType] = useState(null);
-  const location = useLocation().pathname;
+  const [category, setCategory] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
   };
-
   return (
     <form className="editor" onSubmit={(e) => handleSubmit(e)}>
-      <h1>Create / Edit + Question</h1>
+      <h1>Create / Edit {isTest ? "Test" : "Question"}</h1>
       <div className="divider" />
       <div className="editor__grid">
-        <label for="category">Category</label>
-        <select id="category" required>
-          <option>Visualisation</option>
-          <option>Rotation</option>
-          <option>Perception</option>
-          <option>Memory</option>
-        </select>
-        <label for="type">Type</label>
-        <select id="type" onChange={(e) => setType(e.target.value)} required>
-          <option value="text">Text input</option>
-          <option value="multi">Multichoice</option>
-        </select>
         <label for="name">Name</label>
         <input
           type="text"
@@ -35,25 +22,15 @@ const Editor = () => {
           className="editor__input"
           required
         />
-        <label for="text">Text</label>
-        <textarea
-          id="text"
-          rows="5"
-          placeholder="Place question prompt here"
-          className="editor__input"
-          required
-        />
-        <label for="image">Image</label>
-        <input type="file" id="image" required />
         <label for="time">Time</label>
         <div className="editor__row">
           <input
             type="text"
             placeholder="60"
-            className="editor__time-limit editor__input"
+            className="editor__input--small editor__input"
             required
           />
-          <p style={{ fontSize: "0.8rem" }}>seconds</p>
+          <p style={{ fontSize: "0.8rem" }}>minutes</p>
         </div>
         <label for="no-time-limit">No time limit</label>
         <input
@@ -61,53 +38,135 @@ const Editor = () => {
           id="no-time-limit"
           style={{ width: "min-content" }}
         />
+        {isTest ? (
+          <>
+            <label>Linear Progression</label>
+            <input
+              type="checkbox"
+              id="no-time-limit"
+              style={{ width: "min-content" }}
+            />
+          </>
+        ) : (
+          <>
+            <label for="text">Text</label>
+            <textarea
+              id="text"
+              rows="5"
+              placeholder="Place question prompt here"
+              className="editor__input"
+              required
+            />
+            {category !== "memory" ? (
+              <>
+                <label for="image">Image</label>
+                <input type="file" id="image" required />
+              </>
+            ) : null}
+            <label for="category">Category</label>
+            <select
+              id="category"
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              <option value="visual">Visualisation</option>
+              <option value="rotation">Rotation</option>
+              <option value="perception">Perception</option>
+              <option value="memory">Memory</option>
+            </select>
+            <label for="type">Type</label>
+            <select
+              id="type"
+              onChange={(e) => setType(e.target.value)}
+              required
+            >
+              {category === "memory" ? (
+                <>
+                  <option value="card">Card</option>
+                  <option value="block">Block</option>
+                </>
+              ) : (
+                <>
+                  <option value="text">Text input</option>
+                  <option value="multi">Multichoice</option>
+                </>
+              )}
+            </select>
+            {category === "memory" ? (
+              <>
+                <label>Size</label>
+                <input
+                  type="text"
+                  placeholder="5"
+                  className="editor__input editor__input--small"
+                  required
+                />
+                <label>Preview Duration</label>
+                <input
+                  type="text"
+                  placeholder="5"
+                  className="editor__input editor__input--small"
+                  required
+                />
+                <label>Matches</label>
+                <input
+                  type="text"
+                  placeholder="5"
+                  className="editor__input editor__input--small"
+                  required
+                />
+              </>
+            ) : type === "multi" ? (
+              <>
+                <label>Number of Answers</label>
+                <input
+                  type="text"
+                  placeholder="4"
+                  className="editor__input editor__input--small"
+                  required
+                />
+                {[1, 2, 3, 4].map((index) => (
+                  <>
+                    <label for={`grade-${index}`}>Grade</label>
+                    <input
+                      id={`grade-${index}`}
+                      type="text"
+                      placeholder="1.0"
+                      className="editor__input editor__input--small"
+                      required
+                    />
+                    <label for={`image-${index}`}>Image</label>
+                    <input type="file" id={`image-${index}`} required />
+                  </>
+                ))}
+              </>
+            ) : (
+              <>
+                <label>Answer</label>
+                <input
+                  type="text"
+                  className="editor__input"
+                  placeholder="e.g. 17"
+                  required
+                />
+                <label>Grade</label>
+                <input
+                  type="text"
+                  className="editor__input editor__input--small"
+                  placeholder="1.0"
+                  required
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
       <div className="divider" />
-
-      {type === "multi" ? (
-        <div className="editor__answer-grid">
-          {[1, 2, 3, 4].map((index) => (
-            <div className="editor__grid editor__answer" key={index}>
-              <label>Answer</label>
-              <label>{index}</label>
-              <label for={`grade-${index}`}>Grade</label>
-              <input
-                id={`grade-${index}`}
-                type="text"
-                placeholder="1.0"
-                required
-              />
-              <label for={`image-${index}`}>Image</label>
-              <input type="file" id={`image-${index}`} required />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="editor__grid">
-          <label>Answer</label>
-          <input
-            type="text"
-            className="editor__input"
-            placeholder="e.g. 17"
-            required
-          />
-          <label>Grade</label>
-          <input
-            type="text"
-            className="editor__input"
-            placeholder="1.0"
-            required
-          />
-        </div>
-      )}
-      <div className="divider" />
-
       <div className="editor__action-container">
         <button className="button button--caution">
           Delete
           <FaTrash size={iconSize} />
         </button>
-
         <button className="button button--filled">
           Save
           <FaSave size={iconSize} />

@@ -50,6 +50,9 @@
     font-size: 1rem;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
+    font-family: var(--font-cta);
+    transition: background-color .25s, color .25s, border .25s, transform .25s;
 }
 
 .button--outlined {
@@ -65,6 +68,10 @@
 .button--filled {
     background-color: var(--accent-color);
     color: var(--contrast-color)
+}
+
+.button--filled:hover {
+    transform: translateY(-.5rem);
 }
 
 .button--caution {

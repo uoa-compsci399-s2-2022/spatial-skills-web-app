@@ -34,7 +34,7 @@ const Bank = () => {
         <label>Name</label>
         <input
           type="text"
-          className="bank__search"
+          className="editor__input"
           onChange={(e) => setData(e.target.value)}
           placeholder="Search"
         />

@@ -8,7 +8,7 @@
 
 .editor__grid {
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: 15rem 1fr;
     align-items: center;
     gap: 1rem 3rem;
 }
@@ -19,7 +19,7 @@
     align-items: center;
 }
 
-.editor__time-limit {
+.editor__input--small {
     text-align: center;
     width: 3rem;
     height: 3rem;
@@ -28,7 +28,15 @@
 .editor__input {
     padding: 1rem;
     border-radius: .5rem;
+    background-color: transparent;
+    border: 1px solid var(--shadow-color);
+    transition: box-shadow .25s, background-color .25s;
+}
+
+.editor__input:focus {
+    background-color: var(--contrast-color);
     box-shadow: 0 .5rem 1rem var(--shadow-color);
+
 }
 
 .editor__answer {
@@ -36,13 +44,6 @@
     padding: 2rem;
     box-shadow: 0 .5rem 1rem var(--shadow-color);
     border-radius: .5rem;
-}
-
-.editor__answer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 2rem;
 }
 
 .editor__action-container {

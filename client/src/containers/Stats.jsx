@@ -104,6 +104,13 @@ const Stats = () => {
           Delete
           <FaTrash size={iconSize} />
         </button>
+        <Link
+          to={`/dashboard/test/${testId}`}
+          className="button button--outlined"
+        >
+          Edit
+          <FaEdit size={iconSize} />
+        </Link>
         <button
           className="button button--outlined"
           title="Share"
