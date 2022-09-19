@@ -11,7 +11,7 @@ const Dashboard = () => {
     <div className="dashboard">
       {dummyData.map((test) => (
         <Link
-          className="dashboard__test section"
+          className="dashboard__item section"
           key={test._id + test.code}
           to={`/dashboard/test/${test._id}/stats`}
           title="Edit/View"

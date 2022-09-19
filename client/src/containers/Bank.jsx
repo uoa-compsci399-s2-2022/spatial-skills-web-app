@@ -52,7 +52,7 @@ const Bank = () => {
               ) {
                 return (
                   <Link
-                    className="dashboard__test section"
+                    className="dashboard__item section"
                     to={`/dashboard/test/${testId}/question/${question._id}`}
                   >
                     <img

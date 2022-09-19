@@ -23,63 +23,8 @@
     gap: 3rem;
 }
 
-.stats__test-code {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: 1rem;
-    padding: 1rem;
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-    border-radius: .5rem;
-    position: absolute;
-    right: 5rem;
-}
-
 .stats__action-container {
     display: flex;
     gap: 2rem;
     justify-content: flex-end;
-}
-
-.button {
-    padding: 1rem;
-    display: flex;
-    gap: .5rem;
-    border-radius: .25rem;
-    font-size: 1rem;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-family: var(--font-cta);
-    transition: background-color .25s, color .25s, border .25s, transform .25s;
-}
-
-.button--outlined {
-    border: 1px solid var(--accent-color);
-    color: var(--accent-color);
-}
-
-.button--outlined:hover {
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-}
-
-.button--filled {
-    background-color: var(--accent-color);
-    color: var(--contrast-color)
-}
-
-.button--filled:hover {
-    transform: translateY(-.5rem);
-}
-
-.button--caution {
-    border: 1px solid var(--error-color);
-    color: var(--error-color)
-}
-
-.button--caution:hover {
-    background-color: var(--error-color);
-    color: var(--contrast-color);
 }

@@ -23,15 +23,12 @@ const Editor = (props) => {
           required
         />
         <label for="time">Time</label>
-        <div className="editor__row">
-          <input
-            type="text"
-            placeholder="60"
-            className="editor__input--small editor__input"
-            required
-          />
-          <p style={{ fontSize: "0.8rem" }}>minutes</p>
-        </div>
+        <input
+          type="text"
+          placeholder="60"
+          className="editor__input--small editor__input"
+          required
+        />
         <label for="no-time-limit">No time limit</label>
         <input
           type="checkbox"

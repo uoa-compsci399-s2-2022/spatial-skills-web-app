@@ -21,10 +21,7 @@ const Stats = () => {
   return (
     <div className="stats">
       <h1>{test.title}</h1>
-      <h3>{test.creator}</h3>
-      <h3 className="stats__test-code" title="Copy to clipboard">
-        {test.code}
-      </h3>
+      <h3>{test.code}</h3>
 
       <div className="divider" />
 

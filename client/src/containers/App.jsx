@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import "../styles/App.css";
 import Home from "./Home";
 import Test from "./Test";
 import Dashboard from "./Dashboard";
