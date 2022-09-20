@@ -115,7 +115,44 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
   if (!studentAnswer) {
     return next(new APIError("Could not find student answer.", 404));
   }
-  res.status(200).json(studentAnswer);
+
+  // // Get full details of question and test (not answer).
+  const qaIdArr = studentAnswer.answers.map((q) => q.qId);
+  const questions = await Question.find({ _id: { $in: qaIdArr } }).exec();
+  if (questions.length < qaIdArr.length) {
+    return next(new APIError("Could not find all test questions.", 404));
+  }
+
+  const test = await Test.findById(req.body.tId).exec();
+  var testMaxGrade = 0;
+  var testQuestions = [];
+  // var question, answer;
+  test.questions.forEach(q => { 
+    testMaxGrade += q.grade;
+    let question = questions.find(obj => obj._id == q.qId);  // Full question object
+    let answer = studentAnswer.answers.find(ans => ans.qId == q.qId);  // Get student answer for question
+    testQuestions.push(
+      {
+        id: q.qId,
+        grade: q.grade,
+        image: question.image,
+        category: question.category,
+        description: question.description,
+        correct: answer.correct,
+        value: answer.value,  // For memory / entry questions
+      }
+    )
+  });
+
+  const result = {
+    tId: studentAnswer.tId,
+    testTitle: test.title,
+    testCreator: test.creator,
+    testMaxGrade: testMaxGrade,
+    testQuestions: testQuestions,
+  }
+
+  res.status(200).json(result);
 };
 
 export { createStudentAnswer, getAllStudentAnswers, getStudentAnswerBytIdsId };
