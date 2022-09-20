@@ -87,12 +87,22 @@ const getQuestionsBytId = async (req, res, next) => {
 
   const qidArr = test.questions.map((q) => q.qId);
 
+  // Questions will be in order of creation date
   const questions = await Question.find({ _id: { $in: qidArr } }).exec();
   if (questions.length < qidArr.length){
     return next(new APIError("Could not find all test questions.", 404));
   }
+  // Sort the questions in the original order.
+  var orderedQuestions = [];
+  for (let i = 0; i < qidArr.length; i++) {
+    for (let x = 0; x < qidArr.length; x++) {
+      if (questions[x]._id == qidArr[i]) {
+        orderedQuestions.push(questions[x]);
+      }
+    }
+  }
 
-  let questionsOut = questions.map((q) => new QuestionOut(q));
+  let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
   if (req.body.shuffle) {
     questionsOut = FisherYatesShuffle(questionsOut);
   }
