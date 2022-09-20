@@ -116,7 +116,7 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
     return next(new APIError("Could not find student answer.", 404));
   }
 
-  // // Get full details of question and test (not answer).
+  // // Get full details of question and test.
   const qaIdArr = studentAnswer.answers.map((q) => q.qId);
   const questions = await Question.find({ _id: { $in: qaIdArr } }).exec();
   if (questions.length < qaIdArr.length) {
@@ -126,7 +126,6 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
   const test = await Test.findById(req.body.tId).exec();
   var testMaxGrade = 0;
   var testQuestions = [];
-  // var question, answer;
   test.questions.forEach(q => { 
     testMaxGrade += q.grade;
     let question = questions.find(obj => obj._id == q.qId);  // Full question object

@@ -25,7 +25,8 @@ const Test = (props) => {
   const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
   const data = {
     tId: testId,
-    shuffle: false,
+    shuffleQuestions: false,
+    shuffleAnswers: false,
   };
 
   // Get test question data from backend API.

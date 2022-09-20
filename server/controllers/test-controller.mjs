@@ -95,15 +95,15 @@ const getQuestionsBytId = async (req, res, next) => {
   // Sort the questions in the original order.
   var orderedQuestions = [];
   for (let i = 0; i < qidArr.length; i++) {
-    for (let x = 0; x < qidArr.length; x++) {
-      if (questions[x]._id == qidArr[i]) {
-        orderedQuestions.push(questions[x]);
-      }
+    let question = questions.find(q => q._id == qidArr[i]);
+    if (req.body.shuffleAnswers) {
+      question.answer = FisherYatesShuffle(question.answer);
     }
+    orderedQuestions.push(question);
   }
-
+  
   let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
-  if (req.body.shuffle) {
+  if (req.body.shuffleQuestions) {
     questionsOut = FisherYatesShuffle(questionsOut);
   }
   const timeOut = questionsOut.map(
