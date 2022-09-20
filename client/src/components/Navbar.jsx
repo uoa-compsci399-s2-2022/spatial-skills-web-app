@@ -67,8 +67,6 @@ const Navbar = (props) => {
     </>,
   ];
 
-  console.log(location.pathname === "/test");
-
   return (
     <nav
       className="navbar"

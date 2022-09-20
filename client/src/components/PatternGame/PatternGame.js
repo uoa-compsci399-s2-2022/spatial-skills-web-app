@@ -22,6 +22,7 @@ const blocksArray = CreateBlockArray(gameDim)
 let numMatched = 0
 let health = maxHealth
 
+let currentPatternIndex = 0
 
 function PatternGame(props) {
   const [blocks, setBlocks] = useState(blocksArray)
@@ -34,25 +35,28 @@ function PatternGame(props) {
   const [time, setTime] = useState(props.timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
   const [started, setStarted] = useState(false)
+  const [displayOrder, setDisplayOrder ] = useState(true)
 
   const totalNumberOfBlocks = gameDim * gameDim
   const numberOfPatternBlocks = levelList[level]
 
+  let patternIDArray
+  let startAlready = false
+
 
   // if order of clicking pattern matters
-  const orderMatters = false
+  const order = true
 
   // get an random array of IDs
+  const generatePatternIDs = (length, numPatternBlocks) => {
+    let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
+    .sort(() => Math.random() - 0.5)
+    return(randomIDsarray.slice(0, length))
+  }
+  
+
   // create pattern array marked by its key
   const generatePattern = () => {
-    const generatePatternIDs = (length, numPatternBlocks) => {
-      let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
-      .sort(() => Math.random() - 0.5)
-      return(randomIDsarray.slice(0, length))
-    }
-    
-    const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
-    console.log(patternIDs)
 
     // reset blocks status
     blocks.map(block => {
@@ -61,6 +65,10 @@ function PatternGame(props) {
       block.clicked = false
       return(null)
     })
+
+    const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
+    patternIDArray = patternIDs
+    console.log(patternIDs)
     
     // update block property if it's chosen to be the question pattern
     for(let i = 0; i < totalNumberOfBlocks; i++){
@@ -72,13 +80,12 @@ function PatternGame(props) {
     }
 
     numMatched = 0
-    showPattern(true)
-    setTimeout(() => {
-      showPattern(false)
-    }, 1000);
+    setDisplayOrder(prevState => !prevState)
+
     setPatternBlockIDs(patternIDs)
     setDisabled(false)
     setVictory(false)
+    startAlready = true
   }
 
   // handle user's choice
@@ -100,12 +107,10 @@ function PatternGame(props) {
     }
   }
 
-  const reveal = () => {
-    setBlocks(prevBlocks => {
-      return (prevBlocks.map(block => {
-        return ({...block, matched: true, clicked: true})
-        })
-      )})
+
+  const reveal = (block) => {
+    let newBlock = {...block, matched: true, clicked: true}
+    return (newBlock)
   }
 
   const unreveal = () => {
@@ -116,14 +121,29 @@ function PatternGame(props) {
       )})
   }
 
-  // show pattern
-  const showPattern = (show) => {
-    if (show){
-      reveal()
-    } else {
-      unreveal()
-    }
+
+  useEffect(() => {
+    if(currentPatternIndex < patternBlockID.length) {
+        setTimeout(() => {
+            setBlocks(prevBlocks => {
+                return (prevBlocks.map(block => {
+                    if(block.id == patternBlockID[currentPatternIndex-1]){
+                        return (reveal(block))
+                    } else {
+                        return (block)
+                    }
+                  })
+                )})
+                setDisplayOrder(prevState => !prevState)
+        }, 500);  
+      currentPatternIndex ++
   }
+
+  setTimeout(() => {
+    unreveal()
+  }, 400);
+
+}, [displayOrder])
 
   const resetTurn = () => {
     setUserCurrentChoice(null)
@@ -136,7 +156,7 @@ function PatternGame(props) {
         setBlocks(prevBlocks => {
           return (prevBlocks.map(block => {
             if (userCurrentChoice.id === block.id) {
-              if(orderMatters) {
+              if(order) {
                 if(userCurrentChoice.id === patternBlockID[numMatched]){
                   numMatched = numMatched + 1
                   return ({...block, matched: true, clicked: true})
@@ -178,6 +198,7 @@ function PatternGame(props) {
       setDisabled(true)
       setVictory(true)
       setLevel(prevLevel => prevLevel + 1)
+      currentPatternIndex = 0
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCurrentChoice])
