@@ -21,8 +21,6 @@
     border-radius: 25px;
     animation: shake 0.2s;
 }
-
-
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -35,4 +33,18 @@
     80% { transform: translate(-1px, -1px) rotate(1deg); }
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
-  }
+}
+
+
+.block__flash-color{
+  height: 10vh;
+  width: 10vh;
+  border-radius: 25px;
+  background-color: grey;
+  animation: flash_color 0.5s;
+}
+
+@keyframes flash_color{
+  0% {background-color: yellow;}
+  100% {background-color: grey;}
+}
