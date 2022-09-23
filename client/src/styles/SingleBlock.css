@@ -41,10 +41,15 @@
   width: 10vh;
   border-radius: 25px;
   background-color: grey;
-  animation: flash_color 0.5s;
+  animation: flash_color 0.3s, shake 0.2s;
+
 }
 
 @keyframes flash_color{
-  0% {background-color: yellow;}
+  0% {background-color: red;}
   100% {background-color: grey;}
+}
+
+.pa {
+  color: white;
 }

@@ -123,7 +123,11 @@ function PatternGame(props) {
   const unreveal = () => {
     setBlocks(prevBlocks => {
       return (prevBlocks.map(block => {
+        if(block.matched == true && block.clicked == true){
           return ({...block, matched: false, clicked: false})
+        } else{
+          return (block)
+        }
         })
       )})
   }
@@ -161,16 +165,16 @@ function PatternGame(props) {
                     })
                   )})
                   setDisplayOrder(prevState => !prevState)
-          }, 500);  
+          }, 1000);  
         currentPatternIndex ++
     } else {
       setTimeout(() => {
         setDisabled(false)
-      }, 400);
+      }, 999);
     }
     setTimeout(() => {
       unreveal()
-    }, 400);
+    }, 999);
   }
 }, [displayOrder])
 
@@ -284,8 +288,18 @@ function PatternGame(props) {
     }, 300);
   }
 
+  const victoryAnimation = () => {
+    if(victory){
+      return("pattern-game-victory")
+    } else if(gameOver) {
+      return ("pattern-game-over")
+    } else {
+      return ("pattern-game")
+    }
+  }
+
   return (
-    <div className={"pattern-game"}>
+    <div className={victoryAnimation()}>
       {!started ? 
         <div className="pattern-game__instructions">
           <h1>Memory Test: Block Patterns</h1>

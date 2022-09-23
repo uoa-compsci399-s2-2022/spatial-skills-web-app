@@ -27,7 +27,7 @@ const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled, clic
 
     return(
         <div>
-            <div className={generateClassName()} onClick={handleClick}><p>{block.id}</p></div>
+            <div className={generateClassName()} onClick={handleClick}><p className='pa'>{block.id}</p></div>
         </div>
     )
 }

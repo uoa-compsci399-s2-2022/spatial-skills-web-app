@@ -35,8 +35,7 @@ const TrialComp = () => {
                 setGreen(prevState => !prevState)
             }, 600);
             index ++ 
-        }
-       
+        }     
     }, [green])
 
     setTimeout(() => {
