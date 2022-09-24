@@ -4,6 +4,7 @@ class TestIn {
     this.creator = test.creator;
     this.questions = test.questions;
     this.published = test.published;
+    this.allowBackTraversal = test.allowBackTraversal;
   }
 }
 

@@ -39,6 +39,7 @@ const createTest = async (req, res, next) => {
     })),
     studentAnswers: [],
     published: req.body.published,
+    allowBackTraversal: req.body.allowBackTraversal,
     code: await createCode(),
   });
 
