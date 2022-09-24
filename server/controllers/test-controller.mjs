@@ -40,6 +40,7 @@ const createTest = async (req, res, next) => {
     studentAnswers: [],
     published: req.body.published,
     allowBackTraversal: req.body.allowBackTraversal,
+    totalTime: req.body.totalTime,
     code: await createCode(),
   });
 

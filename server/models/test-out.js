@@ -6,6 +6,7 @@ class TestOut {
     this.published = test.published;
     this.code = test.code;
     this.allowBackTraversal = test.allowBackTraversal;
+    this.totalTime = test.totalTime;
   }
 }
 
