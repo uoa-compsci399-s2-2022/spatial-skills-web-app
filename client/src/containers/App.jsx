@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "../styles/App.css";
 import Home from "./Home";
 import Test from "./Test";
+import TestResult from "./TestResult";
 import Dashboard from "./Dashboard";
 import Stats from "./Stats";
 import Bank from "./Bank";
@@ -29,6 +30,8 @@ function App() {
             path="/"
             element={<Home userData={userData} setUserData={setUserData} />}
           />
+          <Route path="/test" element={<Test userData={userData} />} />
+          <Route path="/results/:tId/:sId" element={<TestResult />} />
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId/stats" element={<Stats />} />
