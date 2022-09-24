@@ -1,13 +1,16 @@
 * {
   box-sizing: border-box;
   --accent-color: #4895EF;
+  --accent-color-hover: #deeefc;
   --contrast-color: #ffffff;
   --contrast-color-hover: #dadce0;
+  --offwhite-color: #f2f6f8;
+  --base-300: #e6e8ec;
   --mid-color: #323944;
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
   --error-color: #f51d24;
-  --shadow-color: rgba(49, 50, 53, 0.26);
+  --shadow-color: rgba(13, 13, 88, 0.05);
   --font: 'Quicksand';
   --font-cta: 'Montserrat';
 }
@@ -28,6 +31,7 @@ h1, h2, h3, h4, h5 {
 
 body {
   color: var(--mid-color);
+  background-color: var(--offwhite-color);
   margin: 0;
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
@@ -37,6 +41,15 @@ body {
 input {
   outline: none;
   border: none;
+  font-family: var(--font);
+  font-size: .8rem;
+}
+
+textarea {
+  outline: none;
+  border: none;
+  font-family: var(--font);
+  font-size: .8rem;
 }
 
 button {
@@ -44,6 +57,25 @@ button {
   cursor: pointer;
   background-color: transparent;
   font-family: var(--font-cta);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+}
+
+th, td {
+  text-align: start;
+  padding: .5rem;
+  border: none;
+}
+
+tr:nth-child(odd) {
+  background-color: var(--offwhite-color);
 }
 
 @font-face {

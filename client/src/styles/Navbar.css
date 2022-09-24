@@ -1,7 +1,7 @@
 .navbar {
   z-index: 5;
   width: 100%;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   display: flex;
@@ -25,7 +25,7 @@
 }
 
 .popup{
-  outline: 2px solid var(--accent-color);
+  box-shadow: 0 .5rem 1rem var(--shadow-color);
   position: fixed;
   padding: 2rem;
   width: 20rem;
@@ -70,4 +70,17 @@
 .navbar__signout:hover {
   background-color: var(--error-color);
   color: var(--contrast-color);
+}
+
+.navbar__dashboard {
+  background-color: var(--accent-color);
+  padding: 1rem;
+  border-radius: .5rem;
+  text-align: center;
+  font-weight: bold;
+  transition: transform .25s;
+}
+
+.navbar__dashboard:hover {
+  transform: translateY(-5px);
 }

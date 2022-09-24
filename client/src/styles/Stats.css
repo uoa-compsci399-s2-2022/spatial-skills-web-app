@@ -1,0 +1,30 @@
+.stats {
+    margin-top: 4rem;
+    padding: 5rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.stats__section {
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.stats__col {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.stats__row {
+    display: flex;
+    gap: 3rem;
+}
+
+.stats__action-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: flex-end;
+}
