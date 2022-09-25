@@ -1,8 +1,19 @@
 import User from "../models/user.js";
+import Test from "../models/test.js"
 import APIError from "../handlers/APIError.js";
 // import bcrypt from "bcrypt";
 
 const createStudent = async (req, res, next) => {
+
+  if (!req.body.name) {
+    return next(new APIError("Name not provided.", 400));
+  }
+
+  //Check if there is a test with test code
+  const testExists = await Test.findOne({code: req.body.permissions}).exec();
+  if (!testExists) {
+    return next(new APIError("Invalid test code", 400));
+  }
 
   // Prevent creating admin user
   if (req.body.permissions.includes("admin")) {
@@ -24,7 +35,7 @@ const createStudent = async (req, res, next) => {
     permissions: req.body.permissions,
   }).exec();
   if (exists) {
-    return next(new APIError("You have already done test.", 400));
+    return next(new APIError("You have already done this test.", 400));
   }
 
   const createdStudent = new User({
@@ -45,7 +56,7 @@ const createStudent = async (req, res, next) => {
     return next(new APIError("Could not save user.", 500));
   }
 
-  res.status(201).json(result);
+  res.status(201).json({message: "Successfully created user."});
 };
 
 export { createStudent };
