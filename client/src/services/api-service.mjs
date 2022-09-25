@@ -12,7 +12,7 @@ const axiosAPICaller = axios.create({
 // DESCRIPTION: Intercepts requests and adds authorization header
 axiosAPICaller.interceptors.request.use(
   (config) => {
-    const aT = localStorage.getItem("accessToken");
+    const aT = sessionStorage.getItem("accessToken");
     if (aT) {
       config.headers["Authorization"] = `Bearer ${aT}`;
     }
@@ -37,7 +37,7 @@ axiosAPICaller.interceptors.response.use(
       originalConfig._retry = true;
       try {
         const aT = await refreshToken();
-        localStorage.setItem("accessToken", aT);
+        sessionStorage.setItem("accessToken", aT);
         originalConfig.headers["Authorization"] = `Bearer  ${aT}`;
         return axiosAPICaller(originalConfig);
       } catch (e) {

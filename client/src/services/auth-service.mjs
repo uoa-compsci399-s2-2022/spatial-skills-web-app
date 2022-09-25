@@ -2,44 +2,61 @@ import axios from "axios";
 
 const url = "http://localhost:3001/api/auth/";
 
-const login = async (username, sub) => {
-  // Handle google log in
-  if (sub) {
-    return axios
+const createStudent = async (name, code) => {
+      return axios
       .post(
-        url,
+        "http://localhost:3001/api/user/createStudent",
         {
-          username,
-          sub,
+          name: name,
+          permissions: [code]
         },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
-      )
-      .then((res) => {
-        localStorage.setItem("accessToken", res.data.accessToken);
+      ).then((res) =>{
         return res.data;
       });
-  } else {
-    // Handle other log in
+}
+
+const studentLogin = async (name, code) => {
+
     return axios
-      .post(
-        url,
-        {
-          username,
-        },
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      )
-      .then((res) => {
-        localStorage.setItem("accessToken", res.data.accessToken);
-        return res.data;
-      });
-  }
+    .post(
+      url + "studentLogin",
+      {
+        name: name,
+        permissions: [code]
+      },
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" },
+      }
+    )
+    .then((res) => {
+      sessionStorage.setItem("accessToken", res.data.accessToken);
+      return res.data;
+    });
+    
 };
+
+const adminLogin = async (name) => {
+  return axios
+  .post(
+    url+'adminLogin',
+    {
+      name,
+    },
+    {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    }
+  )
+  .then((res) => {
+    sessionStorage.setItem("accessToken", res.data.accessToken);
+    return res.data;
+  });
+}
 
 const logout = async () => {
   return axios
@@ -52,7 +69,8 @@ const logout = async () => {
       }
     )
     .then((res) => {
-      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("code");
     });
 };
 
@@ -66,10 +84,9 @@ const refreshToken = async () => {
     }
   )
   .then((res) => {
-    localStorage.setItem("accessToken", res.data.accessToken);
+    sessionStorage.setItem("accessToken", res.data.accessToken);
     return res.data.accessToken;
   });
-  
 }
 
-export { login, logout, refreshToken };
+export { createStudent, studentLogin, adminLogin, logout, refreshToken };
