@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 
@@ -64,6 +65,23 @@ const adminLogin = async (req, res, next) => {
   if (!req.body.name) {
     return next(new APIError("Name not provided.", 400));
   }
+  if (!req.body.gIdToken) {
+    return next(new APIError("ID token not provided.", 400));
+  }
+
+  // Verifying google ID_TOKEN https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+  const AuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  try {
+    const ticket = await AuthClient.verifyIdToken({
+      idToken: req.body.gIdToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    console.log(ticket);
+  } catch (e) {
+    console.log(e);
+    return next(new APIError("Failed to verify Google ID.", 400));
+  }
 
   const existUser = await User.findOne({
     name: req.body.name,
@@ -104,8 +122,8 @@ const refresh = async (req, res, next) => {
     return next(new APIError("Forbidden.", 403));
   }
 
-  try{
-      // create new access token
+  try {
+    // create new access token
     accessToken = jwt.sign(
       {
         UserInfo: {

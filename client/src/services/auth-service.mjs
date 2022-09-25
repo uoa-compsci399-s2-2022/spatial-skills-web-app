@@ -40,12 +40,13 @@ const studentLogin = async (name, code) => {
     
 };
 
-const adminLogin = async (name) => {
+const adminLogin = async (name,gIdToken) => {
   return axios
   .post(
     url+'adminLogin',
     {
       name,
+      gIdToken
     },
     {
       withCredentials: true,

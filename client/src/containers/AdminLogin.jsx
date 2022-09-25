@@ -17,7 +17,7 @@ const AdminLogin = (props) => {
   const handleGoogleLogin = (credentials) => {
     setError("");
     const payload = jwt_decode(credentials);
-    adminLogin(payload.email).then(
+    adminLogin(payload.email,credentials).then(
       (res) => {
         setUserData({
           name: payload.given_name + " " + payload.family_name,
