@@ -6,23 +6,21 @@ import axios from "axios";
 
 const TestResult = () => {
   let { tId, sId } = useParams();
-  const [userAnswers, setUserAnswers] = useState(null);
-  const [grade, setGrade] = useState(null);
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const url = 'http://localhost:3001/api/answer/getStudentAnswer';
-  const data = {
+  const body = {
     tId: tId,
     sId: sId
   };
 
   useEffect(() => {
-    axios.post(url, data)
+    axios.post(url, body)
     .then((res) => {
       console.log(res);
-      setUserAnswers(res.data.answers);
-      setGrade(res.data.grade);
+      setData(res.data);
       setIsLoaded(true);
     },
     (error) => {
@@ -32,10 +30,15 @@ const TestResult = () => {
   }, [])
 
   const renderAnswers = () => {
-    const answers = userAnswers.map((ans) => {
+    const answers = data.testQuestions.map((ans) => {
       return (
         <li key={ans.qId}>
-          {ans.correct ? 'Correct' : 'Wrong'} Value: {ans.value}
+          <img src={ans.image} alt='No Image'/>
+          <p>Category: {ans.category}</p>
+          <p>Description: {ans.description}</p>
+          <p>Grade: {ans.grade}</p>
+          <p>{ans.correct ? 'Correct' : 'Wrong'}</p>
+          <p>Value: {ans.value}</p>
         </li>
       )
     })
@@ -51,9 +54,9 @@ const TestResult = () => {
       <div className='results'>
         <div>
           <h1>Test Result Page</h1>
-          <h1>Test {tId}</h1>
-          <h1>Taken by {sId}</h1>
-          <h1>Grade: {grade}</h1>
+          <h1>Test Name: {data.testTitle}</h1>
+          <h1>Student Name: {data.sId}</h1>
+          <h1>Grade: {data.studentGrade} / {data.testMaxGrade}</h1>
           <ol type="1">
             {renderAnswers()}
           </ol>

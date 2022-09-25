@@ -124,15 +124,19 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
   }
 
   const test = await Test.findById(req.body.tId).exec();
-  var testMaxGrade = 0;
-  var testQuestions = [];
+  let testMaxGrade = 0;
+  let studentGrade = 0;
+  let testQuestions = [];
   test.questions.forEach(q => { 
     testMaxGrade += q.grade;
     let question = questions.find(obj => obj._id == q.qId);  // Full question object
     let answer = studentAnswer.answers.find(ans => ans.qId == q.qId);  // Get student answer for question
+    if (answer.correct) {
+      studentGrade += q.grade;
+    }
     testQuestions.push(
       {
-        id: q.qId,
+        qId: q.qId,
         grade: q.grade,
         image: question.image,
         category: question.category,
@@ -145,9 +149,11 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
 
   const result = {
     tId: studentAnswer.tId,
+    sId: studentAnswer.sId,
     testTitle: test.title,
     testCreator: test.creator,
     testMaxGrade: testMaxGrade,
+    studentGrade: studentGrade,
     testQuestions: testQuestions,
   }
 

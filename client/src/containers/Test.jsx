@@ -60,9 +60,6 @@ const Test = (props) => {
   }, []);
 
   const nextQuestion = () => {
-    // if (userAnswers[currentQuestion - 1].aId === null && timeLeft > 0) {
-    //   return; // Prevent user from proceeding if no answer given
-    // }
     console.log(userAnswers); // for debugging
     setSelectedAnswer(userAnswers[currentQuestion].aId);
     if (currentQuestion < questionBank.length) {
@@ -70,25 +67,9 @@ const Test = (props) => {
       if (!allowBackTraversal) {
         setTimeLeft(questionTimeBank[currentQuestion]);
       }
-      return true;
+      return;
     } else {
-      if (userData.name) {
-        // Create answer in DB if user logged in
-        let testData = {
-          tId: testId,
-          sId: userData.name,
-          answers: userAnswers,
-        };
-
-        axios
-          .post("http://localhost:3001/api/answer", testData)
-          .then(
-            window.location.replace(
-              `http://localhost:3000/results/${testId}/${userData.name}`
-            )
-          );
-      }
-      return false;
+      finishTest();  // No more questions.
     }
   };
 
@@ -105,7 +86,20 @@ const Test = (props) => {
   }
 
   const finishTest = () => {
-
+    if (userData.name) {
+      // Create answer in DB if user logged in
+      let testData = {
+        tId: testId,
+        sId: userData.name,
+        answers: userAnswers,
+      };
+      axios.post("http://localhost:3001/api/answer", testData).then(
+        window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
+      );
+    } else {
+      alert("Test Finished. You are not logged in, so your results wont be saved.")
+      window.location.href(`http://localhost:3000/`);
+    }
   }
 
   const submitAnswer = (event) => {
@@ -132,8 +126,10 @@ const Test = (props) => {
 
   const timeCountDown = () => {
     if (timeLeft <= 0) {
-      if (!nextQuestion()) {
-        clearInterval(Ref.current);
+      if (allowBackTraversal) {
+        finishTest();
+      } else {
+        nextQuestion();
       }
     } else {
       setTimeLeft(timeLeft - 1);
