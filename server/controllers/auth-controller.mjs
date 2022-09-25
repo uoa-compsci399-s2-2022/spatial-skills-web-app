@@ -9,11 +9,10 @@ import APIError from "../handlers/APIError.js";
 
 // GLOBAL VARS
 const accessTokenTime = "30m";
-const refreshTokenTime = "1";
+const refreshTokenTime = "1h";
 
 // HELPER FUNCTIONS
 const createTokens = async (res, name, permissions) => {
-
   const accessToken = jwt.sign(
     {
       UserInfo: {
@@ -45,23 +44,19 @@ const createTokens = async (res, name, permissions) => {
   });
 
   res.json({ accessToken });
-
-}
+};
 
 // ACCESS: PUBLIC
 const studentLogin = async (req, res, next) => {
-  if (!req.body.name) {
-    return next(new APIError("Name not provided.", 400));
-  }
-
-  const existUser = await User.findOne({ name: req.body.name, permissions: req.body.permissions }).exec();
-
+  const existUser = await User.findOne({
+    name: req.body.name,
+    permissions: req.body.permissions,
+  }).exec();
   if (!existUser) {
     return next(new APIError("User not registered.", 400));
   }
 
-  createTokens(res,existUser.name,existUser.permissions);
-
+  createTokens(res, existUser.name, existUser.permissions);
 };
 
 // ACCESS: PUBLIC - GATED BY GOOGLE LOGIN
@@ -70,15 +65,17 @@ const adminLogin = async (req, res, next) => {
     return next(new APIError("Name not provided.", 400));
   }
 
-  const existUser = await User.findOne({ username: req.body.name, permissions: "admin"}).exec();
+  const existUser = await User.findOne({
+    name: req.body.name,
+    permissions: "admin",
+  }).exec();
 
   if (!existUser) {
     return next(new APIError("Admin not registered.", 400));
   }
 
-  createTokens(res,existUser.name,existUser.permissions);
-
-}
+  createTokens(res, existUser.name, existUser.permissions);
+};
 
 // ACCESS: PUBLIC
 // DESCRIPTION: refresh acess token if expired
@@ -95,7 +92,10 @@ const refresh = async (req, res, next) => {
   try {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    existUser = await User.findOne({ name: decoded.name, permissions: decoded.permissions });
+    existUser = await User.findOne({
+      name: decoded.name,
+      permissions: decoded.permissions,
+    });
 
     if (!existUser) {
       throw new Error();
@@ -126,7 +126,7 @@ const logout = async (req, res, next) => {
     return next(new APIError("Missing cookie.", 400));
   }
   // ***************SET secure: TRUE IN DEPLOYEMENT NEED HTTPS*****************
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false }); 
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false });
   res.json({ message: "Logged out" });
 };
 
