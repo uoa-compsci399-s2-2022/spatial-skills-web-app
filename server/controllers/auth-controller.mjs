@@ -8,40 +8,17 @@ import User from "../models/user.js";
 import APIError from "../handlers/APIError.js";
 
 // GLOBAL VARS
-const accessTokenTime = "60s";
-const refreshTokenTime = "1d";
+const accessTokenTime = "30m";
+const refreshTokenTime = "1";
 
-// ACCESS: PUBLIC
-const login = async (req, res, next) => {
-  if (!req.body.username) {
-    return next(new APIError("No username provided.", 400));
-  }
-
-  const existUser = await User.findOne({ username: req.body.username }).exec();
-
-  if (!existUser) {
-    return next(new APIError("User not registered.", 400));
-  }
-
-  //Login for google sign in users
-  if (existUser.sub) {
-    if (!req.body.sub) {
-      return next(new APIError("Google identifier not provided.", 400));
-    }
-
-    const match = await bcrypt.compare(req.body.sub, existUser.sub);
-
-    //identifiers do not match
-    if (!match) {
-      return next(new APIError("Google-identifier do not match.", 400));
-    }
-  }
+// HELPER FUNCTIONS
+const createTokens = async (res, name, permissions) => {
 
   const accessToken = jwt.sign(
     {
       UserInfo: {
-        username: existUser.username,
-        permissions: existUser.permissions,
+        name: name,
+        permissions: permissions,
       },
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -49,7 +26,12 @@ const login = async (req, res, next) => {
   );
 
   const refreshToken = jwt.sign(
-    { username: existUser.username },
+    {
+      UserInfo: {
+        name: name,
+        permissions: permissions,
+      },
+    },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: refreshTokenTime }
   );
@@ -63,7 +45,40 @@ const login = async (req, res, next) => {
   });
 
   res.json({ accessToken });
+
+}
+
+// ACCESS: PUBLIC
+const studentLogin = async (req, res, next) => {
+  if (!req.body.name) {
+    return next(new APIError("Name not provided.", 400));
+  }
+
+  const existUser = await User.findOne({ name: req.body.name, permissions: req.body.permissions }).exec();
+
+  if (!existUser) {
+    return next(new APIError("User not registered.", 400));
+  }
+
+  createTokens(res,existUser.name,existUser.permissions);
+
 };
+
+// ACCESS: PUBLIC - GATED BY GOOGLE LOGIN
+const adminLogin = async (req, res, next) => {
+  if (!req.body.name) {
+    return next(new APIError("Name not provided.", 400));
+  }
+
+  const existUser = await User.findOne({ username: req.body.name, permissions: "admin"}).exec();
+
+  if (!existUser) {
+    return next(new APIError("Admin not registered.", 400));
+  }
+
+  createTokens(res,existUser.name,existUser.permissions);
+
+}
 
 // ACCESS: PUBLIC
 // DESCRIPTION: refresh acess token if expired
@@ -80,7 +95,7 @@ const refresh = async (req, res, next) => {
   try {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    existUser = await User.findOne({ username: decoded.username });
+    existUser = await User.findOne({ name: decoded.name, permissions: decoded.permissions });
 
     if (!existUser) {
       throw new Error();
@@ -90,7 +105,7 @@ const refresh = async (req, res, next) => {
     accessToken = jwt.sign(
       {
         UserInfo: {
-          username: existUser.username,
+          name: existUser.username,
           permissions: existUser.permissions,
         },
       },
@@ -115,4 +130,4 @@ const logout = async (req, res, next) => {
   res.json({ message: "Logged out" });
 };
 
-export { login, refresh, logout };
+export { studentLogin, adminLogin, refresh, logout };
