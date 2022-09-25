@@ -1,19 +1,15 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  username: {
+  name: {
     type: String,
     required: true,
-  },
-  sub: {
-    type: String,
-    required: false,
   },
   permissions: [
     {
       type: String,
     },
-  ],
+  ]
 });
 
 //Check if question already a model before exporting

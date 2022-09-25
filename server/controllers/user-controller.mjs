@@ -1,41 +1,46 @@
 import User from "../models/user.js";
 import APIError from "../handlers/APIError.js";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 
-const createUser = async (req, res, next) => {
-  // Check if user already exists
-  const exists = await User.findOne({ username: req.body.username }).exec();
+const createStudent = async (req, res, next) => {
+
+  // Prevent creating admin user
+  if (req.body.permissions.includes("admin")) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
+  // Prevent creating same name as an admin
+  let exists = await User.findOne({
+    name: req.body.name,
+    permissions: "admin",
+  }).exec();
   if (exists) {
-    return next(new APIError("User already exists.", 400));
+    return next(new APIError("Cannot use this name, choose another one", 400));
   }
 
-  let createdUser;
-  if (req.body.sub) {
-    // Google sign in user
-    //Hash google unique identifier (need to decrypt when used)
-    const hashedSub = await bcrypt.hash(req.body.sub, 10);
-    createdUser = new User({
-      username: req.body.username,
-      sub: hashedSub,
-      permissions: req.body.permissions,
-    });
-  } else {
-    // Other user
-    createdUser = new User({
-      username: req.body.username,
-      permissions: req.body.permissions,
-    });
+  // Check if user already exists
+  exists = await User.findOne({
+    name: req.body.name,
+    permissions: req.body.permissions,
+  }).exec();
+  if (exists) {
+    return next(new APIError("You have already done test.", 400));
   }
+
+  const createdStudent = new User({
+    name: req.body.name,
+    permissions: req.body.permissions,
+  });
 
   try {
-    await createdUser.validate();
+    await createdStudent.validate();
   } catch (e) {
     return next(new APIError("Invalid or missing inputs.", 400));
   }
 
   let result;
   try {
-    result = await createdUser.save();
+    result = await createdStudent.save();
   } catch (e) {
     return next(new APIError("Could not save user.", 500));
   }
@@ -43,4 +48,4 @@ const createUser = async (req, res, next) => {
   res.status(201).json(result);
 };
 
-export { createUser };
+export { createStudent };
