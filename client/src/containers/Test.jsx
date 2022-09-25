@@ -1,6 +1,6 @@
 import "../styles/Test.css";
 import React, { useState, useRef, useEffect } from "react";
-import { FaCaretRight } from "react-icons/fa";
+import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
@@ -13,16 +13,18 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
   const [questionTimeBank, setQuestionTimeBank] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(4);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
+  const [allowBackTraversal, setAllowBackTraversal] = useState(null);
 
   const url = "http://localhost:3001/api/test/getquestions";
   // const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
-  const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
+  // const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
+  const testId = "632efea0a6069a23596d3347"; // Non-linear
   const data = {
     tId: testId,
     shuffleQuestions: false,
@@ -36,8 +38,13 @@ const Test = (props) => {
         console.log(res);
         setQuestionBank(res.data.questions);
         setQuestionTimeBank(res.data.times);
-        setTimeLeft(res.data.times[currentQuestion - 1]);
-
+        setAllowBackTraversal(res.data.allowBackTraversal);
+        if (res.data.allowBackTraversal) {
+          setTimeLeft(res.data.totalTime);
+        } else {
+          setTimeLeft(res.data.times[currentQuestion - 1]);
+        }
+        
         let defaultAns = [];
         for (const q of res.data.questions) {
           defaultAns.push({ qId: q.id, aId: null, value: null });
@@ -57,10 +64,12 @@ const Test = (props) => {
     //   return; // Prevent user from proceeding if no answer given
     // }
     console.log(userAnswers); // for debugging
-    setSelectedAnswer(null);
+    setSelectedAnswer(userAnswers[currentQuestion].aId);
     if (currentQuestion < questionBank.length) {
       setCurrentQuestion(currentQuestion + 1);
-      setTimeLeft(questionTimeBank[currentQuestion]);
+      if (!allowBackTraversal) {
+        setTimeLeft(questionTimeBank[currentQuestion]);
+      }
       return true;
     } else {
       if (userData.name) {
@@ -82,6 +91,22 @@ const Test = (props) => {
       return false;
     }
   };
+
+  const previousQuestion = () => {
+    console.log(userAnswers); // for debugging
+    
+    if (currentQuestion > 1 && allowBackTraversal) {
+      setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
+      setCurrentQuestion(currentQuestion - 1);
+      if (!allowBackTraversal) {
+        setTimeLeft(questionTimeBank[currentQuestion]);
+      }
+    }
+  }
+
+  const finishTest = () => {
+
+  }
 
   const submitAnswer = (event) => {
     // if (questionTypeBank[questionNum - 1] === "entry") {
@@ -106,7 +131,6 @@ const Test = (props) => {
   };
 
   const timeCountDown = () => {
-    // console.log(timeLeft);  // for debugging
     if (timeLeft <= 0) {
       if (!nextQuestion()) {
         clearInterval(Ref.current);
@@ -168,13 +192,24 @@ const Test = (props) => {
           <TimerDisplay seconds={timeLeft} />
         }
         
+        {currentQuestion === 1 && allowBackTraversal ? null : 
+          <button
+            className="test__previous"
+            onClick={() => previousQuestion()}
+            title="Previous Question"
+          >
+            <FaCaretLeft size={60} />
+          </button>
+        }
+
+
         {testQuestion}
 
         <div className="test__progress" title="Progress">
           {currentQuestion} / {questionBank.length}
         </div>
 
-        {selectedAnswer === null ? null : ( // Hide next button if no answer selected
+        {selectedAnswer === null && !allowBackTraversal ? null : ( // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
@@ -185,7 +220,9 @@ const Test = (props) => {
         )}
 
         <Timer
-          questionTime={questionTimeBank[currentQuestion - 1]}
+          questionTime={ allowBackTraversal ? 
+            questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
+            questionTimeBank[currentQuestion - 1]}
           timeLeft={timeLeft}
         />
       </div>

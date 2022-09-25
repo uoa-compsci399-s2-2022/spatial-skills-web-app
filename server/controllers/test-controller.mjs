@@ -111,7 +111,13 @@ const getQuestionsBytId = async (req, res, next) => {
   const timeOut = questionsOut.map(
     (qo) => test.questions.find((q) => q.qId === qo.id).time
   );
-  const combined = { questions: questionsOut, times: timeOut };
+
+  const combined = { questions: questionsOut,
+    times: timeOut, 
+    allowBackTraversal: test.allowBackTraversal,
+    // totalTime: test.totalTime,
+    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0)
+  };
   res.json(combined);
 };
 

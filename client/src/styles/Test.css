@@ -96,6 +96,20 @@
     animation: fadeIn 1s;
 }
 
+.test__previous {
+    display: flex;
+    border: none;
+    position: absolute;
+    padding: 0;
+    left: 1rem;
+    background-color: transparent;
+    color: var(--accent-color);
+    fill: var(--accent-color);
+    cursor: pointer;
+    transition: color .25s;
+    animation: fadeIn 1s;
+}
+
 .test__next:hover {
     color: #1b7be9;
 }
