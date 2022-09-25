@@ -9,7 +9,7 @@ import APIError from "../handlers/APIError.js";
 
 // GLOBAL VARS
 const accessTokenTime = "30m";
-const refreshTokenTime = "1h";
+const refreshTokenTime = "50m";
 
 // HELPER FUNCTIONS
 const createTokens = async (res, name, permissions) => {
@@ -93,19 +93,23 @@ const refresh = async (req, res, next) => {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     existUser = await User.findOne({
-      name: decoded.name,
-      permissions: decoded.permissions,
+      name: decoded.UserInfo.name,
+      permissions: decoded.UserInfo.permissions,
     });
 
     if (!existUser) {
       throw new Error();
     }
+  } catch (e) {
+    return next(new APIError("Forbidden.", 403));
+  }
 
-    // create new access token
+  try{
+      // create new access token
     accessToken = jwt.sign(
       {
         UserInfo: {
-          name: existUser.username,
+          name: existUser.name,
           permissions: existUser.permissions,
         },
       },
@@ -113,7 +117,7 @@ const refresh = async (req, res, next) => {
       { expiresIn: accessTokenTime } // Set to 15min+ after dev
     );
   } catch (e) {
-    return next(new APIError("Forbidden.", 403));
+    return next(new APIError("Could not create token.", 500));
   }
   res.json({ accessToken });
 };
