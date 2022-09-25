@@ -10,7 +10,9 @@ import jwtHandler from "../handlers/jwt-handler.js";
 
 const testRouter = express.Router();
 
-//apply JWT handler to all endpoints in this route
+//UNPORTECTED ENDPOINTS
+
+//PROTECTED ENDPOINTS
 testRouter.use(jwtHandler);
 
 testRouter.post("/", createTest);
