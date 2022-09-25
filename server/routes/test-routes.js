@@ -7,6 +7,7 @@ import {
   getQuestionsBytId,
 } from "../controllers/test-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
+import adminAuthHandler from "../handlers/admin-auth-handler.js";
 
 const testRouter = express.Router();
 
@@ -15,9 +16,11 @@ const testRouter = express.Router();
 //PROTECTED ENDPOINTS
 testRouter.use(jwtHandler);
 
-testRouter.post("/", createTest);
+// ADMIN
+testRouter.post("/", adminAuthHandler, createTest);
 
-testRouter.get("/all", getAllTests);
+// ADMIN
+testRouter.get("/all", adminAuthHandler, getAllTests);
 
 testRouter.post("/getquestions", getQuestionsBytId);
 

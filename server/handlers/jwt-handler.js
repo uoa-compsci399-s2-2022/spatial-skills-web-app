@@ -18,7 +18,7 @@ const jwtHandler = async (req,res,next) => {
 
     try {
         const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
-        req.username = decoded.UserInfo.username;
+        req.name = decoded.UserInfo.name;
         req.permissions = decoded.UserInfo.permissions;
 
     } catch (e){

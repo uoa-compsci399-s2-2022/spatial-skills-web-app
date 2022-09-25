@@ -5,6 +5,7 @@ import {
   getStudentAnswerBytIdsId,
 } from "../controllers/answer-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
+import adminAuthHandler from "../handlers/admin-auth-handler.js";
 
 const answerRouter = express.Router();
 
@@ -13,8 +14,8 @@ const answerRouter = express.Router();
 //PROTECTED ENDPOINTS
 answerRouter.use(jwtHandler);
 
-//get all
-answerRouter.get("/all", getAllStudentAnswers);
+//get all (ADMIN)
+answerRouter.get("/all", adminAuthHandler, getAllStudentAnswers);
 
 //add student answer
 answerRouter.post("/", createStudentAnswer);
