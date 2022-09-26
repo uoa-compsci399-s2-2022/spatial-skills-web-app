@@ -7,7 +7,6 @@ import TestResult from "./TestResult";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Splash from "../components/Splash";
-import TrialComp from "../components/PatternGame/try";
 
 import PatternGame from "../components/PatternGame/PatternGame";
 
@@ -32,7 +31,6 @@ function App() {
           <Route path="/test" element={<Test userData={userData} />} />
           <Route path="/results/:tId/:sId" element={<TestResult />} />
           <Route path="/pattern" element={<PatternGame timeAllowed="60"/>} />
-          <Route path="/try" element={<TrialComp></TrialComp>} ></Route>
         </Routes>
         <Footer />
         <Splash />

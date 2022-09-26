@@ -78,11 +78,9 @@
   width:fit-content;
   margin-top: 15px;
   display: grid;
-  grid-template-columns: 10vh 10vh 10vh 10vh 10vh 10vh;
   column-gap: 20px;
   row-gap: 20px;
   justify-items: center;
-
 }
 
 .pattern-game__heart {

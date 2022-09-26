@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import "../../styles/PatternGame.css";
 import SingleBlock from './SingleBlock';
 
@@ -6,25 +6,24 @@ import SingleBlock from './SingleBlock';
 const endLevel = Array(20).fill(10)
 const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
 const levelList = easyLevel.concat(endLevel)
-const maxHealth = 5
-// const timeAllowed = 120
-const gameDim = 6
 
-// create blocks array
-const CreateBlockArray = (dimension) => {
-  const bArray = []
-  for (let i = 0; i < dimension * dimension; i++) {
-    bArray.push({"id": i, "pattern": false, "matched": false, "clicked": false, "flash": false})
-  }
-  return bArray
-}
-const blocksArray = CreateBlockArray(gameDim)
+
 let numMatched = 0
-let health = maxHealth
-
 let currentPatternIndex = 0
 
-function PatternGame(props) {
+function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
+
+  // create blocks array
+  const CreateBlockArray = (dimension) => {
+    const bArray = []
+    for (let i = 0; i < dimension * dimension; i++) {
+      bArray.push({"id": i, "pattern": false, "matched": false, "clicked": false, "flash": false})
+    }
+    return bArray
+  }
+  const blocksArray = CreateBlockArray(gameDim)
+
+
   const [blocks, setBlocks] = useState(blocksArray)
   const [patternBlockID, setPatternBlockIDs] = useState([])
   const [userCurrentChoice, setUserCurrentChoice] = useState(null)
@@ -32,20 +31,17 @@ function PatternGame(props) {
   const [gameOver, setGameOver] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [level, setLevel] = useState(0)
-  const [time, setTime] = useState(props.timeAllowed)
+  const [time, setTime] = useState(timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
   const [started, setStarted] = useState(false)
   const [displayOrder, setDisplayOrder ] = useState(true)
+  const health = useRef(maxHealth)
 
   const totalNumberOfBlocks = gameDim * gameDim
   const numberOfPatternBlocks = levelList[level]
 
   let patternIDArray
   let startAlready = false
-
-
-  // if order of clicking pattern matters
-  const order = true
 
   // get an random array of IDs
   const generatePatternIDs = (length, numPatternBlocks) => {
@@ -69,7 +65,6 @@ function PatternGame(props) {
 
     const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
     patternIDArray = patternIDs
-    console.log(patternIDs)
     
     // update block property if it's chosen to be the question pattern
     for(let i = 0; i < totalNumberOfBlocks; i++){
@@ -107,7 +102,7 @@ function PatternGame(props) {
     }
     if (block.pattern && block.matched) {
       return ("correct")
-    } else if (block.clicked === true && block.matched === false || block.flash) {
+    } else if ((block.clicked === true && block.matched === false) || block.flash) {
       return ("incorrect")
     } else {
       return ("grey")
@@ -123,7 +118,7 @@ function PatternGame(props) {
   const unreveal = () => {
     setBlocks(prevBlocks => {
       return (prevBlocks.map(block => {
-        if(block.matched == true && block.clicked == true){
+        if(block.matched === true && block.clicked === true){
           return ({...block, matched: false, clicked: false})
         } else{
           return (block)
@@ -186,11 +181,11 @@ function PatternGame(props) {
     setBlocks(prevBlocks => {
       return (prevBlocks.map(block => {
         if (userCurrentChoice.id === block.id) {
-          health = health - 1
-          if (health === 0) {
+          health.current --
+          if (health.current === 0) {
             setTimerOn(false)
             setGameOver(true)
-            props.submit(level)
+            submit(level)
           }
           return ({...block, clicked: true})
         } else {
@@ -212,11 +207,11 @@ function PatternGame(props) {
                   numMatched = numMatched + 1
                   return ({...block, matched: true, clicked: true})
                 } else {
-                  health = health - 1
-                  if (health === 0) {
+                  health.current --
+                  if (health.current === 0) {
                     setTimerOn(false)
                     setGameOver(true)
-                    props.submit(level)
+                    submit(level)
                   }
                   return ({...block, flash: true})
                 }
@@ -298,6 +293,13 @@ function PatternGame(props) {
     }
   }
 
+  // style for dynamic grid size of equal width and height
+  const patternGridStyle = () => {
+
+    let columnSize = '10vh '.repeat(gameDim)
+    return({'gridTemplateColumns': columnSize})
+  }
+
   return (
     <div className={victoryAnimation()}>
       {!started ? 
@@ -313,8 +315,8 @@ function PatternGame(props) {
       <div className='pattern-game__lives-div'>
           <h2 className='pattern-game__lives-number'>Lives:</h2>
           <div className='pattern-game__lives-div__hearts'>
-          {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
-          {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
+          {[...Array(health.current)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
+          {[...Array(maxHealth - health.current)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
           </div>         
       </div>
         <h2 className="pattern-game__timerText">{time}</h2>
@@ -323,10 +325,10 @@ function PatternGame(props) {
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {level}</h2>
-          <button onClick={props.next}>Next Question</button>
+          <button onClick={next}>Next Question</button>
         </div> : null
       }
-      <div className='pattern-game__blocks-grid'>
+      <div className='pattern-game__blocks-grid' style={patternGridStyle()}>
         {blocks.map(block => (
           <SingleBlock 
             key={block.id} 

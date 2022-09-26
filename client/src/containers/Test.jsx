@@ -144,7 +144,14 @@ const Test = (props) => {
       }
       else if (getCurrentQuestion().title === "PatternGame") {
         testQuestion = <PatternGame 
+
+
+          gameDim={3}
+          order={false}
+          maxHealth={5}
           timeAllowed={questionTimeBank[currentQuestion - 1]}
+
+
           submit={submitAnswerValue}
           next={nextQuestion}
         />
