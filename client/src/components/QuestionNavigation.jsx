@@ -1,6 +1,5 @@
 const QuestionNavigation = (props) => {
-  const { numberOfQuestions, onClick } = props;
-
+  const { numberOfQuestions, onClick, answers, currentQuestion } = props;
 
   const renderQuestionNavigation = () => {
     let questionSelectButtons = [];
@@ -11,8 +10,12 @@ const QuestionNavigation = (props) => {
           onClick={() => onClick(i+1)}
           title="Go to question"
           key={i + 1}
+          style={{
+            background: (answers[i].aId || answers[i].value) ? "var(--accent-color)" : null,
+            outline: currentQuestion == i + 1 ? "1.5px solid var(--accent-color)" : null,
+          }}
         >
-          <p>{i + 1}</p>
+          {i + 1}
         </button>
       )
     }

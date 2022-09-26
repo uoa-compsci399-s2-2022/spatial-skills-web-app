@@ -25,7 +25,7 @@ const Test = (props) => {
   const url = "http://localhost:3001/api/test/getquestions";
   // const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
   // const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
-  const testId = "632efea0a6069a23596d3347"; // Non-linear
+  const testId = "633127cf6005f2c17949b366"; // Non-linear
   const data = {
     tId: testId,
     shuffleQuestions: false,
@@ -186,10 +186,10 @@ const Test = (props) => {
         />
     }
     
-    
     return (
       <div className="test">
-        { getCurrentQuestion().category === "Spatial Memory" ? null : 
+        { getCurrentQuestion().category === "Spatial Memory" && !allowBackTraversal
+         ? null : 
           <TimerDisplay seconds={timeLeft} />
         }
         
@@ -224,15 +224,16 @@ const Test = (props) => {
         <QuestionNavigation 
           numberOfQuestions={questionBank.length}
           onClick={setCurrentQuestion}
-        /> 
-        : null}
-
+          answers={userAnswers}
+          currentQuestion={currentQuestion}
+        /> :
         <Timer
-          questionTime={ allowBackTraversal ? 
-            questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
-            questionTimeBank[currentQuestion - 1]}
-          timeLeft={timeLeft}
-        />
+        questionTime={ allowBackTraversal ? 
+          questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
+          questionTimeBank[currentQuestion - 1]}
+        timeLeft={timeLeft}
+        />}
+
       </div>
     );
   }
