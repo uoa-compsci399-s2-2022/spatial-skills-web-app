@@ -66,7 +66,7 @@ const getAllTests = async (req, res, next) => {
 const getTestById = async (req, res, next) => {
   let test;
   try{
-    test = await Test.findById(req.body.tId).exec();
+    test = await Test.findById(req.params.tid).exec();
     if (!test){
       throw new Error;
     }

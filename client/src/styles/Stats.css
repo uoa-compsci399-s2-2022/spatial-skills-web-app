@@ -12,6 +12,11 @@
     width: 100%;
 }
 
+.stats__image {
+    width: 100px;
+    height: 100px;
+}
+
 .stats__col {
     display: flex;
     flex-direction: column;
