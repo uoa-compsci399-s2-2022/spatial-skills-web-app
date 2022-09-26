@@ -84,7 +84,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
       setTimeout(() => {
         showPattern(false)
         setDisabled(false)
-      }, 1000);
+      }, patternFlashTime);
     } else {
       setDisplayOrder(prevState => !prevState)
     }
@@ -152,7 +152,20 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
     if (order){
       if(currentPatternIndex < patternBlockID.length) {
           setDisabled(true)
-          setTimeout(() => {
+
+          if(currentPatternIndex === 0){
+            setBlocks(prevBlocks => {
+              return (prevBlocks.map(block => {
+                  if(block.id === patternBlockID[0]){
+                      return (reveal(block))
+                  } else {
+                      return (block)
+                  }
+                })
+              )})
+              setDisplayOrder(prevState => !prevState)
+          } else {
+            setTimeout(() => {
               setBlocks(prevBlocks => {
                   return (prevBlocks.map(block => {
                       if(block.id === patternBlockID[currentPatternIndex-1]){
@@ -163,7 +176,8 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
                     })
                   )})
                   setDisplayOrder(prevState => !prevState)
-          }, patternFlashTime);  
+          }, patternFlashTime)
+          } 
         currentPatternIndex ++
     } else {
       setTimeout(() => {

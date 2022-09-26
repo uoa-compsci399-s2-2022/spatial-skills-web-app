@@ -145,12 +145,11 @@ const Test = (props) => {
       else if (getCurrentQuestion().title === "PatternGame") {
         testQuestion = <PatternGame 
 
-
           gameDim={3} // width and height of grid
           order={true}
           maxHealth={5}
           timeAllowed={questionTimeBank[currentQuestion - 1]}
-          patternFlashTime={0.5} // time for each block to stay revealed (s)
+          patternFlashTime={5} // time for each block to stay revealed (s)
 
           submit={submitAnswerValue}
           next={nextQuestion}
