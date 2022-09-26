@@ -3,15 +3,14 @@ import "../../styles/PatternGame.css";
 import SingleBlock from './SingleBlock';
 
 
-const endLevel = Array(20).fill(10)
-const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
-const levelList = easyLevel.concat(endLevel)
 
 
 let numMatched = 0
 let currentPatternIndex = 0
 
-function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
+function PatternGame({ gameDim, order, maxHealth, timeAllowed, 
+                       patternFlashTime, next, submit}) {
+  patternFlashTime = patternFlashTime * 1000
 
   // create blocks array
   const CreateBlockArray = (dimension) => {
@@ -38,7 +37,9 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
   const health = useRef(maxHealth)
 
   const totalNumberOfBlocks = gameDim * gameDim
+  const levelList = Array.from({length: totalNumberOfBlocks}, (_, i) => i + 1)
   const numberOfPatternBlocks = levelList[level]
+
 
   let patternIDArray
   let startAlready = false
@@ -77,15 +78,17 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
 
     numMatched = 0
     if(!order){
+      setDisabled(true)
       showPattern(true)
+
       setTimeout(() => {
         showPattern(false)
+        setDisabled(false)
       }, 1000);
     } else {
       setDisplayOrder(prevState => !prevState)
     }
     setPatternBlockIDs(patternIDs)
-    setDisabled(false)
     setVictory(false)
     startAlready = true
   }
@@ -127,7 +130,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
       )})
   }
 
-  // standard version of game (non-ordered)
+  // show pattern for standard version of game (not ordered)
   const showPattern = (show) => {
     if (show){
       setBlocks(prevBlocks => {
@@ -144,7 +147,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
     }
   }
 
-  // ordered version of pattern game
+  // display pattern in order
   useEffect(() => {
     if (order){
       if(currentPatternIndex < patternBlockID.length) {
@@ -160,16 +163,16 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
                     })
                   )})
                   setDisplayOrder(prevState => !prevState)
-          }, 1000);  
+          }, patternFlashTime);  
         currentPatternIndex ++
     } else {
       setTimeout(() => {
         setDisabled(false)
-      }, 999);
+      }, patternFlashTime - 2);
     }
     setTimeout(() => {
       unreveal()
-    }, 999);
+    }, patternFlashTime - 2);
   }
 }, [displayOrder])
 
@@ -244,11 +247,17 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed, next, submit}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCurrentChoice])
 
+  // when a round is won
   useEffect(() => {
     if (victory){
-      setTimeout(() => {
-        generatePattern()
-      }, 500);
+      // detect if it has reached last level (using every block as pattern)
+      if(level === totalNumberOfBlocks){
+        setGameOver(true)
+      } else {
+        setTimeout(() => {
+          generatePattern()
+        }, 500);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [victory])
