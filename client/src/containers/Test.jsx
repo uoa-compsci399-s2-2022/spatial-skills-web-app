@@ -4,6 +4,7 @@ import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
+import QuestionNavigation from "../components/QuestionNavigation";
 import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
 import axios from "axios";
@@ -61,8 +62,8 @@ const Test = (props) => {
 
   const nextQuestion = () => {
     console.log(userAnswers); // for debugging
-    setSelectedAnswer(userAnswers[currentQuestion].aId);
     if (currentQuestion < questionBank.length) {
+      setSelectedAnswer(userAnswers[currentQuestion].aId);
       setCurrentQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
         setTimeLeft(questionTimeBank[currentQuestion]);
@@ -98,7 +99,7 @@ const Test = (props) => {
       );
     } else {
       alert("Test Finished. You are not logged in, so your results wont be saved.")
-      window.location.href(`http://localhost:3000/`);
+      // window.location.href(`http://localhost:3000/`);
     }
   }
 
@@ -126,6 +127,7 @@ const Test = (props) => {
 
   const timeCountDown = () => {
     if (timeLeft <= 0) {
+      clearInterval(Ref.current);
       if (allowBackTraversal) {
         finishTest();
       } else {
@@ -146,16 +148,19 @@ const Test = (props) => {
     Ref.current = id;
   };
 
+
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
   } else {  
     // Test loaded successfully
-    
     let testQuestion;
+    startTimer();
     if (getCurrentQuestion().category === "Spatial Memory") {
-      clearInterval(Ref.current)  // Stop timer
+      if (!allowBackTraversal) {
+        clearInterval(Ref.current)  // Stop timer if the test is linear.
+      }
       if (getCurrentQuestion().title === "MatchingGame") {
         testQuestion = <MatchingGame
             timeAllowed={questionTimeBank[currentQuestion - 1]}
@@ -179,8 +184,8 @@ const Test = (props) => {
           submit={submitAnswer}
           selected={selectedAnswer}
         />
-      startTimer();
     }
+    
     
     return (
       <div className="test">
@@ -188,7 +193,7 @@ const Test = (props) => {
           <TimerDisplay seconds={timeLeft} />
         }
         
-        {currentQuestion === 1 && allowBackTraversal ? null : 
+        {allowBackTraversal && currentQuestion != 1 ? 
           <button
             className="test__previous"
             onClick={() => previousQuestion()}
@@ -196,8 +201,8 @@ const Test = (props) => {
           >
             <FaCaretLeft size={60} />
           </button>
+          : null
         }
-
 
         {testQuestion}
 
@@ -214,6 +219,13 @@ const Test = (props) => {
             <FaCaretRight size={60} />
           </button>
         )}
+
+        {allowBackTraversal ? 
+        <QuestionNavigation 
+          numberOfQuestions={questionBank.length}
+          onClick={setCurrentQuestion}
+        /> 
+        : null}
 
         <Timer
           questionTime={ allowBackTraversal ? 
