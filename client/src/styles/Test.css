@@ -103,7 +103,7 @@
 .test__progress {
     position: absolute;
     right: 1rem;
-    top: 4.5rem;
+    top: 5rem;
     font-size: 32px;
     color: var(--accent-color);
 }
@@ -114,7 +114,7 @@
 
 .test__timer {
     position: absolute;
-    top: 4.5rem;
+    top: 5rem;
     left: 1rem;
     font-size: 32px;
     color: var(--accent-color);

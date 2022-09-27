@@ -5,10 +5,7 @@ const Footer = () => {
   return (
     <footer
       className="footer"
-      style={{
-        color:
-          location.pathname === "/test" ? "inherit" : "var(--contrast-color)",
-      }}
+      style={{ display: location.pathname === "/" ? "flex" : "none" }}
     >
       <p>
         [untitled-project] is developed by Team Marshmallow

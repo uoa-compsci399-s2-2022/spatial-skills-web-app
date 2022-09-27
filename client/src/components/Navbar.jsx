@@ -1,6 +1,5 @@
 import "../styles/Navbar.css";
 import logo from "../assets/logo.png";
-import logoColor from "../assets/logo-color.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -26,6 +25,9 @@ const Navbar = (props) => {
       <p>Signed in as</p>
       <h3>{userData.name}</h3>
       <p>{userData.email}</p>
+      <Link to="/dashboard" className="navbar__dashboard">
+        Dashboard
+      </Link>
       <button
         className="navbar__signout"
         onClick={() => {
@@ -70,24 +72,16 @@ const Navbar = (props) => {
     </>,
   ];
 
-  console.log(location.pathname === "/test");
-
   return (
     <nav
       className="navbar"
       style={{
-        color:
-          location.pathname === "/test"
-            ? "var(--accent-color)"
-            : "var(--contrast-color)",
+        backgroundColor:
+          location.pathname === "/" ? "inherit" : "var(--accent-color)",
       }}
     >
       <Link to="/" style={{ marginRight: "auto" }}>
-        <img
-          src={location.pathname === "/test" ? logoColor : logo}
-          className="navbar__icon"
-          alt="Logo"
-        />
+        <img src={logo} className="navbar__icon" alt="Logo" />
       </Link>
       <button onClick={() => setId(2)} className="navbar__button">
         <GoSettings
