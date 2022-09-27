@@ -5,7 +5,7 @@ const Question = (props) => {
     const labels = ["a", "b", "c", "d", "e"];
     const answerChoices = [];
     // The images cannot be retrieved through their filename (array, not object)
-    for (var i = 0; i < answers.length; i++) {
+    for (let i = 0; i < answers.length; i++) {
       answerChoices.push(
         <div className="answer__choice" key={labels[i]}>
           <label htmlFor={labels[i]}>
