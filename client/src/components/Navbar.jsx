@@ -9,6 +9,8 @@ import { IoMdHelp } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 
+import { logout } from "../services/auth-service.mjs"
+
 const iconSize = "1.5rem";
 
 const Navbar = (props) => {
@@ -30,6 +32,7 @@ const Navbar = (props) => {
         className="navbar__signout"
         onClick={() => {
           googleLogout();
+          logout();
           setUserData({ name: null, email: null, picture: null });
           setId(0);
           navigate("/");

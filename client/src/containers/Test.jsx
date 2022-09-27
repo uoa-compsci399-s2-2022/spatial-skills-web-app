@@ -7,6 +7,7 @@ import Question from "../components/Question";
 import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
 import axios from "axios";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
   const { userData } = props;
@@ -29,9 +30,9 @@ const Test = (props) => {
 
   // Get test question data from backend API.
   useEffect(() => {
-    axios.post(url, data).then(
+    axiosAPICaller.post('/test/getquestions', data).then(
       (res) => {
-        console.log(res);
+        // console.log(res);
         setQuestionBank(res.data.questions);
         setQuestionTimeBank(res.data.times);
         setTimeLeft(res.data.times[0]);

@@ -5,16 +5,31 @@ import {
   getAllTests,
   getTestById,
   getQuestionsBytId,
+  getQuestionsByCode,
+  getTestByCode
 } from "../controllers/test-controller.mjs";
+import jwtHandler from "../handlers/jwt-handler.js";
+import adminAuthHandler from "../handlers/admin-auth-handler.js";
 
 const testRouter = express.Router();
 
-testRouter.post("/", createTest);
+//UNPORTECTED ENDPOINTS
 
-testRouter.get("/all", getAllTests);
+//PROTECTED ENDPOINTS
+testRouter.use(jwtHandler);
+
+// ADMIN
+testRouter.post("/", adminAuthHandler, createTest);
+
+// ADMIN
+testRouter.get("/all", adminAuthHandler, getAllTests);
 
 testRouter.post("/getquestions", getQuestionsBytId);
 
 testRouter.get("/:tid", getTestById);
+
+testRouter.post("/code/getquestions", getQuestionsByCode);
+
+testRouter.get("/code/:code", getTestByCode);
 
 export default testRouter;
