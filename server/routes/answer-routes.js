@@ -4,11 +4,18 @@ import {
   getAllStudentAnswers,
   getStudentAnswerBytIdsId,
 } from "../controllers/answer-controller.mjs";
+import jwtHandler from "../handlers/jwt-handler.js";
+import adminAuthHandler from "../handlers/admin-auth-handler.js";
 
 const answerRouter = express.Router();
 
-//get all
-answerRouter.get("/all", getAllStudentAnswers);
+//UNPORTECTED ENDPOINTS
+
+//PROTECTED ENDPOINTS
+answerRouter.use(jwtHandler);
+
+//get all (ADMIN)
+answerRouter.get("/all", adminAuthHandler, getAllStudentAnswers);
 
 //add student answer
 answerRouter.post("/", createStudentAnswer);

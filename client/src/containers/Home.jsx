@@ -1,38 +1,44 @@
 import "../styles/Home.css";
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
 import { MdErrorOutline } from "react-icons/md";
-import jwt_decode from "jwt-decode";
 import logo from "../assets/logo.png";
+
+import { studentLogin, createStudent } from "../services/auth-service.mjs";
 
 const Home = (props) => {
   const { userData, setUserData } = props;
   const nameRef = useRef(null);
+  const codeRef = useRef(null);
   const [error, setError] = useState("");
 
+  sessionStorage.setItem("redirectAdmin", "false")
+
   const handleSubmit = () => {
+    // Handles name login
     setError("");
     const name = nameRef.current.value;
+    const code = codeRef.current.value;
     if (name.length === 0) {
       setError("Invalid name!");
     } else {
-      setUserData({
-        name: name,
-        email: null,
-        picture: null,
-      });
+      createStudent(name, code)
+        .then((res) => {
+          return studentLogin(name, code);
+        })
+        .then((res) => {
+          console.log("passed");
+          sessionStorage.setItem("code", code);
+          setUserData({
+            name: name,
+            email: null,
+            picture: null,
+          });
+        })
+        .catch((error) => {
+          setError(error.response.data.message);
+        });
     }
-  };
-
-  const handleGoogleLogin = (credentials) => {
-    setError("");
-    const payload = jwt_decode(credentials);
-    setUserData({
-      name: payload.given_name + " " + payload.family_name,
-      email: payload.email,
-      picture: payload.picture,
-    });
   };
 
   return (
@@ -42,13 +48,6 @@ const Home = (props) => {
         {userData.name === null ? (
           // Authentication
           <>
-            <GoogleLogin
-              onSuccess={(credentialResponse) =>
-                handleGoogleLogin(credentialResponse.credential)
-              }
-              onError={() => setError("Unable to authenticate Google account!")}
-              width="240"
-            />
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -61,6 +60,12 @@ const Home = (props) => {
                 placeholder="Name"
                 className="home__input home__input--text"
                 ref={nameRef}
+              />
+              <input
+                type="text"
+                placeholder="Test Code"
+                className="home__input home__input--text"
+                ref={codeRef}
               />
               {error === "" ? null : (
                 <div className="home__error">

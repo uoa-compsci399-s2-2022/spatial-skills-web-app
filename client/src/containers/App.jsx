@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "../styles/App.css";
 import Home from "./Home";
 import Test from "./Test";
 import TestResult from "./TestResult";
+import AdminLogin from "./AdminLogin";
 import Dashboard from "./Dashboard";
 import Stats from "./Stats";
 import Bank from "./Bank";
@@ -21,6 +22,7 @@ function App() {
     email: null,
     picture: null,
   });
+
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <BrowserRouter>
@@ -30,8 +32,26 @@ function App() {
             path="/"
             element={<Home userData={userData} setUserData={setUserData} />}
           />
+          <Route
+            path="/adminLogin"
+            element={
+              <AdminLogin
+                userData={userData}
+                setUserData={setUserData}
+              />
+            }
+          />
           <Route path="/test" element={<Test userData={userData} />} />
           <Route path="/results/:tId/:sId" element={<TestResult />} />
+          <Route
+            path="*"
+            element={
+              sessionStorage.getItem("redirectAdmin") === "true" ? (
+                <Navigate replace to="/adminLogin" />
+              ) : (
+                <Navigate replace to="/" />
+              )
+            }
           <Route path="test" element={<Test />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId/stats" element={<Stats />} />

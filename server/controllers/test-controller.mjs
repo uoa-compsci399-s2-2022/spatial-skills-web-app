@@ -63,32 +63,48 @@ const getAllTests = async (req, res, next) => {
   res.json(tests);
 };
 
-const getTestById = async (req, res, next) => {
+const getTestByCode = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.params.code)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
   let test;
-  try{
-    test = await Test.findById(req.body.tId).exec();
-    if (!test){
-      throw new Error;
+  try {
+    test = await Test.findOne({ code: req.params.code }).exec();
+    if (!test) {
+      throw new Error();
     }
-  } catch(e) {
+  } catch (e) {
     return next(new APIError("Test not found.", 404));
   }
   const testOut = new TestOut(test);
   res.json(testOut);
 };
 
-const getQuestionsBytId = async (req, res, next) => {
+const getQuestionsByCode = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.body.code)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
   let test;
-  try{
-    test = await Test.findById(req.body.tId).exec();
-  } catch(e) {
+  try {
+    test = await Test.findOne({ code: req.body.code }).exec();
+  } catch (e) {
     return next(new APIError("Test not found.", 404));
   }
 
   const qidArr = test.questions.map((q) => q.qId);
 
   const questions = await Question.find({ _id: { $in: qidArr } }).exec();
-  if (questions.length < qidArr.length){
+  if (questions.length < qidArr.length) {
     return next(new APIError("Could not find all test questions.", 404));
   }
 
@@ -103,4 +119,69 @@ const getQuestionsBytId = async (req, res, next) => {
   res.json(combined);
 };
 
-export { createTest, getAllTests, getTestById, getQuestionsBytId };
+//DEPRECATE IN FAVOUR OF get test by code enpoints
+const getTestById = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.params.tid)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
+  let test;
+  try {
+    test = await Test.findById(req.params.tid).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+  const testOut = new TestOut(test);
+  res.json(testOut);
+};
+
+//DEPRECATE IN FAVOUR OF get test by code enpoints
+const getQuestionsBytId = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.body.tId)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
+  let test;
+  try {
+    test = await Test.findById(req.body.tId).exec();
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+
+  const qidArr = test.questions.map((q) => q.qId);
+
+  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
+  if (questions.length < qidArr.length) {
+    return next(new APIError("Could not find all test questions.", 404));
+  }
+
+  let questionsOut = questions.map((q) => new QuestionOut(q));
+  if (req.body.shuffle) {
+    questionsOut = FisherYatesShuffle(questionsOut);
+  }
+  const timeOut = questionsOut.map(
+    (qo) => test.questions.find((q) => q.qId === qo.id).time
+  );
+  const combined = { questions: questionsOut, times: timeOut };
+  res.json(combined);
+};
+
+export {
+  createTest,
+  getAllTests,
+  getTestById,
+  getQuestionsBytId,
+  getQuestionsByCode,
+  getTestByCode,
+};
