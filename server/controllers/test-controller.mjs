@@ -130,10 +130,10 @@ const getTestById = async (req, res, next) => {
   }
 
   let test;
-  try {
+  try{
     test = await Test.findById(req.params.tid).exec();
-    if (!test) {
-      throw new Error();
+    if (!test){
+      throw new Error;
     }
   } catch (e) {
     return next(new APIError("Test not found.", 404));
