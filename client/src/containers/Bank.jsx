@@ -8,17 +8,17 @@ const iconSize = "1.25em";
 const Bank = () => {
   const { testId } = useParams();
   const [optionValue, setOptionValue] = useState("All");
-  const [isLoadedQuestion, setIsLoadedQuestion] = React.useState(false);
-  const [isLoadedTest, setIsLoadedTest] = React.useState(false);
+  const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
+  const [isLoadedTest, setIsLoadedTest] = useState(false);
   const [data, setData] = useState("");
   const handleSelect = (e) => {
     setOptionValue(e.target.value);
   };
 
   const qURL = "http://localhost:3001/api/question/all";
-  const [questionData, setQuestionData] = React.useState([]);
+  const [questionData, setQuestionData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     axios.get(qURL).then((response) => {
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
@@ -26,9 +26,9 @@ const Bank = () => {
   }, []);
 
   const tURL = "http://localhost:3001/api/test/" + testId;
-  const [testData, setTestData] = React.useState([]);
+  const [testData, setTestData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     axios.get(tURL).then((response) => {
       setTestData(response.data);
       setIsLoadedTest(true);
@@ -38,7 +38,7 @@ const Bank = () => {
   const Questions = testData.questions;
   const QuestionList = questionData;
 
-  if(isLoadedQuestion && isLoadedTest){
+  if (isLoadedQuestion && isLoadedTest) {
     return (
       <div className="bank">
         <div className="bank__side">
@@ -69,34 +69,40 @@ const Bank = () => {
           <h1>Bank</h1>
           <div className="divider" />
           <div className="bank__question-grid">
-          {Questions && Questions.map((question) => {
+            {Questions &&
+              Questions.map((question) => {
                 return (
-                QuestionList && QuestionList.map((_question) => {
-                  if(question.qId === _question._id || testId === "bank"){
-                    if (
-                      (_question.category === optionValue || optionValue === "All") &&
-                      _question.title.toLowerCase().includes(data.toLowerCase())
-                    ) {
-                      return (
-                        <Link
-                          className="dashboard__item section"
-                          to={`/dashboard/test/${testId}/question/${_question._id}`}
-                        >
-                          <img
-                            alt=""
-                            src={_question.image}
-                            className="bank__question"
-                          />
-                          <div className="bank__test-text">
-                            <h4>{_question.title}</h4>
-                            <p>{_question.category}</p>
-                          </div>
-                        </Link>
-                      );
+                  QuestionList &&
+                  QuestionList.map((_question) => {
+                    if (question.qId === _question._id || testId === "bank") {
+                      if (
+                        (_question.category === optionValue ||
+                          optionValue === "All") &&
+                        _question.title
+                          .toLowerCase()
+                          .includes(data.toLowerCase())
+                      ) {
+                        return (
+                          <Link
+                            className="dashboard__item section"
+                            to={`/dashboard/test/${testId}/question/${_question._id}`}
+                          >
+                            <img
+                              alt=""
+                              src={_question.image}
+                              className="bank__question"
+                            />
+                            <div className="bank__test-text">
+                              <h4>{_question.title}</h4>
+                              <p>{_question.category}</p>
+                            </div>
+                          </Link>
+                        );
+                      }
                     }
-                  }
-                })
-              )})}
+                  })
+                );
+              })}
             <Link
               to={`/dashboard/test/${testId}/question/create`}
               className="dashboard__create"

@@ -40,7 +40,7 @@ const Stats = () => {
     });
   }, []);
 
-  if(isLoadedTest && isLoadedQuestion){
+  if (isLoadedTest && isLoadedQuestion) {
     return (
       <div className="stats">
         <h1>{test.title}</h1>
@@ -63,25 +63,28 @@ const Stats = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {test && test.questions.map((question) => {
-                  return (
-                  questionData && questionData.map((_question) => {
-                    if(question.qId === _question._id){
-                          return (
-                            <tr key={question._id}>
-                              <img
-                                alt=""
-                                src={_question.image}
-                                class="stats__image"
-                              />
-                              <td>{_question.title}</td>
-                              <td>{`${question.time}s`}</td>
-                              <td>{question.grade.toFixed(1)}</td>
-                            </tr>
-                          );
-                    }
-                  })
-                )})}
+                  {test &&
+                    test.questions.map((question) => {
+                      return (
+                        questionData &&
+                        questionData.map((_question) => {
+                          if (question.qId === _question._id) {
+                            return (
+                              <tr key={question._id}>
+                                <img
+                                  alt=""
+                                  src={_question.image}
+                                  class="stats__image"
+                                />
+                                <td>{_question.title}</td>
+                                <td>{`${question.time}s`}</td>
+                                <td>{question.grade.toFixed(1)}</td>
+                              </tr>
+                            );
+                          }
+                        })
+                      );
+                    })}
                 </tbody>
               </table>
               <div className="stats__action-container">
@@ -127,14 +130,6 @@ const Stats = () => {
         <div className="divider" />
 
         <div className="stats__action-container">
-          <button
-            className="button button--caution"
-            title="Delete"
-            style={{ marginRight: "auto" }}
-          >
-            Delete
-            <FaTrash size={iconSize} />
-          </button>
           <Link
             to={`/dashboard/test/${testId}`}
             className="button button--outlined"
@@ -143,7 +138,7 @@ const Stats = () => {
             <FaEdit size={iconSize} />
           </Link>
           <button
-            className="button button--outlined"
+            className="button button--filled"
             title="Share"
             onClick={() => {
               navigator.clipboard.writeText(
@@ -153,10 +148,6 @@ const Stats = () => {
           >
             Share
             <FaShareAlt size={iconSize} />
-          </button>
-          <button className="button button--filled" title="Save">
-            Save
-            <FaSave size={iconSize} />
           </button>
         </div>
       </div>
