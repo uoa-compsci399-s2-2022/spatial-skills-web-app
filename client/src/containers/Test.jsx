@@ -170,15 +170,14 @@ const Test = (props) => {
       }
       else if (getCurrentQuestion().title === "PatternGame") {
         testQuestion = <PatternGame 
-
-          gameDim={3} // width and height of grid
-          order={true}
+          gameDim={6}       // width and height of grid
+          order={true}        // pattern order/no-order
           maxHealth={5}
-          timeAllowed={questionTimeBank[currentQuestion - 1]}
-          patternFlashTime={5} // time for each block to stay revealed (s)
-
-          submit={submitAnswerValue}
-          next={nextQuestion}
+          timerState={false}       // set timer on/off
+          timeAllowed={10}          // total time if timer on
+          patternFlashTime={0.5}      // time to flash each pattern block
+          randomLevelOrder={false}      // each level is randomized
+          randomSeed={"just a seed"}
         />
       }
     } else {
