@@ -1,16 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
-import "../../styles/PatternGame.css";
-import SingleBlock from './SingleBlock';
+import { Helmet } from 'react-helmet'
+import "../../styles/PatternGame.css"
+import SingleBlock from './SingleBlock'
 
-
-
+var seedrandom = require('seedrandom')
 
 let numMatched = 0
-let currentPatternIndex = 0
+
 
 function PatternGame({ gameDim, order, maxHealth, timeAllowed, 
-                       patternFlashTime, next, submit}) {
+                       patternFlashTime, randomLevelOrder, randomSeed = null, next, submit}) {
+
   patternFlashTime = patternFlashTime * 1000
+
+  const totalNumberOfBlocks = gameDim * gameDim
+  const levelList = Array.from({length: totalNumberOfBlocks}, (_, i) => i + 1)
+
+  let randomNumber = seedrandom(randomSeed)
+  let randomSeedArray = []
+
+  for (let i = 0; i < totalNumberOfBlocks; i++){
+    randomSeedArray.push(randomNumber())
+  }
+
 
   // create blocks array
   const CreateBlockArray = (dimension) => {
@@ -21,7 +33,6 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
     return bArray
   }
   const blocksArray = CreateBlockArray(gameDim)
-
 
   const [blocks, setBlocks] = useState(blocksArray)
   const [patternBlockID, setPatternBlockIDs] = useState([])
@@ -35,11 +46,13 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
   const [started, setStarted] = useState(false)
   const [displayOrder, setDisplayOrder ] = useState(true)
   const health = useRef(maxHealth)
+  const currentPatternIndex = useRef(0)
 
-  const totalNumberOfBlocks = gameDim * gameDim
-  const levelList = Array.from({length: totalNumberOfBlocks}, (_, i) => i + 1)
   const numberOfPatternBlocks = levelList[level]
 
+  // unique random seed for each level (if random pattern wanted)
+  let randomPatternSeed = randomSeedArray[level]
+  let randomLevel = seedrandom(randomPatternSeed)
 
   let patternIDArray
   let startAlready = false
@@ -47,7 +60,14 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
   // get an random array of IDs
   const generatePatternIDs = (length, numPatternBlocks) => {
     let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
-    .sort(() => Math.random() - 0.5)
+    .sort(() => {
+      if (randomLevelOrder){
+        return(randomLevel() - 0.5)
+      } else {
+        return(randomNumber() - 0.5)
+      }
+    })
+    console.log(randomIDsarray)
     return(randomIDsarray.slice(0, length))
   }
   
@@ -133,6 +153,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
   // show pattern for standard version of game (not ordered)
   const showPattern = (show) => {
     if (show){
+      setTimerOn(true)
       setBlocks(prevBlocks => {
         return (prevBlocks.map(block => {
             return ({...block, matched: true, clicked: true})
@@ -149,44 +170,36 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
 
   // display pattern in order
   useEffect(() => {
-    if (order){
-      if(currentPatternIndex < patternBlockID.length) {
-          setDisabled(true)
-
-          if(currentPatternIndex === 0){
-            setBlocks(prevBlocks => {
-              return (prevBlocks.map(block => {
-                  if(block.id === patternBlockID[0]){
-                      return (reveal(block))
-                  } else {
-                      return (block)
-                  }
-                })
-              )})
-              setDisplayOrder(prevState => !prevState)
-          } else {
+    if(!gameOver) {
+      if (order){
+        if(currentPatternIndex.current < patternBlockID.length) {
+            setDisabled(true)
             setTimeout(() => {
-              setBlocks(prevBlocks => {
-                  return (prevBlocks.map(block => {
-                      if(block.id === patternBlockID[currentPatternIndex-1]){
-                          return (reveal(block))
-                      } else {
-                          return (block)
-                      }
-                    })
-                  )})
-                  setDisplayOrder(prevState => !prevState)
-          }, patternFlashTime)
-          } 
-        currentPatternIndex ++
-    } else {
+            setTimerOn(true)
+            setBlocks(prevBlocks => {
+                    return (prevBlocks.map(block => {
+                        if(block.id === patternBlockID[currentPatternIndex.current-1]){
+                            return (reveal(block))
+                        } else {
+                            return (block)
+                        }
+                      })
+                    )})
+                    setDisplayOrder(prevState => !prevState)
+            }, patternFlashTime)  
+          currentPatternIndex.current ++
+      } else {
+        setTimeout(() => {
+          setDisabled(false)
+        }, patternFlashTime - 2);
+      }
+
       setTimeout(() => {
-        setDisabled(false)
+        unreveal()
       }, patternFlashTime - 2);
     }
-    setTimeout(() => {
-      unreveal()
-    }, patternFlashTime - 2);
+  } else{
+    setTimerOn(false)
   }
 }, [displayOrder])
 
@@ -198,11 +211,13 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
     setBlocks(prevBlocks => {
       return (prevBlocks.map(block => {
         if (userCurrentChoice.id === block.id) {
-          health.current --
+          if (health.current > 0) {
+            health.current --
+          }
           if (health.current === 0) {
             setTimerOn(false)
             setGameOver(true)
-            submit(level)
+            // submit(level)
           }
           return ({...block, clicked: true})
         } else {
@@ -224,12 +239,18 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
                   numMatched = numMatched + 1
                   return ({...block, matched: true, clicked: true})
                 } else {
-                  health.current --
+                  if (health.current > 0){
+                    health.current --
+                  }
                   if (health.current === 0) {
                     setTimerOn(false)
                     setGameOver(true)
-                    submit(level)
+                    // submit(level)
                   }
+                  setDisabled(true)
+                  setTimeout(() => {
+                    setDisabled(false)
+                  }, 400);
                   return ({...block, flash: true})
                 }
               } else {
@@ -252,7 +273,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
       setDisabled(true)
       setVictory(true)
       setLevel(prevLevel => prevLevel + 1)
-      currentPatternIndex = 0
+      currentPatternIndex.current = 0
     }
 
     setTimeout(() => {
@@ -295,15 +316,20 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
     if (time === 0){
       setTimerOn(false)
       setGameOver(true)
+      unreveal()
     }
   }, [time])
 
   const startGame = () => {
     setStarted(true)
-    setTimeout(() => {
-      setTimerOn(true)
+    if (!order){
+      setTimeout(() => {
+        generatePattern()
+      }, 300);
+    } else {
+      setStarted(true)
       generatePattern()
-    }, 300);
+    }
   }
 
   const victoryAnimation = () => {

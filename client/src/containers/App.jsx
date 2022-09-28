@@ -30,7 +30,19 @@ function App() {
           />
           <Route path="/test" element={<Test userData={userData} />} />
           <Route path="/results/:tId/:sId" element={<TestResult />} />
-          <Route path="/pattern" element={<PatternGame timeAllowed="60"/>} />
+
+          <Route path="/pattern" element={<PatternGame 
+
+          gameDim={4} // width and height of grid
+          order={false} // pattern order
+          maxHealth={5}
+          timeAllowed={20} // total time
+          patternFlashTime={3} // time to flash each pattern block
+          randomLevelOrder={false} // each level is randomized
+          randomSeed={"duhh"}
+
+          />} />
+
         </Routes>
         <Footer />
         <Splash />

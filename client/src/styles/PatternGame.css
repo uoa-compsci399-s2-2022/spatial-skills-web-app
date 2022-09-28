@@ -8,7 +8,6 @@
 
 .pattern-game {
   text-align: center;
-  color: #19e0b2;
   background-color: var(--contrast-color);
   color: var(--accent-color);
   height: 100vh;
@@ -18,6 +17,7 @@
 
 .pattern-game-over{
     text-align: center;
+    color: var(--accent-color);
     background-color: white; 
     height: 100vh;
     display: flex;
@@ -27,11 +27,12 @@
 
 .pattern-game-victory{
   text-align: center;
-    background-color: white; 
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    animation: won_flash 0.3s;
+  background-color: white; 
+  color: var(--accent-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  animation: won_flash 0.3s;
 }
 
 @keyframes lose_flash{
