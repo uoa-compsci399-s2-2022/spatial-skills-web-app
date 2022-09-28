@@ -33,14 +33,15 @@ function App() {
 
           <Route path="/pattern" element={<PatternGame 
 
-          gameDim={4} // width and height of grid
-          order={false} // pattern order
+          gameDim={6} // width and height of grid
+          order={true} // pattern order/no-order
           maxHealth={5}
-          timeAllowed={20} // total time
-          patternFlashTime={3} // time to flash each pattern block
+          timerState={false} // set timer on/off
+          timeAllowed={10} // total time if timer on
+          patternFlashTime={0.5} // time to flash each pattern block
           randomLevelOrder={false} // each level is randomized
-          randomSeed={"duhh"}
-
+          randomSeed={"just a seed"}
+          
           />} />
 
         </Routes>

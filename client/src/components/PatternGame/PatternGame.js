@@ -1,3 +1,4 @@
+import e from 'cors'
 import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import "../../styles/PatternGame.css"
@@ -8,7 +9,7 @@ var seedrandom = require('seedrandom')
 let numMatched = 0
 
 
-function PatternGame({ gameDim, order, maxHealth, timeAllowed, 
+function PatternGame({ gameDim, order, maxHealth, timerState, timeAllowed, 
                        patternFlashTime, randomLevelOrder, randomSeed = null, next, submit}) {
 
   patternFlashTime = patternFlashTime * 1000
@@ -301,12 +302,14 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
   useEffect(() => {
     let interval = null
 
-    if (timerOn) {
-      interval = setInterval(() => {
-        setTime(prevTime => prevTime - 1)
-      }, 1000)
-    } else {
-      clearInterval(interval)
+    if (timerState){
+      if (timerOn) {
+        interval = setInterval(() => {
+          setTime(prevTime => prevTime - 1)
+        }, 1000)
+      } else {
+        clearInterval(interval)
+      }
     }
     return () => clearInterval(interval)
   }, [timerOn])
@@ -342,6 +345,14 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
     }
   }
 
+  const displayTimer = () => {
+    if (timerState){
+      return (<div><h2>{time}</h2></div>)
+    } else{
+      return(<div></div>)
+    }
+  }
+
   // style for dynamic grid size of equal width and height
   const patternGridStyle = () => {
 
@@ -368,7 +379,7 @@ function PatternGame({ gameDim, order, maxHealth, timeAllowed,
           {[...Array(maxHealth - health.current)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
           </div>         
       </div>
-        <h2 className="pattern-game__timerText">{time}</h2>
+        {displayTimer()}
         <h2>Score: {level}</h2>
       </div>
       {gameOver ? 
