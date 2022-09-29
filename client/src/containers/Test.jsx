@@ -60,10 +60,10 @@ const Test = (props) => {
   }, []);
 
   const nextQuestion = () => {
-    console.log(userAnswers); // for debugging
     if (currentQuestion < questionBank.length) {
-      setSelectedAnswer(userAnswers[currentQuestion].aId);
-      setCurrentQuestion(currentQuestion + 1);
+      // setSelectedAnswer(userAnswers[currentQuestion].aId);
+      // setCurrentQuestion(currentQuestion + 1);
+      goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
         setTimeLeft(questionTimeBank[currentQuestion]);
       }
@@ -74,10 +74,10 @@ const Test = (props) => {
   };
 
   const previousQuestion = () => {
-    console.log(userAnswers); // for debugging
     if (currentQuestion > 1 && allowBackTraversal) {
-      setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
-      setCurrentQuestion(currentQuestion - 1);
+      // setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
+      // setCurrentQuestion(currentQuestion - 1);
+      goToQuestion(currentQuestion - 1);
       if (!allowBackTraversal) {
         setTimeLeft(questionTimeBank[currentQuestion]);
       }
@@ -122,6 +122,12 @@ const Test = (props) => {
   const getCurrentQuestion = () => {
     return questionBank[currentQuestion - 1];
   };
+
+  const goToQuestion = (num) => {
+    setCurrentQuestion(num);
+    setSelectedAnswer(userAnswers[num - 1].aId);
+    console.log(userAnswers); // for debugging
+  }
 
   const timeCountDown = () => {
     if (timeLeft <= 0) {
@@ -228,7 +234,7 @@ const Test = (props) => {
         {allowBackTraversal ? 
         <QuestionNavigation 
           numberOfQuestions={questionBank.length}
-          onClick={setCurrentQuestion}
+          onClick={goToQuestion}
           answers={userAnswers}
           currentQuestion={currentQuestion}
         /> :
