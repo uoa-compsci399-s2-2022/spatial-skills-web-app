@@ -7,13 +7,46 @@
 }
 
 .pattern-game {
-    text-align: center;
-    color: #19e0b2;
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-    height: 100vh;
-    border: 2px solid var(--accent-color);
+  text-align: center;
+  background-color: var(--contrast-color);
+  color: var(--accent-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+.pattern-game-over{
+    text-align: center;
+    color: var(--accent-color);
+    background-color: white; 
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    animation: lose_flash 0.3s;
+}
+
+.pattern-game-victory{
+  text-align: center;
+  background-color: white; 
+  color: var(--accent-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  animation: won_flash 0.3s;
+}
+
+@keyframes lose_flash{
+  0% {background-color: white;}
+  50% {background-color: red;}
+  100% {background-color: white;}
+}
+
+@keyframes won_flash{
+  0% {background-color: white;}
+  50% {background-color: #4de806;}
+  100% {background-color: white;}
+}
+
 
 .pattern-game__start-button {
   margin-top: 40px;
@@ -46,11 +79,13 @@
   width:fit-content;
   margin-top: 15px;
   display: grid;
-  grid-template-columns: 165px 165px 165px 165px 165px 165px;
   column-gap: 20px;
   row-gap: 20px;
   justify-items: center;
+}
 
+.pattern-game__no-timer {
+  display: none;
 }
 
 .pattern-game__heart {

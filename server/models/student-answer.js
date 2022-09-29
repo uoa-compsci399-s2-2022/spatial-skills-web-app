@@ -6,7 +6,8 @@ const studentAnswerSchema = new mongoose.Schema({
   answers: [
     new mongoose.Schema({
       qId: { type: String, required: true },
-      aId: { type: String, required: true },
+      aId: { type: String, required: false },
+      value: { type: String, required: false },
       correct: { type: Boolean, required: true },
     }),
   ],

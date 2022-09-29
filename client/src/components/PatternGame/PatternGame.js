@@ -1,61 +1,92 @@
-import { useEffect, useState } from 'react'
-import "../../styles/PatternGame.css";
-import SingleBlock from './SingleBlock';
+import e from 'cors'
+import { useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet'
+import "../../styles/PatternGame.css"
+import SingleBlock from './SingleBlock'
 
+var seedrandom = require('seedrandom')
 
-const endLevel = Array(20).fill(10)
-const easyLevel = [3, 4, 5, 6, 7, 8, 8, 9, 9, 9]
-const levelList = easyLevel.concat(endLevel)
-const maxHealth = 5
-const timeAllowed = 40
-const gameDim = 6
-
-// create blocks array
-const CreateBlockArray = (dimension) => {
-  const bArray = []
-  for (let i = 0; i < dimension * dimension; i++) {
-    bArray.push({"id": i, "pattern": false, "matched": false, "clicked": false})
-  }
-  return bArray
-}
-const blocksArray = CreateBlockArray(gameDim)
 let numMatched = 0
-let health = maxHealth
 
 
-function PatternGame() {
+function PatternGame({ gameDim, order, maxHealth, timerState, timeAllowed, 
+                       patternFlashTime, randomLevelOrder, randomSeed = null, next, submit}) {
+
+  patternFlashTime = patternFlashTime * 1000
+
+  const totalNumberOfBlocks = gameDim * gameDim
+  const levelList = Array.from({length: totalNumberOfBlocks}, (_, i) => i + 1)
+
+  let randomNumber = seedrandom(randomSeed)
+  let randomSeedArray = []
+
+  for (let i = 0; i < totalNumberOfBlocks; i++){
+    randomSeedArray.push(randomNumber())
+  }
+
+
+  // create blocks array
+  const CreateBlockArray = (dimension) => {
+    const bArray = []
+    for (let i = 0; i < dimension * dimension; i++) {
+      bArray.push({"id": i, "pattern": false, "matched": false, "clicked": false, "flash": false})
+    }
+    return bArray
+  }
+  const blocksArray = CreateBlockArray(gameDim)
+
   const [blocks, setBlocks] = useState(blocksArray)
-  const [patternBlocks, setPatternBlocks] = useState([])
+  const [patternBlockID, setPatternBlockIDs] = useState([])
   const [userCurrentChoice, setUserCurrentChoice] = useState(null)
-  const [vicotry, setVictory] = useState(false)
+  const [victory, setVictory] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [level, setLevel] = useState(0)
   const [time, setTime] = useState(timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
   const [started, setStarted] = useState(false)
+  const [displayOrder, setDisplayOrder ] = useState(true)
+  const health = useRef(maxHealth)
+  const currentPatternIndex = useRef(0)
 
-  const totalNumberOfBlocks = gameDim * gameDim
   const numberOfPatternBlocks = levelList[level]
 
+  // unique random seed for each level (if random pattern wanted)
+  let randomPatternSeed = randomSeedArray[level]
+  let randomLevel = seedrandom(randomPatternSeed)
+
+  let patternIDArray
+  let startAlready = false
+
   // get an random array of IDs
+  const generatePatternIDs = (length, numPatternBlocks) => {
+    let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
+    .sort(() => {
+      if (randomLevelOrder){
+        return(randomLevel() - 0.5)
+      } else {
+        return(randomNumber() - 0.5)
+      }
+    })
+    console.log(randomIDsarray)
+    return(randomIDsarray.slice(0, length))
+  }
+  
+
   // create pattern array marked by its key
   const generatePattern = () => {
-    const generatePatternIDs = (length, numPatternBlocks) => {
-      let randomIDsarray = Array.from(Array(numPatternBlocks).keys())
-      .sort(() => Math.random() - 0.5)
-      return(randomIDsarray.slice(0, length))
-    }
-    
-    const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
 
-    // reset blocks status
+    // reset blocks status each round
     blocks.map(block => {
       block.pattern = false
       block.matched = false
       block.clicked = false
+      block.flash = false
       return(null)
     })
+
+    const patternIDs = generatePatternIDs(numberOfPatternBlocks, totalNumberOfBlocks)
+    patternIDArray = patternIDs
     
     // update block property if it's chosen to be the question pattern
     for(let i = 0; i < totalNumberOfBlocks; i++){
@@ -67,13 +98,20 @@ function PatternGame() {
     }
 
     numMatched = 0
-    showPattern(true)
-    setTimeout(() => {
-      showPattern(false)
-    }, 1000);
-    setPatternBlocks(patternIDs)
-    setDisabled(false)
+    if(!order){
+      setDisabled(true)
+      showPattern(true)
+
+      setTimeout(() => {
+        showPattern(false)
+        setDisabled(false)
+      }, patternFlashTime);
+    } else {
+      setDisplayOrder(prevState => !prevState)
+    }
+    setPatternBlockIDs(patternIDs)
     setVictory(false)
+    startAlready = true
   }
 
   // handle user's choice
@@ -88,16 +126,35 @@ function PatternGame() {
     }
     if (block.pattern && block.matched) {
       return ("correct")
-    } else if (block.clicked === true && block.matched === false) {
+    } else if ((block.clicked === true && block.matched === false) || block.flash) {
       return ("incorrect")
     } else {
       return ("grey")
     }
   }
 
-  // show pattern
+
+  const reveal = (block) => {
+    let newBlock = {...block, matched: true, clicked: true}
+    return (newBlock)
+  }
+
+  const unreveal = () => {
+    setBlocks(prevBlocks => {
+      return (prevBlocks.map(block => {
+        if(block.matched === true && block.clicked === true){
+          return ({...block, matched: false, clicked: false})
+        } else{
+          return (block)
+        }
+        })
+      )})
+  }
+
+  // show pattern for standard version of game (not ordered)
   const showPattern = (show) => {
     if (show){
+      setTimerOn(true)
       setBlocks(prevBlocks => {
         return (prevBlocks.map(block => {
             return ({...block, matched: true, clicked: true})
@@ -112,41 +169,103 @@ function PatternGame() {
     }
   }
 
+  // display pattern in order
+  useEffect(() => {
+    if(!gameOver) {
+      if (order){
+        if(currentPatternIndex.current < patternBlockID.length) {
+            setDisabled(true)
+            setTimeout(() => {
+            setTimerOn(true)
+            setBlocks(prevBlocks => {
+                    return (prevBlocks.map(block => {
+                        if(block.id === patternBlockID[currentPatternIndex.current-1]){
+                            return (reveal(block))
+                        } else {
+                            return (block)
+                        }
+                      })
+                    )})
+                    setDisplayOrder(prevState => !prevState)
+            }, patternFlashTime)  
+          currentPatternIndex.current ++
+      } else {
+        setTimeout(() => {
+          setDisabled(false)
+        }, patternFlashTime - 2);
+      }
+
+      setTimeout(() => {
+        unreveal()
+      }, patternFlashTime - 2);
+    }
+  } else{
+    setTimerOn(false)
+  }
+}, [displayOrder])
+
   const resetTurn = () => {
     setUserCurrentChoice(null)
+  }
+
+  const incorrectChoice = () => {
+    setBlocks(prevBlocks => {
+      return (prevBlocks.map(block => {
+        if (userCurrentChoice.id === block.id) {
+          if (health.current > 0) {
+            health.current --
+          }
+          if (health.current === 0) {
+            setTimerOn(false)
+            setGameOver(true)
+            // submit(level)
+          }
+          return ({...block, clicked: true})
+        } else {
+          return (block)
+        }
+      })
+      )})
   }
 
   // compare user's choice with pattern
   useEffect(() => {
     if (userCurrentChoice){
-      if (patternBlocks.includes(userCurrentChoice.id)) {
+      if (patternBlockID.includes(userCurrentChoice.id)) {
         setBlocks(prevBlocks => {
           return (prevBlocks.map(block => {
             if (userCurrentChoice.id === block.id) {
-              numMatched = numMatched + 1
-              return ({...block, matched: true, clicked: true})
+              if(order) {
+                if(userCurrentChoice.id === patternBlockID[numMatched]){
+                  numMatched = numMatched + 1
+                  return ({...block, matched: true, clicked: true})
+                } else {
+                  if (health.current > 0){
+                    health.current --
+                  }
+                  if (health.current === 0) {
+                    setTimerOn(false)
+                    setGameOver(true)
+                    // submit(level)
+                  }
+                  setDisabled(true)
+                  setTimeout(() => {
+                    setDisabled(false)
+                  }, 400);
+                  return ({...block, flash: true})
+                }
+              } else {
+                numMatched = numMatched + 1
+                return ({...block, matched: true, clicked: true})
+              }
             } else {
               return (block)
             }
           })
           )})
         resetTurn()
-      } else {
-        setBlocks(prevBlocks => {
-          return (prevBlocks.map(block => {
-            if (userCurrentChoice.id === block.id) {
-              health = health - 1
-              if (health === 0) {
-                setTimerOn(false)
-                setGameOver(true)
-              }
-              return ({...block, clicked: true})
-            } else {
-              return (block)
-            }
-          })
-          )})
-    
+      } else {  
+        incorrectChoice()
         resetTurn()
       }
     }
@@ -155,39 +274,42 @@ function PatternGame() {
       setDisabled(true)
       setVictory(true)
       setLevel(prevLevel => prevLevel + 1)
+      currentPatternIndex.current = 0
     }
+
+    setTimeout(() => {
+      blocks.forEach(block => block.flash = false)
+    }, 400);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userCurrentChoice])
 
+  // when a round is won
   useEffect(() => {
-    if (vicotry){
-      setTimeout(() => {
-        generatePattern()
-      }, 500);
+    if (victory){
+      // detect if it has reached last level (using every block as pattern)
+      if(level === totalNumberOfBlocks){
+        setGameOver(true)
+      } else {
+        setTimeout(() => {
+          generatePattern()
+        }, 500);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vicotry])
-
-  // alert game over
-  const GameOverText = () => {
-    if (gameOver){
-      return (
-        <div className='game-over-div'>
-          <h2 className="game-over-text">Your score: {level}</h2>
-        </div>
-      )}
-  }
+  }, [victory])
 
   // timer
   useEffect(() => {
     let interval = null
 
-    if (timerOn) {
-      interval = setInterval(() => {
-        setTime(prevTime => prevTime - 1)
-      }, 1000)
-    } else {
-      clearInterval(interval)
+    if (timerState){
+      if (timerOn) {
+        interval = setInterval(() => {
+          setTime(prevTime => prevTime - 1)
+        }, 1000)
+      } else {
+        clearInterval(interval)
+      }
     }
     return () => clearInterval(interval)
   }, [timerOn])
@@ -197,22 +319,52 @@ function PatternGame() {
     if (time === 0){
       setTimerOn(false)
       setGameOver(true)
+      unreveal()
     }
   }, [time])
 
   const startGame = () => {
     setStarted(true)
-    setTimeout(() => {
-      setTimerOn(true)
+    if (!order){
+      setTimeout(() => {
+        generatePattern()
+      }, 300);
+    } else {
+      setStarted(true)
       generatePattern()
-    }, 300);
+    }
+  }
+
+  const victoryAnimation = () => {
+    if(victory){
+      return("pattern-game-victory")
+    } else if(gameOver) {
+      return ("pattern-game-over")
+    } else {
+      return ("pattern-game")
+    }
+  }
+
+  const displayTimer = () => {
+    if (timerState){
+      return (<div><h2>{time}</h2></div>)
+    } else{
+      return(<div></div>)
+    }
+  }
+
+  // style for dynamic grid size of equal width and height
+  const patternGridStyle = () => {
+
+    let columnSize = '10vh '.repeat(gameDim)
+    return({'gridTemplateColumns': columnSize})
   }
 
   return (
-    <div className={"pattern-game"}>
+    <div className={victoryAnimation()}>
       {!started ? 
         <div className="pattern-game__instructions">
-          <h1>Spatial Memory Test 2</h1>
+          <h1>Memory Test: Block Patterns</h1>
           <p>Click on the pattern shown at the start of the game</p>
           <p>You will lose a life for each mismatch.</p>
           <p>Progress as far as you can!</p>
@@ -221,20 +373,22 @@ function PatternGame() {
         </div> : null}
       <div className={started ? 'pattern-game__information-div-show' : 'pattern-game__information-div-hide'}>
       <div className='pattern-game__lives-div'>
-          <h2 className='pattern-game__lives-number'>lives:</h2>
+          <h2 className='pattern-game__lives-number'>Lives:</h2>
           <div className='pattern-game__lives-div__hearts'>
-          {[...Array(health)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
-          {[...Array(maxHealth - health)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
+          {[...Array(health.current)].map((e, i) => <span className="pattern-game__heart" key={i}></span>)}
+          {[...Array(maxHealth - health.current)].map((e, i) => <span className="pattern-game__black-heart" key={i}></span>)}
           </div>         
       </div>
-        <h2 className="pattern-game__timerText">{time}</h2>
+        {displayTimer()}
         <h2>Score: {level}</h2>
       </div>
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {level}</h2>
-        </div> : null}
-      <div className='pattern-game__blocks-grid'>
+          <button onClick={next}>Next Question</button>
+        </div> : null
+      }
+      <div className='pattern-game__blocks-grid' style={patternGridStyle()}>
         {blocks.map(block => (
           <SingleBlock 
             key={block.id} 
@@ -243,6 +397,8 @@ function PatternGame() {
             blockState={currentBlockState(block)}
             gameOver={gameOver}
             disabled={disabled}
+            flash={block.flash}
+            clicked={block.clicked}
             />
         ))}
       </div>

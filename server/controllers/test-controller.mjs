@@ -39,6 +39,8 @@ const createTest = async (req, res, next) => {
     })),
     studentAnswers: [],
     published: req.body.published,
+    allowBackTraversal: req.body.allowBackTraversal,
+    totalTime: req.body.totalTime,
     code: await createCode(),
   });
 
@@ -103,19 +105,35 @@ const getQuestionsByCode = async (req, res, next) => {
 
   const qidArr = test.questions.map((q) => q.qId);
 
+  // Questions will be in order of creation date
   const questions = await Question.find({ _id: { $in: qidArr } }).exec();
   if (questions.length < qidArr.length) {
     return next(new APIError("Could not find all test questions.", 404));
   }
-
-  let questionsOut = questions.map((q) => new QuestionOut(q));
-  if (req.body.shuffle) {
+  // Sort the questions in the original order.
+  var orderedQuestions = [];
+  for (let i = 0; i < qidArr.length; i++) {
+    let question = questions.find(q => q._id == qidArr[i]);
+    if (req.body.shuffleAnswers) {
+      question.answer = FisherYatesShuffle(question.answer);
+    }
+    orderedQuestions.push(question);
+  }
+  
+  let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
+  if (req.body.shuffleQuestions) {
     questionsOut = FisherYatesShuffle(questionsOut);
   }
   const timeOut = questionsOut.map(
     (qo) => test.questions.find((q) => q.qId === qo.id).time
   );
-  const combined = { questions: questionsOut, times: timeOut };
+
+  const combined = { questions: questionsOut,
+    times: timeOut, 
+    allowBackTraversal: test.allowBackTraversal,
+    // totalTime: test.totalTime,
+    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0)
+  };
   res.json(combined);
 };
 

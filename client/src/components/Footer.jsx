@@ -2,6 +2,11 @@ import "../styles/Footer.css";
 import { useLocation } from "react-router-dom";
 const Footer = () => {
   const location = useLocation();
+  // Hide footer on test page.
+  if (location.pathname === "/test") {
+    return null;
+  }
+
   return (
     <footer
       className="footer"

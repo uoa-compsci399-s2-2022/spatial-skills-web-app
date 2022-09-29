@@ -1,29 +1,26 @@
 
 
 .block__standard {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: grey;
     border-radius: 25px;
 }
 
 .block__correct-match {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: #28CFA7;
     border-radius: 25px;
-
   }
 
 .block__incorrect-match {
-    height: 165px;
-    width: 165px;
+    height: 10vh;
+    width: 10vh;
     background-color: rgb(65, 62, 62);
     border-radius: 25px;
     animation: shake 0.2s;
 }
-
-
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -36,4 +33,23 @@
     80% { transform: translate(-1px, -1px) rotate(1deg); }
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
-  }
+}
+
+
+.block__flash-color{
+  height: 10vh;
+  width: 10vh;
+  border-radius: 25px;
+  background-color: grey;
+  animation: flash_color 0.3s, shake 0.2s;
+
+}
+
+@keyframes flash_color{
+  0% {background-color: red;}
+  100% {background-color: grey;}
+}
+
+.pa {
+  color: white;
+}

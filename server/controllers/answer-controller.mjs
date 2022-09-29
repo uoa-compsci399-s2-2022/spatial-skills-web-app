@@ -6,6 +6,11 @@ import APIError from "../handlers/APIError.js";
 const checkAnswer = async (qId, aId) => {
   const query = await Question.findById(qId).exec();
 
+  if (query.category === "Spatial Memory") {
+    return true;
+  } else if (aId === null) {
+    return false;
+  }
   //Check if actual answer in question
   const aCheck = await query.answer.find((c) => c._id == aId);
   if (!aCheck) {
@@ -67,6 +72,7 @@ const createStudentAnswer = async (req, res, next) => {
         req.body.answers.map(async (sa) => ({
           qId: sa.qId,
           aId: sa.aId,
+          value: sa.value,
           correct: await checkAnswer(sa.qId, sa.aId),
         }))
       ),
@@ -109,7 +115,49 @@ const getStudentAnswerBytIdsId = async (req, res, next) => {
   if (!studentAnswer) {
     return next(new APIError("Could not find student answer.", 404));
   }
-  res.status(200).json(studentAnswer);
+
+  // // Get full details of question and test.
+  const qaIdArr = studentAnswer.answers.map((q) => q.qId);
+  const questions = await Question.find({ _id: { $in: qaIdArr } }).exec();
+  if (questions.length < qaIdArr.length) {
+    return next(new APIError("Could not find all test questions.", 404));
+  }
+
+  const test = await Test.findById(req.body.tId).exec();
+  let testMaxGrade = 0;
+  let studentGrade = 0;
+  let testQuestions = [];
+  test.questions.forEach(q => { 
+    testMaxGrade += q.grade;
+    let question = questions.find(obj => obj._id == q.qId);  // Full question object
+    let answer = studentAnswer.answers.find(ans => ans.qId == q.qId);  // Get student answer for question
+    if (answer.correct) {
+      studentGrade += q.grade;
+    }
+    testQuestions.push(
+      {
+        qId: q.qId,
+        grade: q.grade,
+        image: question.image,
+        category: question.category,
+        description: question.description,
+        correct: answer.correct,
+        value: answer.value,  // For memory / entry questions
+      }
+    )
+  });
+
+  const result = {
+    tId: studentAnswer.tId,
+    sId: studentAnswer.sId,
+    testTitle: test.title,
+    testCreator: test.creator,
+    testMaxGrade: testMaxGrade,
+    studentGrade: studentGrade,
+    testQuestions: testQuestions,
+  }
+
+  res.status(200).json(result);
 };
 
 export { createStudentAnswer, getAllStudentAnswers, getStudentAnswerBytIdsId };

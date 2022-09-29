@@ -96,6 +96,20 @@
     animation: fadeIn 1s;
 }
 
+.test__previous {
+    display: flex;
+    border: none;
+    position: absolute;
+    padding: 0;
+    left: 1rem;
+    background-color: transparent;
+    color: var(--accent-color);
+    fill: var(--accent-color);
+    cursor: pointer;
+    transition: color .25s;
+    animation: fadeIn 1s;
+}
+
 .test__next:hover {
     color: #1b7be9;
 }
@@ -122,6 +136,24 @@
 
 .test__timer:hover {
     cursor: default;
+}
+
+.test__question-select {
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+    
+}
+
+.question-select__button {
+    padding: 0.5rem;
+    margin: 1rem;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    /* outline: 1.5px solid; */
+}
+.question-select__button:hover {
+    outline: 1.5px solid var(--accent-color);
 }
 
 @keyframes fadeIn {

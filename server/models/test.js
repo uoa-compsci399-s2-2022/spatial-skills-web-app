@@ -15,6 +15,8 @@ const testSchema = new mongoose.Schema({
   studentAnswers: [StudentAnswer.schema],
   published: { type: Boolean, required: true },
   code: { type: String, required: true },
+  allowBackTraversal: { type: Boolean, required: false },
+  totalTime: { type: Number, required: false }
 });
 
 //Check if question already a model before exporting
