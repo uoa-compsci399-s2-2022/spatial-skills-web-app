@@ -9,15 +9,15 @@ import logo from "../assets/logo.png";
 import { adminLogin } from "../services/auth-service.mjs";
 
 const AdminLogin = (props) => {
-  const { userData, setUserData} = props;
+  const { userData, setUserData } = props;
   const [error, setError] = useState("");
 
-  sessionStorage.setItem("redirectAdmin", "true")
+  sessionStorage.setItem("redirectAdmin", "true");
 
   const handleGoogleLogin = (credentials) => {
     setError("");
     const payload = jwt_decode(credentials);
-    adminLogin(payload.email,credentials).then(
+    adminLogin(payload.email, credentials).then(
       (res) => {
         setUserData({
           name: payload.given_name + " " + payload.family_name,
@@ -54,7 +54,7 @@ const AdminLogin = (props) => {
             )}
           </>
         ) : (
-          <Navigate replace to="dashboard" />
+          <Navigate to="/dashboard" />
         )}
       </div>
     </div>

@@ -1,19 +1,16 @@
 import "../styles/Dashboard.css";
 import { Link } from "react-router-dom";
-import dummyData from "../db/dummyTest.json";
 import { FaPlus } from "react-icons/fa";
 import axios from "axios";
-import React from "react";
+import { useState, useEffect } from "react";
 
 const iconSize = "1.25em";
 const Dashboard = () => {
+  const [data, setData] = useState([]);
 
-  
-  const baseURL = "http://localhost:3001/api/test/all";
-  const [data, setData] = React.useState([]);
-
-  React.useEffect(() => {
-    axios.get(baseURL).then((response) => {
+  useEffect(() => {
+    axios.get("http://localhost:3001/api/test/all").then((response) => {
+      console.log(response);
       setData(response.data);
     });
   }, []);

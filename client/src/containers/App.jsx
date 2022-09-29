@@ -33,12 +33,9 @@ function App() {
             element={<Home userData={userData} setUserData={setUserData} />}
           />
           <Route
-            path="/adminLogin"
+            path="/login"
             element={
-              <AdminLogin
-                userData={userData}
-                setUserData={setUserData}
-              />
+              <AdminLogin userData={userData} setUserData={setUserData} />
             }
           />
           <Route path="/test" element={<Test userData={userData} />} />
@@ -47,12 +44,12 @@ function App() {
             path="*"
             element={
               sessionStorage.getItem("redirectAdmin") === "true" ? (
-                <Navigate replace to="/adminLogin" />
+                <Navigate replace to="/login" />
               ) : (
                 <Navigate replace to="/" />
               )
             }
-          <Route path="test" element={<Test />} />
+          />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="dashboard/test/:testId/stats" element={<Stats />} />
           <Route path="dashboard/test/:testId/question" element={<Bank />} />
