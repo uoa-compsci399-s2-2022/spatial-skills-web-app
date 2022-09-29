@@ -44,7 +44,7 @@ function App() {
             path="*"
             element={
               sessionStorage.getItem("redirectAdmin") === "true" ? (
-                <Navigate replace to="/login" />
+                <Navigate replace to="/dashboard" />
               ) : (
                 <Navigate replace to="/" />
               )

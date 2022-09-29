@@ -11,6 +11,7 @@ import {
   FaShareAlt,
   FaDownload,
 } from "react-icons/fa";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 
@@ -22,7 +23,7 @@ const Stats = () => {
   const [data, setData] = React.useState([]);
 
   React.useEffect(() => {
-    axios.get(baseURL).then((response) => {
+    axiosAPICaller.get(baseURL).then((response) => {
       setData(response.data);
       setIsLoadedTest(true);
     });
@@ -34,7 +35,7 @@ const Stats = () => {
   const [questionData, setQuestionData] = React.useState([]);
 
   React.useEffect(() => {
-    axios.get(qURL).then((response) => {
+    axiosAPICaller.get(qURL).then((response) => {
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
     });

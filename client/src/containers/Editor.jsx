@@ -3,6 +3,7 @@ import { FaSave, FaTrash } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const baseURL = "http://localhost:3001/api"; // change later for prod with .env
@@ -30,7 +31,7 @@ const Editor = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await axios
+      await axiosAPICaller
         .get(
           `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
         )
@@ -54,7 +55,7 @@ const Editor = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post(
+    await axiosAPICaller.post(
       `${baseURL}/${isTest ? "test" : "question"}`,
       isTest
         ? {
