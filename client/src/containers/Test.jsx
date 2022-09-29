@@ -7,7 +7,7 @@ import Question from "../components/Question";
 import QuestionNavigation from "../components/QuestionNavigation";
 import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
-import axios from "axios";
+// import axios from "axios";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
@@ -22,22 +22,20 @@ const Test = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
-
-  const url = "http://localhost:3001/api/test/getquestions";
-  // const testId = "6319abdf2d143b5bfa3de54a"; // Use values from props later.
-  // const testId = "6322b155323d447d6c5f7eb6";  // Memory games included
-  const testId = "633127cf6005f2c17949b366"; // Non-linear
+  const [testId, setTestId] = useState(null);
+  
   const data = {
-    tId: testId,
+    code: sessionStorage.getItem("code"),
     shuffleQuestions: false,
     shuffleAnswers: false,
   };
 
   // Get test question data from backend API.
   useEffect(() => {
-    axiosAPICaller.post('/test/getquestions', data).then(
+    axiosAPICaller.post('/test/code/getquestions', data).then(
       (res) => {
-        // console.log(res);
+        console.log(res);
+        setTestId(res.data.tId);
         setQuestionBank(res.data.questions);
         setQuestionTimeBank(res.data.times);
         setAllowBackTraversal(res.data.allowBackTraversal);
@@ -77,7 +75,6 @@ const Test = (props) => {
 
   const previousQuestion = () => {
     console.log(userAnswers); // for debugging
-    
     if (currentQuestion > 1 && allowBackTraversal) {
       setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
       setCurrentQuestion(currentQuestion - 1);
@@ -95,7 +92,7 @@ const Test = (props) => {
         sId: userData.name,
         answers: userAnswers,
       };
-      axios.post("http://localhost:3001/api/answer", testData).then(
+      axiosAPICaller.post("http://localhost:3001/api/answer", testData).then(
         window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
       );
     } else {
@@ -179,6 +176,8 @@ const Test = (props) => {
           patternFlashTime={0.5}      // time to flash each pattern block
           randomLevelOrder={false}      // each level is randomized
           randomSeed={"just a seed"}
+          next={nextQuestion}
+          submit={submitAnswerValue}
         />
       }
     } else {
