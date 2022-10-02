@@ -10,7 +10,11 @@ const questionSchema = new mongoose.Schema({
       trueAnswer: { type: Boolean, required: false },
     }),
   ],
-  category: { type: String, required: true },
+  category: {
+    type: String,
+    enum: ["PERCEPTION", "ROTATION", "VISUALISATION", "MEMORY"],
+    required: true,
+  },
 });
 
 //Check if question already a model before exporting
