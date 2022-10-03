@@ -168,10 +168,27 @@ const Editor = (props) => {
               }
               required
             >
-              <option value="visual">Visualisation</option>
-              <option value="rotation">Rotation</option>
-              <option value="perception">Perception</option>
-              <option value="memory">Memory</option>
+              <option
+                value="VISUALISATION"
+                selected={settings.category === "VISUALISATION"}
+              >
+                Visualisation
+              </option>
+              <option
+                value="ROTATION"
+                selected={settings.category === "ROTATION"}
+              >
+                Rotation
+              </option>
+              <option
+                value="PERCEPTION"
+                selected={settings.category === "PERCEPTION"}
+              >
+                Perception
+              </option>
+              <option value="MEMORY" selected={settings.category === "MEMORY"}>
+                Memory
+              </option>
             </select>
             <label>Type</label>
             <select

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "../styles/Bank.css";
 import { Link, useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
@@ -87,6 +86,7 @@ const Bank = () => {
                           <Link
                             className="dashboard__item section"
                             to={`/dashboard/test/${testId}/question/${_question._id}`}
+                            key={_question._id}
                           >
                             <img
                               alt=""
