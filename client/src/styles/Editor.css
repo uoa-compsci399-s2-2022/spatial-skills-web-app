@@ -24,9 +24,8 @@
 
 .editor__input:focus {
     background-color: var(--contrast-color);
-    outline: 2px solid var(--accent-color);
+    outline: 1px solid var(--accent-color);
     box-shadow: 0 .5rem 1rem var(--shadow-color);
-
 }
 
 .editor__answer {

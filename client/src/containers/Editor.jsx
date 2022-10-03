@@ -23,10 +23,14 @@ const Editor = (props) => {
     category: "",
     type: "",
     multi: [],
-    text: {
-      answer: "",
-      grade: null,
-    },
+    answer: "",
+    grade: null,
+    size: null,
+    order: true,
+    lives: null,
+    previewDuration: null,
+    randomLevelOder: false,
+    seed: "",
   });
 
   useEffect(() => {
@@ -139,7 +143,7 @@ const Editor = (props) => {
               className="editor__input"
               required
             />
-            {settings.category !== "memory" ? (
+            {settings.category !== "MEMORY" ? (
               <>
                 <label>Image</label>
                 <div className="editor__image-container">
@@ -167,28 +171,12 @@ const Editor = (props) => {
                 setSettings({ ...settings, category: e.target.value })
               }
               required
+              defaultValue={settings.category}
             >
-              <option
-                value="VISUALISATION"
-                selected={settings.category === "VISUALISATION"}
-              >
-                Visualisation
-              </option>
-              <option
-                value="ROTATION"
-                selected={settings.category === "ROTATION"}
-              >
-                Rotation
-              </option>
-              <option
-                value="PERCEPTION"
-                selected={settings.category === "PERCEPTION"}
-              >
-                Perception
-              </option>
-              <option value="MEMORY" selected={settings.category === "MEMORY"}>
-                Memory
-              </option>
+              <option value="VISUALISATION">Visualisation</option>
+              <option value="ROTATION">Rotation</option>
+              <option value="PERCEPTION">Perception</option>
+              <option value="MEMORY">Memory</option>
             </select>
             <label>Type</label>
             <select
@@ -198,43 +186,74 @@ const Editor = (props) => {
               defaultValue={settings.type}
               required
             >
-              {settings.category === "memory" ? (
+              {settings.category === "MEMORY" ? (
                 <>
-                  <option value="card">Card</option>
-                  <option value="block">Block</option>
+                  <option value="MATCH">Match</option>
+                  <option value="PATTERN">Pattern</option>
                 </>
               ) : (
                 <>
-                  <option value="text">Text input</option>
-                  <option value="multi">Multichoice</option>
+                  <option value="TEXT">Text</option>
+                  <option value="MULTI">Multichoice</option>
                 </>
               )}
             </select>
-            {settings.category === "memory" ? (
+            {settings.category === "MEMORY" ? (
               <>
-                <label>Size</label>
+                <label>Grid Size</label>
                 <input
                   type="text"
                   placeholder="5"
                   className="editor__input editor__input"
+                  onChange={(e) =>
+                    setSettings({ ...settings, size: e.target.value })
+                  }
                   required
                 />
                 <label>Preview Duration</label>
                 <input
                   type="text"
-                  placeholder="5"
+                  placeholder="1"
                   className="editor__input editor__input"
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      previewDuration: e.target.value,
+                    })
+                  }
                   required
                 />
-                <label>Matches</label>
+                <label>Seed</label>
                 <input
                   type="text"
-                  placeholder="5"
+                  placeholder="SEED"
                   className="editor__input editor__input"
+                  onChange={(e) =>
+                    setSettings({ ...settings, seed: e.target.value })
+                  }
                   required
                 />
+                <label>Lives</label>
+                <input
+                  type="text"
+                  placeholder="3"
+                  className="editor__input editor__input"
+                  onChange={(e) =>
+                    setSettings({ ...settings, lives: e.target.value })
+                  }
+                  required
+                />
+                <label>Ordered</label>
+                <input
+                  type="checkbox"
+                  style={{ width: "min-content" }}
+                  defaultChecked={settings.order}
+                  onChange={(e) => {
+                    setSettings({ ...settings, order: e.target.checked });
+                  }}
+                />
               </>
-            ) : settings.type === "multi" ? (
+            ) : settings.type === "MULTI" ? (
               <>
                 <label>Number of Answers</label>
                 <input
@@ -267,13 +286,10 @@ const Editor = (props) => {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      text: {
-                        ...settings.text,
-                        answer: e.target.value,
-                      },
+                      answer: e.target.value,
                     })
                   }
-                  defaultValue={settings.text.answer}
+                  defaultValue={settings.answer}
                   required
                 />
                 <label>Grade</label>
@@ -284,13 +300,10 @@ const Editor = (props) => {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      text: {
-                        ...settings.text,
-                        grade: e.target.value,
-                      },
+                      grade: e.target.value,
                     })
                   }
-                  defaultValue={settings.text.grade}
+                  defaultValue={settings.grade}
                   required
                 />
               </>
