@@ -21,7 +21,9 @@ const Home = (props) => {
     const code = codeRef.current.value;
     if (name.length === 0) {
       setError("Invalid name!");
-    } else {
+    } else if (code === "admin"){
+      setError("Invalid code!");
+    }else {
       createStudent(name, code)
         .then((res) => {
           return studentLogin(name, code);

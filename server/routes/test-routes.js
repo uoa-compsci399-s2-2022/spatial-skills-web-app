@@ -6,7 +6,8 @@ import {
   getTestById,
   getQuestionsBytId,
   getQuestionsByCode,
-  getTestByCode
+  getTestByCode,
+  getMyTests
 } from "../controllers/test-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
 import adminAuthHandler from "../handlers/admin-auth-handler.js";
@@ -23,6 +24,9 @@ testRouter.post("/", adminAuthHandler, createTest);
 
 // ADMIN
 testRouter.get("/all", adminAuthHandler, getAllTests);
+
+// ADMIN
+testRouter.get("/mytests", adminAuthHandler, getMyTests);
 
 testRouter.post("/getquestions", getQuestionsBytId);
 
