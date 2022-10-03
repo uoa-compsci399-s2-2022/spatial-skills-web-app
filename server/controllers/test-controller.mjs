@@ -113,13 +113,13 @@ const getQuestionsByCode = async (req, res, next) => {
   // Sort the questions in the original order.
   var orderedQuestions = [];
   for (let i = 0; i < qidArr.length; i++) {
-    let question = questions.find(q => q._id == qidArr[i]);
+    let question = questions.find((q) => q._id == qidArr[i]);
     if (req.body.shuffleAnswers) {
       question.answer = FisherYatesShuffle(question.answer);
     }
     orderedQuestions.push(question);
   }
-  
+
   let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
   if (req.body.shuffleQuestions) {
     questionsOut = FisherYatesShuffle(questionsOut);
@@ -128,16 +128,55 @@ const getQuestionsByCode = async (req, res, next) => {
     (qo) => test.questions.find((q) => q.qId === qo.id).time
   );
 
-  const combined = { questions: questionsOut,
-    times: timeOut, 
+  const combined = {
+    questions: questionsOut,
+    times: timeOut,
     allowBackTraversal: test.allowBackTraversal,
     // totalTime: test.totalTime,
-    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0)
+    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0),
   };
   res.json(combined);
 };
 
-//DEPRECATE IN FAVOUR OF get test by code enpoints
+const getMyTests = async (req, res, next) => {
+  let tests;
+  try {
+    //lean to get plain old javascript object
+    tests = await Test.find({ creator: req.name }).lean().exec();
+  } catch (e) {
+    return next(new APIError("No Test not found.", 404));
+  }
+
+  await Promise.all(
+    tests.map(async (t) => {
+      await Promise.all(
+        t.questions.map(async (q) => {
+          let newQ;
+          try {
+            newQ = await Question.findById(q.qId).exec();
+          } catch (e) {
+            return next(new APIError("Could not find question id.", 404));
+          }
+          q.title = newQ.title;
+          q.description = newQ.description;
+          q.image = newQ.image;
+          q.answer = newQ.answer;
+          q.category = newQ.category;
+          q.citation = newQ.citation;
+          q.creator = newQ.creator;
+          q.questionType = newQ.questionType;
+          delete q._id;
+          return q;
+        })
+      );
+      return t;
+    })
+  );
+
+  res.json(tests);
+};
+
+//DEPRECATE IN FAVOUR OF get test by code endpoints
 const getTestById = async (req, res, next) => {
   //Can only access test if have admin or test permissions
   if (
@@ -148,10 +187,10 @@ const getTestById = async (req, res, next) => {
   }
 
   let test;
-  try{
+  try {
     test = await Test.findById(req.params.tid).exec();
-    if (!test){
-      throw new Error;
+    if (!test) {
+      throw new Error();
     }
   } catch (e) {
     return next(new APIError("Test not found.", 404));
@@ -202,4 +241,5 @@ export {
   getQuestionsBytId,
   getQuestionsByCode,
   getTestByCode,
+  getMyTests,
 };
