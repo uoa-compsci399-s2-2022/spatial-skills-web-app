@@ -161,7 +161,7 @@ const Test = (props) => {
     // Test loaded successfully
     let testQuestion;
     startTimer();
-    if (getCurrentQuestion().category === "Spatial Memory") {
+    if (getCurrentQuestion().category === "MEMORY") {
       if (!allowBackTraversal) {
         clearInterval(Ref.current)  // Stop timer if the test is linear.
       }
