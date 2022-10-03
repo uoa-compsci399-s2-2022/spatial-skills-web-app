@@ -15,6 +15,15 @@ const questionSchema = new mongoose.Schema({
     enum: ["PERCEPTION", "ROTATION", "VISUALISATION", "MEMORY"],
     required: true,
   },
+  questionType: {
+    type: String,
+    enum: ["MULTICHOICE", "TEXT", "DYNAMIC"],
+    required: true,
+  },
+  citation: {
+    type: String,
+    required: false,
+  },
 });
 
 //Check if question already a model before exporting
