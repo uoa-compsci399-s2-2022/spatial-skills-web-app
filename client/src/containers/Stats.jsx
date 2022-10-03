@@ -1,28 +1,20 @@
 import { useParams } from "react-router-dom";
-import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
 import "../styles/Stats.css";
-import axios from "axios";
-import React from "react";
-import {
-  FaSave,
-  FaTrash,
-  FaEdit,
-  FaShareAlt,
-  FaDownload,
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaEdit, FaShareAlt, FaDownload } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 
 const Stats = () => {
   const { testId } = useParams();
-  const [isLoadedTest, setIsLoadedTest] = React.useState(false);
-  const [isLoadedQuestion, setIsLoadedQuestion] = React.useState(false);
+  const [isLoadedTest, setIsLoadedTest] = useState(false);
+  const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const baseURL = "http://localhost:3001/api/test/all";
-  const [data, setData] = React.useState([]);
+  const [data, setData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     axiosAPICaller.get(baseURL).then((response) => {
       setData(response.data);
       setIsLoadedTest(true);
@@ -32,9 +24,9 @@ const Stats = () => {
   const test = data.filter((test) => test._id === testId)[0];
 
   const qURL = "http://localhost:3001/api/question/all";
-  const [questionData, setQuestionData] = React.useState([]);
+  const [questionData, setQuestionData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     axiosAPICaller.get(qURL).then((response) => {
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
@@ -72,11 +64,13 @@ const Stats = () => {
                           if (question.qId === _question._id) {
                             return (
                               <tr key={question._id}>
-                                <img
-                                  alt=""
-                                  src={_question.image}
-                                  class="stats__image"
-                                />
+                                <td>
+                                  <img
+                                    alt=""
+                                    src={_question.image}
+                                    className="stats__image"
+                                  />
+                                </td>
                                 <td>{_question.title}</td>
                                 <td>{`${question.time}s`}</td>
                                 <td>{question.grade.toFixed(1)}</td>
