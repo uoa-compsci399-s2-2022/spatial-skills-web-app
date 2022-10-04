@@ -366,7 +366,7 @@ function PatternGame({
     if (timerState) {
       return (
         <div>
-          <h2>{time}</h2>
+          <h2 className="pattern-game__timer">{time}</h2>
         </div>
       );
     } else {
@@ -413,7 +413,7 @@ function PatternGame({
           </div>
         </div>
         {displayTimer()}
-        <h2>Score: {level}</h2>
+        <h2 className="pattern-game__score">Score: {level}</h2>
       </div>
       {gameOver ? (
         <div className="game-over-div">

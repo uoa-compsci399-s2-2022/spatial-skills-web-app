@@ -14,15 +14,15 @@ const cardImages = [
   { src: "/cardImages/3_of_spades.png", matched: false }
 ];
 
-const maxHealth = 3
+const maxHealth = 5
 const timeBetweenSelection = 1000
 const timeBeforeGameStart = 4000
-// const timeAllowed = 40
 
 let health = maxHealth
 let matchedPair = 0
 
-const MatchingGame = (props) => {
+const MatchingGame = ({ timeAllowed, next, submit }) => {
+
   const [cards, setCards] = useState([])
   // const [turns, setTurns] = useState(0) // add later if turns need to be recorded
   const [choiceOne, setChoiceOne] = useState(null)
@@ -32,7 +32,7 @@ const MatchingGame = (props) => {
   const [gameOver, setGameOver] = useState(false)
   const [started, setStarted] = useState(false)
   const [firstVisit, setFirstvisit] = useState(true)
-  const [time, setTime] = useState(props.timeAllowed)
+  const [time, setTime] = useState(timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
 
 
@@ -48,7 +48,7 @@ const MatchingGame = (props) => {
     // store shuffled cards in state and reset turns to 0 (new game)
     setCards(shuffledCards)
     // setTurns(0)
-    setTime(props.timeAllowed)
+    setTime(timeAllowed)
     setChoiceOne(null)
     setChoiceTwo(null)
     setBothMatched(true)
@@ -160,7 +160,7 @@ const MatchingGame = (props) => {
     if(gameOver){
       showAllCards(true)
       setTimerOn(false)
-      props.submit(matchedPair)
+      // submit(matchedPair)
     }
   }, [gameOver])
 
@@ -186,21 +186,21 @@ const MatchingGame = (props) => {
         </div> : null}
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
       
-      <div className='matching-game__lives-div'>
-          <h2 className='matching-game__lives-text'>Lives:</h2>
-          <div className='matching-game__lives-div__hearts'>
-          {[...Array(health)].map((e, i) => <span className="matching-game__heart" key={i}></span>)}
-          {[...Array(maxHealth - health)].map((e, i) => <span className="matching-game__black-heart" key={i}></span>)}
-          </div>         
-      </div>
-        {started ? <h2 className="timer-text">{time}</h2> : null}
-        <h2>Score: {matchedPair}</h2>
+        <div className='matching-game__lives-div'>
+            <h2 className='matching-game__lives-text'>Lives:</h2>
+            <div className='matching-game__lives-div__hearts'>
+              {[...Array(health)].map((e, i) => <span className="matching-game__heart" key={i}></span>)}
+              {[...Array(maxHealth - health)].map((e, i) => <span className="matching-game__black-heart" key={i}></span>)}
+            </div>         
+        </div>
+          {started ? <h2 className="matching-game__timer-text">{time}</h2> : null}
+          <h2 className='matching-game__score'>Score: {matchedPair}</h2>
       </div>
 
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {matchedPair}</h2>
-          <button onClick={props.next}>Next Question</button>
+          <button onClick={next}>Next Question</button>
         </div> : null}
 
       <div className="card-grid">

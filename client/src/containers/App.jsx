@@ -12,6 +12,8 @@ import Bank from "./Bank";
 import Editor from "./Editor";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PatternGame from "../components/PatternGame/PatternGame";
+import MatchingGame from "../components/MatchingGame/MatchingGame";
 
 const GOOGLE_CLIENT_ID =
   "126878629767-elluidkp4g3iost84sgh5spapdq30su7.apps.googleusercontent.com";
@@ -61,6 +63,30 @@ function App() {
             path="dashboard/test/:testId"
             element={<Editor userData={userData} isTest={true} />}
           />
+
+          <Route
+            path="pattern"
+            element={
+            <PatternGame 
+            gameDim={6}       // width and height of grid
+            order={true}        // pattern order/no-order
+            maxHealth={15}
+            timerState={true}       // set timer on/off
+            timeAllowed={10}          // total time if timer on
+            patternFlashTime={0.5}      // time to flash each pattern block
+            randomLevelOrder={false}      // each level is randomized
+            randomSeed={"just a seed"}
+            />}
+          />
+
+          <Route
+            path="matching"
+            element={
+            <MatchingGame
+              timeAllowed={20}
+            />}
+          />
+
         </Routes>
         <Footer />
       </BrowserRouter>
