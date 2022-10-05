@@ -8,7 +8,7 @@ const testSchema = new mongoose.Schema({
   questions: [
     {
       qId: { type: String, required: true },
-      time: { type: Number, required: true },
+      time: { type: Number, required: false, default: null },
       grade: { type: Number, required: true },
     },
   ],
