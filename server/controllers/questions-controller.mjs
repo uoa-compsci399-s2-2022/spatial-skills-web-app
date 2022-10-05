@@ -3,11 +3,9 @@ import { nanoid } from "nanoid";
 
 import Question from "../models/question.js";
 import QuestionOut from "../models/question-out.js";
-import QuestionOutAdmin from "../models/question-out-admin.js";
 import Test from "../models/test.js";
 import APIError from "../handlers/APIError.js";
 import { s3Client } from "../db/aws.js";
-import { request } from "express";
 
 const REGION = "ap-southeast-2";
 const bucketURL = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${REGION}.amazonaws.com/`;
@@ -189,7 +187,13 @@ const createTQ = async (req) => {
 
 const createDMQ = async (req) => {
   // Includes required fields
-  if (!req.body.size || !req.body.lives || !req.body.seed) {
+  if (
+    !req.body.size ||
+    !req.body.lives ||
+    !req.body.seed ||
+    !req.body.gameStartDelay ||
+    !req.body.selectionDelay
+  ) {
     throw new APIError("Missing fields", 400);
   }
 
@@ -205,6 +209,8 @@ const createDMQ = async (req) => {
       seed: req.body.seed,
       creator: req.name,
       citation: "Jack Huang - The University of Auckland (2022)",
+      gameStartDelay: req.body.gameStartDelay,
+      selectionDelay: req.body.selectionDelay,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -226,7 +232,10 @@ const createDPQ = async (req) => {
     !req.body.size ||
     !req.body.lives ||
     !req.body.seed ||
-    !req.body.randomLevelOrder
+    !req.body.randomLevelOrder ||
+    !req.body.patternFlashTime ||
+    !req.body.corsi ||
+    !req.body.reverse
   ) {
     throw new APIError("Missing fields", 400);
   }
@@ -241,9 +250,12 @@ const createDPQ = async (req) => {
       size: req.body.size,
       lives: req.body.lives,
       seed: req.body.seed,
-      randomLevelOrder: req.body.randomLevelOrder,
       creator: req.name,
       citation: "Jack Huang - The University of Auckland (2022)",
+      patternFlashTime: req.body.patternFlashTime,
+      randomLevelOrder: req.body.randomLevelOrder,
+      corsi: req.body.corsi,
+      reverse: req.body.reverse,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -315,6 +327,8 @@ const updateDMQ = async (req, question) => {
   question.size = req.body.size;
   question.lives = req.body.lives;
   question.seed = req.body.seed;
+  question.gameStartDelay = req.body.gameStartDelay;
+  question.selectionDelay = req.body.selectionDelay;
 
   try {
     await question.validate();
@@ -340,6 +354,9 @@ const updateDPQ = async (req, question) => {
   question.lives = req.body.lives;
   question.seed = req.body.seed;
   question.randomLevelOrder = req.body.randomLevelOrder;
+  question.patternFlashTime = req.body.patternFlashTime;
+  question.corsi = req.body.corsi;
+  question.reverse = req.body.reverse;
 
   try {
     await question.validate();
@@ -365,6 +382,9 @@ const updateQuestion = async (req, res, next) => {
   let question;
   try {
     question = await Question.findById(req.params.qid).exec();
+    if (!question) {
+      return next(new APIError("Could not find question", 400));
+    }
   } catch (e) {
     return next(new APIError("Could not find question", 400));
   }
@@ -425,7 +445,6 @@ const createQuestion = async (req, res, next) => {
 };
 
 const deleteQuestionById = async (req, res, next) => {
-
   let question;
   try {
     question = await Question.findById(req.params.qid).exec();
@@ -433,8 +452,10 @@ const deleteQuestionById = async (req, res, next) => {
     return next(new APIError("Could not find question", 400));
   }
 
-  if (question.creator !== req.name){
-    return next(new APIError("Cannot edit question, you are not the creator.", 403))
+  if (question.creator !== req.name) {
+    return next(
+      new APIError("Cannot edit question, you are not the creator.", 403)
+    );
   }
 
   try {
@@ -457,7 +478,7 @@ const getQuestionById = async (req, res, next) => {
   } catch (e) {
     return next(new APIError("Could not find question id.", 404));
   }
-  if (!req.permissions.includes("admin")){
+  if (!req.permissions.includes("admin")) {
     question = new QuestionOut(question);
   }
 

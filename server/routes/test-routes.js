@@ -28,10 +28,12 @@ testRouter.get("/all", adminAuthHandler, getAllTests);
 // ADMIN
 testRouter.get("/mytests", adminAuthHandler, getMyTests);
 
+// DEPRECATE - functionality to be included in the getTestById
 testRouter.post("/getquestions", getQuestionsBytId);
 
 testRouter.get("/:tid", getTestById);
 
+// DEPRECATE - functionality to be included in the getTestByCode
 testRouter.post("/code/getquestions", getQuestionsByCode);
 
 testRouter.get("/code/:code", getTestByCode);

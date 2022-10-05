@@ -37,7 +37,18 @@ const questionSchema = new mongoose.Schema({
   seed: { type: Number, required: false, default: null },
 
   // questionType DYNAMIC-PATTERN
+  patternFlashTime: {
+    type: mongoose.Decimal128,
+    required: false,
+    default: null,
+  },
   randomLevelOrder: { type: Boolean, required: false, default: null },
+  corsi: { type: Boolean, required: false, default: null },
+  reverse: { type: Boolean, required: false, default: null },
+
+  // questionType DYNAMIC-MEMORY
+  gameStartDelay: { type: mongoose.Decimal128, required: false, default: null },
+  selectionDelay: { type: mongoose.Decimal128, required: false, default: null },
 });
 
 export default mongoose.models?.Question ||
