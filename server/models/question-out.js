@@ -1,14 +1,19 @@
 class QuestionOut {
   constructor(question) {
-    this.id = question.id;
+    this._id = question._id;
     this.title = question.title;
     this.description = question.description;
     this.image = question.image;
-    this.answer = question.answer.map((a) => ({ id: a.id, image: a.image }));
+    this.multi = !question.multi ? null : question.multi.map((a) => ({ _id: a._id, image: a.image }));
+    this.numMulti = question.numMulti;
     this.category = question.category;
     this.quesionType = question.quesionType;
-    this.citation = question.citation;
     this.creator = question.creator;
+    this.citation = question.citation;
+    this.size = question.size
+    this.lives = question.lives
+    this.seed = question.seed
+    this.randomLevelOrder = question.randomLevelOrder
   }
 }
 

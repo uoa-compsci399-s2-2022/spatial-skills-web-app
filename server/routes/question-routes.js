@@ -5,8 +5,7 @@ import {
   getAllQuestions,
   getQuestionById,
   deleteQuestionById,
-  createMultiChoiceQuestion,
-  getQuestionByIdAdmin
+  updateQuestion
 } from "../controllers/questions-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
 import adminAuthHandler from "../handlers/admin-auth-handler.js";
@@ -28,15 +27,9 @@ questionRouter.get("/:qid", getQuestionById);
 questionRouter.delete("/:qid", adminAuthHandler, deleteQuestionById);
 
 //get question by id - includes sensitive information (ADMIN)
-questionRouter.get("/:qid", adminAuthHandler, getQuestionByIdAdmin);
-// questionRouter.get("/admin/:qid", getQuestionByIdAdmin);
+questionRouter.patch("/:qid", adminAuthHandler, updateQuestion);
 
-//create multichoice question
-questionRouter.post("/create/multichoice", adminAuthHandler, createMultiChoiceQuestion);
-// questionRouter.post("/create/multichoice", createMultiChoiceQuestion);
-
-//DEPRECATE
-//add question
+//Create question (ADMIN)
 questionRouter.post("/", adminAuthHandler, createQuestion);
 
 

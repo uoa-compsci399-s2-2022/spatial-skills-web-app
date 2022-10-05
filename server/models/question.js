@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
-
   // GENERIC QUESTION FIELDS
   title: { type: String, required: true },
   description: { type: String, required: true },
@@ -17,7 +16,7 @@ const questionSchema = new mongoose.Schema({
     required: true,
   },
   creator: { type: String, required: true },
-  citation: {type: String, required: false, default: null },
+  citation: { type: String, required: false, default: null },
 
   //REQUIREMENTS FOR DIFFERENT QUESTION TYPES WILL BE VALIDATED IN MIDDLEWARE
   // questionType MULTICHOICE fields
@@ -27,19 +26,18 @@ const questionSchema = new mongoose.Schema({
       trueAnswer: { type: Boolean, required: false },
     }),
   ],
-  numMulti: {type: Number, required: false, default: null},
+  numMulti: { type: Number, required: false, default: null },
 
   // questionType TEXT
-  answer: {type:string, required: false, default: null},
+  answer: { type: String, required: false, default: null },
 
   // questionType DYNAMIC-MEMORY and DYNAMIC-PATTERN
-  size: {type: Number, required: false, default: null},
-  lives: {type: Number, required: false, default: null},
-  seed: {type:string, required: false, default: null},
+  size: { type: Number, required: false, default: null },
+  lives: { type: Number, required: false, default: null },
+  seed: { type: Number, required: false, default: null },
 
-  // questionType DYNAMIC-PATTERN 
-  randomLevelOrder: {type: boolean, required: false, default: null}
-
+  // questionType DYNAMIC-PATTERN
+  randomLevelOrder: { type: Boolean, required: false, default: null },
 });
 
 export default mongoose.models?.Question ||
