@@ -18,7 +18,12 @@ function PatternGame({
   next,
   submit,
 }) {
-  patternFlashTime = patternFlashTime * 1000;
+
+  if (order){
+    patternFlashTime = patternFlashTime * 1000;
+  } else {
+    patternFlashTime = patternFlashTime * 1000 + 300; // pause between levels
+  }
 
   const totalNumberOfBlocks = gameDim * gameDim;
   const levelList = Array.from(
@@ -64,6 +69,8 @@ function PatternGame({
   const currentPatternIndex = useRef(0);
   const numMatched = useRef(0);
 
+  const test = useRef(0)
+
   const numberOfPatternBlocks = levelList[level];
 
   // unique random seed for each level (if random pattern wanted)
@@ -82,7 +89,9 @@ function PatternGame({
         return randomNumber() - 0.5;
       }
     });
+
     console.log(randomIDsarray);
+
     return randomIDsarray.slice(0, length);
   };
 
@@ -113,8 +122,14 @@ function PatternGame({
     }
 
     currentPatternIndex.current = 0;
-    numMatched.current = 0;
+
+    if (reverse && order){
+      numMatched.current = level;
+    } else {
+      numMatched.current = 0;
+    }
     
+
     if (!order) {
       setDisabled(true);
       showPattern(true);
@@ -172,13 +187,22 @@ function PatternGame({
 
   // show pattern for standard version of game (not ordered)
   const showPattern = (show) => {
+    let pause
     if (show) {
-      setTimerOn(true);
-      setBlocks((prevBlocks) => {
-        return prevBlocks.map((block) => {
-          return { ...block, matched: true, clicked: true };
+      if (order){
+        pause = 0
+      } else {
+        pause = 300
+      }
+      setTimeout(() => {
+        setTimerOn(true);
+        setBlocks((prevBlocks) => {
+          return prevBlocks.map((block) => {
+            return { ...block, matched: true, clicked: true };
+          });
         });
-      });
+      }, pause);
+
     } else {
       setBlocks((prevBlocks) => {
         return prevBlocks.map((block) => {
@@ -239,7 +263,7 @@ function PatternGame({
           if (health.current === 0) {
             setTimerOn(false);
             setGameOver(true);
-            submit(level)
+            // submit(level);
           }
           return { ...block, clicked: true };
         } else {
@@ -257,8 +281,14 @@ function PatternGame({
           return prevBlocks.map((block) => {
             if (userCurrentChoice.id === block.id) {
               if (order) {
-                if (userCurrentChoice.id === patternBlockID[numMatched.current]) {
-                  numMatched.current += 1
+                if (
+                  userCurrentChoice.id === patternBlockID[numMatched.current]
+                ) {
+                  if (reverse){
+                    numMatched.current -= 1;
+                  } else {
+                    numMatched.current += 1;
+                  }
                   return { ...block, matched: true, clicked: true };
                 } else {
                   if (health.current > 0) {
@@ -267,7 +297,7 @@ function PatternGame({
                   if (health.current === 0) {
                     setTimerOn(false);
                     setGameOver(true);
-                    submit(level)
+                    // submit(level);
                   }
                   setDisabled(true);
                   setTimeout(() => {
@@ -276,9 +306,10 @@ function PatternGame({
                   return { ...block, flash: true };
                 }
               } else {
-                numMatched.current += 1
+                numMatched.current += 1;
                 return { ...block, matched: true, clicked: true };
               }
+
             } else {
               return block;
             }
@@ -291,10 +322,18 @@ function PatternGame({
       }
     }
 
-    if (numMatched.current === numberOfPatternBlocks) {
-      setDisabled(true);
-      setVictory(true);
-      setLevel((prevLevel) => prevLevel + 1);
+    if (reverse && order){
+      if (numMatched.current < 0) {
+        setDisabled(true);
+        setVictory(true);
+        setLevel((prevLevel) => prevLevel + 1);
+      }
+    } else {
+      if (numMatched.current === numberOfPatternBlocks) {
+        setDisabled(true);
+        setVictory(true);
+        setLevel((prevLevel) => prevLevel + 1);
+      }
     }
 
     setTimeout(() => {
