@@ -12,7 +12,7 @@ const Home = (props) => {
   const codeRef = useRef(null);
   const [error, setError] = useState("");
 
-  sessionStorage.setItem("redirectAdmin", "false")
+  sessionStorage.setItem("redirectAdmin", "false");
 
   const handleSubmit = () => {
     // Handles name login
@@ -21,7 +21,9 @@ const Home = (props) => {
     const code = codeRef.current.value;
     if (name.length === 0) {
       setError("Invalid name!");
-    } else {
+    } else if (code === "admin"){
+      setError("Invalid code!");
+    }else {
       createStudent(name, code)
         .then((res) => {
           return studentLogin(name, code);
@@ -74,6 +76,13 @@ const Home = (props) => {
                 </div>
               )}
               <button className="home__input home__input--button">Enter</button>
+
+              <p>
+                Not a student? Login{" "}
+                <Link to="/login" className="hyperlink">
+                  here!
+                </Link>
+              </p>
             </form>
           </>
         ) : (
