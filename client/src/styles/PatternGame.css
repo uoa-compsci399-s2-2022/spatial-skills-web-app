@@ -74,6 +74,16 @@
   transform: scale(1.05) rotate(-1deg);
 }
 
+.pattern-game__score {
+  top: 50%;
+  position: relative;
+}
+
+.pattern-game__timer {
+  top: 50%;
+  position: relative;
+}
+
 .pattern-game__blocks-grid {
   margin: auto;
   width:fit-content;
@@ -84,9 +94,6 @@
   justify-items: center;
 }
 
-.pattern-game__no-timer {
-  display: none;
-}
 
 .pattern-game__heart {
   background-color: red;
@@ -118,26 +125,26 @@
 }
 
 .pattern-game__lives-div__hearts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  top: 55%;
+  position: relative;
 }
 
 .pattern-game__lives-number {
-  margin-left: 50%;
+  top: 50%;
+  position: relative;
 }
 
 .pattern-game__lives-div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: fit-content;
+  display: flex;
+  column-gap: 30px;
 }
 
 .pattern-game__information-div-show {
   width: fit-content;
   margin: auto;
-  margin-top: 80px;
+  margin-top: 65px;
   display: grid;
+  height: 100px;
   grid-template-columns: 1fr 1fr 1fr;
 }
 

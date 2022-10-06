@@ -12,6 +12,8 @@ import Bank from "./Bank";
 import Editor from "./Editor";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PatternGame from "../components/PatternGame/PatternGame";
+import MatchingGame from "../components/MatchingGame/MatchingGame";
 
 const GOOGLE_CLIENT_ID =
   "126878629767-elluidkp4g3iost84sgh5spapdq30su7.apps.googleusercontent.com";
@@ -61,6 +63,7 @@ function App() {
             path="dashboard/test/:testId"
             element={<Editor userData={userData} isTest={true} />}
           />
+
         </Routes>
         <Footer />
       </BrowserRouter>
