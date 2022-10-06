@@ -133,7 +133,8 @@ const getQuestionsByCode = async (req, res, next) => {
     times: timeOut,
     allowBackTraversal: test.allowBackTraversal,
     // totalTime: test.totalTime,
-    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0),
+    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0),  // Sum of question times
+    tId: test._id,
   };
   res.json(combined);
 };

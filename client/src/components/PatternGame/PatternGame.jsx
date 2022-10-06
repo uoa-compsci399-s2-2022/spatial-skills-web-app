@@ -235,7 +235,7 @@ function PatternGame({
           if (health.current === 0) {
             setTimerOn(false);
             setGameOver(true);
-            // submit(level)
+            submit(level)
           }
           return { ...block, clicked: true };
         } else {
@@ -263,7 +263,7 @@ function PatternGame({
                   if (health.current === 0) {
                     setTimerOn(false);
                     setGameOver(true);
-                    // submit(level)
+                    submit(level)
                   }
                   setDisabled(true);
                   setTimeout(() => {
