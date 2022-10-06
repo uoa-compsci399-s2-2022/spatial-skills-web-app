@@ -68,10 +68,11 @@ function App() {
             path="pattern"
             element={
             <PatternGame 
-            gameDim={6}       // width and height of grid
+            gameDim={2}       // width and height of grid
             order={true}        // pattern order/no-order
-            maxHealth={15}
-            timerState={true}       // set timer on/off
+            reverse={true}      // replicate the pattern in reverse order
+            maxHealth={5}
+            timerState={false}       // set timer on/off
             timeAllowed={10}          // total time if timer on
             patternFlashTime={0.5}      // time to flash each pattern block
             randomLevelOrder={false}      // each level is randomized
@@ -83,7 +84,13 @@ function App() {
             path="matching"
             element={
             <MatchingGame
-              timeAllowed={20}
+            pairs={8}                // number of pairs to match
+            gameStartDelay={4}       // time to reveal all cards beginning of game
+            selectionDelay={1}       // reveal time after a mismatch between 2 cards
+            maxHealth={5}
+            randomSeed={"Hi"}         
+            timerState={false}       // set timer on/off
+            timeAllowed={10}         // total time if timer on
             />}
           />
 
