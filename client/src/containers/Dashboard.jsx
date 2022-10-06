@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const Dashboard = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/test/all").then((response) => {
+    axiosAPICaller.get("http://localhost:3001/api/test/all").then((response) => {
       console.log(response);
       setData(response.data);
     });

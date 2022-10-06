@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import "../styles/Bank.css";
 import { Link, useParams } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const Bank = () => {
@@ -19,7 +19,7 @@ const Bank = () => {
   const [questionData, setQuestionData] = useState([]);
 
   useEffect(() => {
-    axios.get(qURL).then((response) => {
+    axiosAPICaller.get(qURL).then((response) => {
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
     });
@@ -29,7 +29,7 @@ const Bank = () => {
   const [testData, setTestData] = useState([]);
 
   useEffect(() => {
-    axios.get(tURL).then((response) => {
+    axiosAPICaller.get(tURL).then((response) => {
       setTestData(response.data);
       setIsLoadedTest(true);
     });
@@ -86,6 +86,7 @@ const Bank = () => {
                           <Link
                             className="dashboard__item section"
                             to={`/dashboard/test/${testId}/question/${_question._id}`}
+                            key={_question._id}
                           >
                             <img
                               alt=""
