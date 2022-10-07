@@ -7,7 +7,9 @@ import {
   getQuestionsBytId,
   getQuestionsByCode,
   getTestByCode,
-  getMyTests
+  getMyTests,
+  editTest,
+  deleteTest
 } from "../controllers/test-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
 import adminAuthHandler from "../handlers/admin-auth-handler.js";
@@ -35,7 +37,13 @@ testRouter.get("/mytests", adminAuthHandler, getMyTests);
 // DEPRECATE - functionality to be included in the getTestByCode
 // testRouter.post("/code/getquestions", getQuestionsByCode);
 
-// admin or student
+// ADMIN or student
 testRouter.post("/code/:code", getTestByCode);
+
+// ADMIN
+testRouter.patch("/code/:code", adminAuthHandler, editTest);
+
+// ADMIN
+testRouter.delete("/code/:code", adminAuthHandler, deleteTest);
 
 export default testRouter;

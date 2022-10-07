@@ -37,28 +37,29 @@ const validateQuestions = async (questions) => {
   for (let i = 0; i < questions.length; i++) {
     try {
       q = await Question.findById(questions[i].qId).lean().exec();
+      if (!q) {
+        throw new Error();
+      }
     } catch (e) {
       throw new APIError(`Could not find question ${questions[i].qId}`, 400);
     }
 
-    if (!q) {
-      throw new APIError(`Could not find question ${questions[i].qId}`, 400);
-    }
+    if (q.questionType === "MULTICHOICE") {
+      if (q.multi.length !== questions[i].multiGrades.length) {
+        throw new APIError(
+          `Answer array given for ${questions[i].qId} does not match actual answer array`,
+          400
+        );
+      }
 
-    if (q.multi.length !== questions[i].multiGrades.length) {
-      throw new APIError(
-        `Answer array given for ${questions[i].qId} does not match actual answer array`,
-        400
-      );
-    }
-
-    for (let j = 0; j < questions[i].multiGrades.length; j++) {
-      if (
-        q.multi.filter(
-          (a) => a._id.toString() === questions[i].multiGrades[j].aId
-        ).length !== 1
-      ) {
-        throw new APIError(`Answer not found`, 400);
+      for (let j = 0; j < questions[i].multiGrades.length; j++) {
+        if (
+          q.multi.filter(
+            (a) => a._id.toString() === questions[i].multiGrades[j].aId
+          ).length !== 1
+        ) {
+          throw new APIError(`Answer not found`, 400);
+        }
       }
     }
   }
@@ -93,15 +94,14 @@ const questionOutAdmin = async (question) => {
   question.reverse = adminQ.reverse;
   question.gameStartDelay = adminQ.gameStartDelay;
   question.selectionDelay = adminQ.selectionDelay;
-  question.multiGrades.forEach(e => {
+  question.multiGrades.forEach((e) => {
     delete e._id;
   });
   delete question._id;
   return question;
 };
 
-
-const questionOutStudent = async (req,question) => {
+const questionOutStudent = async (req, question) => {
   const studentQ = {};
   let adminQ;
   try {
@@ -113,10 +113,12 @@ const questionOutStudent = async (req,question) => {
     throw new APIError(`Could not find question ${question.qId}.`, 404);
   }
 
-  const multi = req.body.shuffleAnswers ? FisherYatesShuffle(adminQ.multi): adminQ.multi;
-  multi.forEach(m=>{delete m.trueAnswer})
-
-  console.log(multi)
+  const multi = req.body.shuffleAnswers
+    ? FisherYatesShuffle(adminQ.multi)
+    : adminQ.multi;
+  multi.forEach((m) => {
+    delete m.trueAnswer;
+  });
 
   studentQ.title = adminQ.title;
   studentQ.description = adminQ.description;
@@ -143,13 +145,13 @@ const questionOutStudent = async (req,question) => {
 };
 
 const testOutAdmin = async (test) => {
-  test.questions =  await Promise.all(test.questions.map(
-    async (q) => await questionOutAdmin(q)
-  ));
+  test.questions = await Promise.all(
+    test.questions.map(async (q) => await questionOutAdmin(q))
+  );
   return test;
 };
 
-const testOutStudent = async (req,test) => {
+const testOutStudent = async (req, test) => {
   const testOut = {};
   testOut.title = test.title;
   testOut.creator = test.creator;
@@ -158,14 +160,15 @@ const testOutStudent = async (req,test) => {
   testOut.totalTime = test.totalTime;
   testOut.individualTime = test.individualTime;
 
-  testOut.questions =  await Promise.all(test.questions.map(
-    async (q) => await questionOutStudent(req,q)
-  ));
+  testOut.questions = await Promise.all(
+    test.questions.map(async (q) => await questionOutStudent(req, q))
+  );
 
-  testOut.questions = req.body.shuffleQuestions ? FisherYatesShuffle(testOut.questions): testOut.questions;
+  testOut.questions = req.body.shuffleQuestions
+    ? FisherYatesShuffle(testOut.questions)
+    : testOut.questions;
 
   return testOut;
-
 };
 
 ////////////////////////
@@ -203,7 +206,7 @@ const createTest = async (req, res, next) => {
           qId: q.qId,
           time: q.time,
           multiGrades: q.multiGrades,
-          textGrade: q.grade,
+          textGrade: q.textGrade,
         })),
     studentAnswers: [],
     published: false,
@@ -258,13 +261,13 @@ const getTestByCode = async (req, res, next) => {
 
   //Different outputs depending on whether admin or student
   if (req.permissions.includes("admin")) {
-    // res.json(await testOutStudent(req,test));
+    // res.json(await testOutStudent(req, test));
     res.json(await testOutAdmin(test));
   } else {
-    if (!test.published){
+    if (!test.published) {
       return next(new APIError("Cannot do unpublished test.", 403));
     }
-    res.json(await testOutStudent(req,test));
+    res.json(await testOutStudent(req, test));
   }
 };
 
@@ -273,12 +276,115 @@ const getMyTests = async (req, res, next) => {
   try {
     //lean to get plain old javascript object
     tests = await Test.find({ creator: req.name }).lean().exec();
+    if (!tests) {
+      throw new Error();
+    }
   } catch (e) {
-    return next(new APIError("No Test not found.", 404));
+    return next(new APIError("No test not found.", 404));
   }
 
-  const testsOut = await Promise.all(tests.map((t)=>testOutAdmin(t)));
+  const testsOut = await Promise.all(tests.map((t) => testOutAdmin(t)));
   res.json(testsOut);
+};
+
+const editTest = async (req, res, next) => {
+  let test;
+  try {
+    test = await Test.findOne({
+      creator: req.name,
+      code: req.params.code,
+    }).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(
+      new APIError(
+        "No test not found or user does not have permission to edit test.",
+        404
+      )
+    );
+  }
+
+  if (test.published) {
+    return next(new APIError("Cannot edit published test", 404));
+  }
+
+  if (req.body.allowBackTraversal && req.body.individualTime) {
+    return next(
+      new APIError("Cannot have individual time and backwards traversal.", 400)
+    );
+  }
+  //Validate questions field
+  if (req.body.questions) {
+    try {
+      await validateQuestions(req.body.questions);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  test.title = !req.body.title ? test.title : req.body.title;
+  test.questions = !req.body.questions ? test.questions : req.body.questions;
+  test.published = !req.body.published ? test.published : req.body.published;
+  test.allowBackTraversal =
+    req.body.allowBackTraversal == null
+      ? test.allowBackTraversal
+      : req.body.allowBackTraversal;
+  test.individualTime =
+    req.body.individualTime == null
+      ? test.individualTime
+      : req.body.individualTime;
+  test.totalTime = !test.individualTime
+    ? !req.body.totalTime
+      ? test.totalTime
+      : req.body.totalTime
+    : req.body.questions.map((q) => q.time).reduce((total, t) => total + t, 0);
+
+  try {
+    await test.validate();
+  } catch (e) {
+    return next(new APIError("Invalid or missing inputs.", 400));
+  }
+
+  let result;
+  try {
+    result = await test.save();
+  } catch (e) {
+    return next(new APIError("Failed to save in database.", 500));
+  }
+
+  res.status(201).json(result);
+};
+
+const deleteTest = async (req, res, next) => {
+  let test;
+  try {
+    test = await Test.findOne({ creator: req.name, code: req.params.code })
+      .lean()
+      .exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(
+      new APIError(
+        "No test not found or user does not have permission to delete test.",
+        404
+      )
+    );
+  }
+
+  try {
+    await Test.findOneAndDelete({
+      creator: req.name,
+      code: req.params.code,
+    }).exec();
+  } catch (e) {
+    return next(new APIError("Could not delete test", 400));
+  }
+
+  res.json({ message: "Successfully deleted test" });
 };
 
 /////////////////////////////
@@ -343,7 +449,6 @@ const getTestById = async (req, res, next) => {
   res.json(testOut);
 };
 
-
 //DEPRECATE - functionality included in getTestByCode
 const getQuestionsByCode = async (req, res, next) => {
   //Can only access test if have admin or test permissions
@@ -403,9 +508,6 @@ const getAllTests = async (req, res, next) => {
   res.json(tests);
 };
 
-
-
-
 export {
   createTest,
   getAllTests,
@@ -414,4 +516,6 @@ export {
   getQuestionsByCode,
   getTestByCode,
   getMyTests,
+  editTest,
+  deleteTest,
 };
