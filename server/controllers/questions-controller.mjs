@@ -120,10 +120,13 @@ const createMCQ = async (req) => {
 };
 
 const createTQ = async (req) => {
+  console.log(req.files);
   // Includes question image
   if (!Object.keys(req.files).includes("question") || !req.body.answer) {
     throw new APIError("Missing question (image)", 400);
   }
+
+  console.log("IMAGE OK");
 
   // Get unique file directory
   let fileDir;
@@ -413,6 +416,7 @@ const updateQuestion = async (req, res, next) => {
 };
 
 const createQuestion = async (req, res, next) => {
+  console.log(req.body);
   // Check if missing any required generic fields
   if (
     !req.body.title ||
@@ -445,6 +449,7 @@ const createQuestion = async (req, res, next) => {
 };
 
 const deleteQuestionById = async (req, res, next) => {
+  console.log("DELETING QUESTION");
   let question;
   try {
     question = await Question.findById(req.params.qid).exec();

@@ -73,7 +73,7 @@ const Stats = () => {
                                 </td>
                                 <td>{_question.title}</td>
                                 <td>{`${question.time}s`}</td>
-                                <td>{question.grade.toFixed(1)}</td>
+                                <td>{_question.grade}</td>
                               </tr>
                             );
                           }

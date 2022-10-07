@@ -55,11 +55,11 @@ function App() {
           <Route path="dashboard/test/:testId/question" element={<Bank />} />
           <Route
             path="dashboard/test/:testId/question/:questionId"
-            element={<Editor userData={userData} isTest={false} />}
+            element={<Editor userData={userData} />}
           />
           <Route
             path="dashboard/test/:testId"
-            element={<Editor userData={userData} isTest={true} />}
+            element={<Editor userData={userData} />}
           />
         </Routes>
         <Footer />

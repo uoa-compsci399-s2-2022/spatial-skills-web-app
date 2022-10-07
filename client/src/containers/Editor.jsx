@@ -1,15 +1,19 @@
 import "../styles/Editor.css";
 import { FaSave, FaTrash } from "react-icons/fa";
+import { MdError } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const baseURL = "http://localhost:3001/api"; // change later for prod with .env
+const errorTree = {
+  403: "ERROR: Unauthorized!",
+};
 
 const Editor = (props) => {
-  const { userData, isTest } = props;
+  const [error, setError] = useState(null);
+  const { userData } = props;
   const { testId, questionId } = useParams();
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
@@ -19,9 +23,13 @@ const Editor = (props) => {
     timeLimit: null,
     noTimeLimit: false,
     linearProgression: false,
+    shuffleTestQuestions: false,
+    shuffleMCQAnswers: false,
     image: "",
+    question: null,
     category: "",
     type: "",
+    citation: "",
     multi: [],
     answer: "",
     grade: null,
@@ -32,14 +40,20 @@ const Editor = (props) => {
     randomLevelOder: false,
     seed: "",
   });
+  const MODE =
+    testId === "create" || questionId === "create" ? "CREATE" : "EDIT";
+  const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchQuestionData = async () => {
       await axiosAPICaller
         .get(
-          `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
+          `${baseURL}/${
+            CONTEXT === "TEST" ? `test/${testId}` : `question/${questionId}`
+          }`
         )
         .then((response) => {
+          console.log(response.data);
           setSettings({
             ...settings,
             title: response.data.title,
@@ -47,41 +61,60 @@ const Editor = (props) => {
             description: response.data.description,
             category: response.data.category,
             image: response.data.image,
+            answer: response.data.answer,
+            citation: response.data.citation,
+            type: response.data.questionType,
+            timeLimit: response.data.totalTime,
           });
         });
     };
 
-    // only fetch if there is something to fetch
+    // fetch question data
     if (testId !== "create" && questionId !== "create") {
-      fetchData();
+      fetchQuestionData();
     }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axiosAPICaller.post(
-      `${baseURL}/${isTest ? "test" : "question"}`,
-      isTest
-        ? {
-            title: settings.title,
-            creator: userData.name,
-            published: settings.published,
-          }
-        : {
-            title: settings.title,
-            description: settings.description,
-            image: settings.image,
-            category: settings.category,
-          }
-    );
-    navigate(-1);
+    window.scrollTo(0, 0);
+    let noErrors = true;
+    const data = {
+      title: settings.title,
+      description: settings.description,
+      category: settings.category,
+      questionType: settings.type,
+      creator: userData.name,
+      answer: settings.answer,
+      question: settings.question,
+      citation: settings.citation,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    if (MODE === "EDIT") {
+      await axiosAPICaller
+        .patch(`${baseURL}/question/${questionId}`, data, config)
+        .catch((e) => {
+          setError(e.response.status);
+          noErrors = false;
+        });
+    } else {
+      console.log(settings.question);
+      await axiosAPICaller.post(`${baseURL}/question`, data, config);
+    }
+
+    // Only navigate back if there is no errors
+    if (noErrors) {
+      navigate(-1);
+    }
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    await axios.delete(
-      `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
-    );
+    await axiosAPICaller.delete(`${baseURL}/question/${questionId}`);
     navigate(-1);
   };
 
@@ -91,8 +124,17 @@ const Editor = (props) => {
 
   return (
     <form className="editor" onSubmit={(e) => handleSubmit(e)}>
-      <h1>Create / Edit {isTest ? "Test" : "Question"}</h1>
+      <h1>{`${MODE === "CREATE" ? "Create" : "Edit"} ${
+        CONTEXT === "TEST" ? "Test" : "Question"
+      }`}</h1>
       <div className="divider" />
+      {error !== null ? (
+        <p className="editor__error">
+          <MdError size={iconSize} />
+          {errorTree[error]}
+        </p>
+      ) : null}
+
       <div className="editor__grid">
         <label>Title</label>
         <input
@@ -103,7 +145,7 @@ const Editor = (props) => {
           defaultValue={settings.title}
           required
         />
-        {isTest ? (
+        {CONTEXT === "TEST" ? (
           <>
             <label>Published</label>
             <input
@@ -143,6 +185,16 @@ const Editor = (props) => {
               className="editor__input"
               required
             />
+            <label>Citation</label>
+            <input
+              type="text"
+              placeholder="Citation"
+              className="editor__input"
+              onChange={(e) =>
+                setSettings({ ...settings, citation: e.target.value })
+              }
+              defaultValue={settings.citation}
+            />
             {settings.category !== "MEMORY" ? (
               <>
                 <label>Image</label>
@@ -152,16 +204,19 @@ const Editor = (props) => {
                     onChange={(e) => {
                       setSettings({
                         ...settings,
+                        question: e.target.files[0],
                         image: URL.createObjectURL(e.target.files[0]),
                       });
                     }}
-                    required
+                    required={MODE === "CREATE"}
                   />
-                  <img
-                    src={settings.image}
-                    className="editor__image"
-                    alt="Preview of question diagram"
-                  />
+                  {settings.image !== "" ? (
+                    <img
+                      src={settings.image}
+                      className="editor__image"
+                      alt=""
+                    />
+                  ) : null}
                 </div>
               </>
             ) : null}
@@ -173,10 +228,30 @@ const Editor = (props) => {
               required
               defaultValue={settings.category}
             >
-              <option value="VISUALISATION">Visualisation</option>
-              <option value="ROTATION">Rotation</option>
-              <option value="PERCEPTION">Perception</option>
-              <option value="MEMORY">Memory</option>
+              <option selected={settings.category === ""}>
+                Select question category
+              </option>
+              <option
+                value="VISUALISATION"
+                selected={settings.category === "VISUALISATION"}
+              >
+                Visualisation
+              </option>
+              <option
+                value="ROTATION"
+                selected={settings.category === "ROTATION"}
+              >
+                Rotation
+              </option>
+              <option
+                value="PERCEPTION"
+                selected={settings.category === "PERCEPTION"}
+              >
+                Perception
+              </option>
+              <option value="MEMORY" selected={settings.category === "MEMORY"}>
+                Memory
+              </option>
             </select>
             <label>Type</label>
             <select
@@ -186,6 +261,10 @@ const Editor = (props) => {
               defaultValue={settings.type}
               required
             >
+              <option selected={settings.type === ""}>
+                Select question type
+              </option>
+
               {settings.category === "MEMORY" ? (
                 <>
                   <option value="MATCH">Match</option>
@@ -193,8 +272,15 @@ const Editor = (props) => {
                 </>
               ) : (
                 <>
-                  <option value="TEXT">Text</option>
-                  <option value="MULTI">Multichoice</option>
+                  <option value="TEXT" selected={settings.type === "TEXT"}>
+                    Text
+                  </option>
+                  <option
+                    value="MULTICHOICE"
+                    selected={settings.type === "MULTICHOICE"}
+                  >
+                    Multichoice
+                  </option>
                 </>
               )}
             </select>
