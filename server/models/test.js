@@ -15,14 +15,15 @@ const testSchema = new mongoose.Schema({
           grade: { type: mongoose.Decimal128, required: false, default: 0 },
         }),
       ],
-      grade: { type: mongoose.Decimal128, required: false, default: 0 },
+      textGrade: { type: mongoose.Decimal128, required: false, default: null },
     },
   ],
   studentAnswers: [StudentAnswer.schema],
   published: { type: Boolean, required: true },
   code: { type: String, required: true },
-  allowBackTraversal: { type: Boolean, required: false },
-  totalTime: { type: Number, required: false },
+  allowBackTraversal: { type: Boolean, required: false, default: false },
+  totalTime: { type: Number, required: false, default: null },
+  individualTime: { type: Boolean, required: false, default: false },
 });
 
 //Check if question already a model before exporting
