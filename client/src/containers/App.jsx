@@ -77,6 +77,11 @@ function App() {
             patternFlashTime={0.5}      // time to flash each pattern block
             randomLevelOrder={true}      // each level is randomized
             randomSeed={"just a seed"}
+            description={
+              "Click on the pattern shown at the start of the game, \
+              You will lose a life for each mismatch. \
+              Progress as far as you can! \
+              Click start to begin."}
             />}
           />
 
@@ -91,6 +96,11 @@ function App() {
             randomSeed={"Hi"}         
             timerState={false}       // set timer on/off
             timeAllowed={10}         // total time if timer on
+            description={
+            "Match those cards in pairs before time runs out! \
+            You will lose a life for each mismatch. \
+            Click start to begin."
+            }
             />}
           />
 

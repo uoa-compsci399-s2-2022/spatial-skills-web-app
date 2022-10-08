@@ -15,6 +15,7 @@ function PatternGame({
   patternFlashTime,
   randomLevelOrder,
   randomSeed = null,
+  description,
   next,
   submit,
 }) {
@@ -427,10 +428,7 @@ function PatternGame({
       {!started ? (
         <div className="pattern-game__instructions">
           <h1>Memory Test: Block Patterns</h1>
-          <p>Click on the pattern shown at the start of the game</p>
-          <p>You will lose a life for each mismatch.</p>
-          <p>Progress as far as you can!</p>
-          <p>Click start to begin.</p>
+          <p>{description}</p>
           <button className="pattern-game__start-button" onClick={startGame}>
             Start
           </button>

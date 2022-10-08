@@ -1,3 +1,9 @@
+
+
+.pattern-game__instructions {
+  width: 25%;
+}
+
 .pattern-game__instructions h1{
   font-size: 40px;
 }
