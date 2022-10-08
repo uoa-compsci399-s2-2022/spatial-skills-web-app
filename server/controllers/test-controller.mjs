@@ -176,48 +176,27 @@ const testOutStudent = async (req, test) => {
 ////////////////////////
 
 const createTest = async (req, res, next) => {
-  if (req.body.allowBackTraversal && !req.body.totalTime) {
-    return next(
-      new APIError("To allow backward traversal must have total time.", 400)
-    );
-  }
-
   if (req.body.allowBackTraversal && req.body.individualTime) {
     return next(
       new APIError("Cannot have individual time and backwards traversal.", 400)
     );
   }
-
-  //Validate questions field
-  if (req.body.questions) {
-    try {
-      await validateQuestions(req.body.questions);
-    } catch (e) {
-      return next(e);
-    }
-  }
-
   const createdTest = new Test({
     title: req.body.title,
     creator: req.name,
-    questions: !req.body.questions
-      ? []
-      : req.body.questions.map((q) => ({
-          qId: q.qId,
-          time: q.time,
-          multiGrades: q.multiGrades,
-          textGrade: q.textGrade,
-        })),
+    questions: [],
     studentAnswers: [],
     published: false,
-    allowBackTraversal: req.body.allowBackTraversal,
-    totalTime: !req.body.individualTime
-      ? req.body.totalTime
-      : req.body.questions
-          .map((q) => q.time)
-          .reduce((total, t) => total + t, 0),
+    allowBackTraversal:
+      req.body.allowBackTraversal == null ? false : req.body.allowBackTraversal,
+    totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
     code: await createCode(),
-    individualTime: req.body.individualTime,
+    individualTime:
+      req.body.individualTime == null ? true : req.body.individualTime,
+    shuffleAnswers:
+      req.body.shuffleAnswers == null ? false : req.body.shuffleAnswers,
+    shuffleQuestions:
+      req.body.shuffleQuestions == null ? false : req.body.shuffleQuestions,
   });
 
   try {
