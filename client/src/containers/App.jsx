@@ -68,13 +68,14 @@ function App() {
             path="pattern"
             element={
             <PatternGame 
+            corsi={true}
             gameDim={5}       // width and height of grid
             order={true}        // pattern order/no-order
             reverse={true}      // replicate the pattern in reverse order, order must be true
             maxHealth={5}
             timerState={true}       // set timer on/off
-            timeAllowed={30}          // total time if timer on
-            patternFlashTime={0.5}      // time to flash each pattern block
+            timeAllowed={60}          // total time if timer on
+            patternFlashTime={0.1}      // time to flash each pattern block
             randomLevelOrder={true}      // each level is randomized
             randomSeed={"just a seed"}
             description={
@@ -90,12 +91,12 @@ function App() {
             element={
             <MatchingGame
             pairs={8}                // number of pairs to match
-            gameStartDelay={4}       // time to reveal all cards beginning of game
+            gameStartDelay={1}       // time to reveal all cards beginning of game
             selectionDelay={1}       // reveal time after a mismatch between 2 cards
             maxHealth={5}
             randomSeed={"Hi"}         
-            timerState={false}       // set timer on/off
-            timeAllowed={10}         // total time if timer on
+            timerState={true}       // set timer on/off
+            timeAllowed={2}         // total time if timer on
             description={
             "Match those cards in pairs before time runs out! \
             You will lose a life for each mismatch. \

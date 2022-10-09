@@ -6,6 +6,7 @@ import seedrandom from "seedrandom";
 
 
 function PatternGame({
+  corsi,
   gameDim,
   order,
   reverse,
@@ -26,23 +27,10 @@ function PatternGame({
     patternFlashTime = patternFlashTime * 1000 + 300; // pause between levels
   }
 
-  const totalNumberOfBlocks = gameDim * gameDim;
-  const levelList = Array.from(
-    { length: totalNumberOfBlocks },
-    (_, i) => i + 1
-  );
-
-  let randomNumber = seedrandom(randomSeed);
-  let randomSeedArray = [];
-
-  for (let i = 0; i < totalNumberOfBlocks; i++) {
-    randomSeedArray.push(randomNumber());
-  }
-
   // create blocks array
-  const CreateBlockArray = (dimension) => {
+  const CreateBlockArray = (numberOfBlocks) => {
     const bArray = [];
-    for (let i = 0; i < dimension * dimension; i++) {
+    for (let i = 0; i < numberOfBlocks; i++) {
       bArray.push({
         id: i,
         pattern: false,
@@ -53,7 +41,42 @@ function PatternGame({
     }
     return bArray;
   };
-  const blocksArray = CreateBlockArray(gameDim);
+
+  let totalNumberOfBlocks
+  
+  if (corsi){
+    totalNumberOfBlocks = 9;
+  } else {
+    totalNumberOfBlocks = gameDim * gameDim;
+  }
+
+  let levelList
+
+  let randomNumber = seedrandom(randomSeed);
+  let randomSeedArray = [];
+  let blocksArray
+
+  if (corsi){
+    levelList = Array.from(
+      { length: totalNumberOfBlocks },
+      (_, i) => i + 1
+    );
+    
+    blocksArray = CreateBlockArray(totalNumberOfBlocks);
+
+  } else {
+    levelList = Array.from(
+      { length: totalNumberOfBlocks },
+      (_, i) => i + 1
+    );
+
+    blocksArray = CreateBlockArray(totalNumberOfBlocks);
+
+  }
+
+  for (let i = 0; i < totalNumberOfBlocks; i++) {
+    randomSeedArray.push(randomNumber());
+  }
 
   const [blocks, setBlocks] = useState(blocksArray);
   const [patternBlockID, setPatternBlockIDs] = useState([]);
@@ -418,10 +441,29 @@ function PatternGame({
   };
 
   // style for dynamic grid size of equal width and height
-  const patternGridStyle = () => {
-    let columnSize = "10vh ".repeat(gameDim);
-    return { gridTemplateColumns: columnSize };
+  const patternGridStyleNoCorsi = () => {
+    if (corsi){
+      let columnSize = "10vh ".repeat(2);
+      return { display: "flex" };
+    
+    } else {
+      let columnSize = "10vh ".repeat(gameDim);
+      return { gridTemplateColumns: columnSize };
+    }
   };
+
+  const renderPage = () => {
+    if (started) {
+      if (corsi){
+        return ("corsi-test__blocks-div")
+      } else {
+        return ("pattern-game__blocks-grid")
+      }
+
+    } else {
+      return ("")
+    }
+  }
 
   return (
     <div className={victoryAnimation()}>
@@ -461,7 +503,7 @@ function PatternGame({
           <button onClick={next}>Next Question</button>
         </div>
       ) : null}
-      <div className="pattern-game__blocks-grid" style={patternGridStyle()}>
+      <div className={renderPage()} style={patternGridStyleNoCorsi()}>
         {blocks.map((block) => (
           <SingleBlock
             key={block.id}
@@ -472,6 +514,7 @@ function PatternGame({
             disabled={disabled}
             flash={block.flash}
             clicked={block.clicked}
+            corsiMode={corsi}
           />
         ))}
       </div>

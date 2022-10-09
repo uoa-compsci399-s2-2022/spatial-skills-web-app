@@ -19,6 +19,8 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  
 }
 
 .pattern-game-over{
@@ -100,6 +102,22 @@
   justify-items: center;
 }
 
+.corsi-test__blocks-div {
+  background-color: rgba(255,255,255, 0.9);
+  position: relative;
+  width: 90vh;
+  height: 70vh;
+  margin: auto;
+  font-size: 1.6rem;
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+  border: 8px solid;
+  padding: 1rem;
+  border-image: linear-gradient(45deg, turquoise, rgba(20, 4, 163, 0.6)) 1;
+
+}
+
 
 .pattern-game__heart {
   background-color: red;
@@ -152,6 +170,7 @@
   display: grid;
   height: 100px;
   grid-template-columns: 1fr 1fr 1fr;
+
 }
 
 .pattern-game__information-div-hide {
