@@ -7,14 +7,14 @@ import {
   getQuestionsBytId,
   getQuestionsByCode,
   getTestByCode,
-  getMyTests
+  getMyTests,
+  editTest,
+  deleteTest
 } from "../controllers/test-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
 import adminAuthHandler from "../handlers/admin-auth-handler.js";
 
 const testRouter = express.Router();
-
-//UNPORTECTED ENDPOINTS
 
 //PROTECTED ENDPOINTS
 testRouter.use(jwtHandler);
@@ -29,13 +29,21 @@ testRouter.get("/all", adminAuthHandler, getAllTests);
 testRouter.get("/mytests", adminAuthHandler, getMyTests);
 
 // DEPRECATE - functionality to be included in the getTestById
-testRouter.post("/getquestions", getQuestionsBytId);
+// testRouter.post("/getquestions", getQuestionsBytId);
 
-testRouter.get("/:tid", getTestById);
+// DEPRECATE - in favour of getTestByCode
+// testRouter.get("/:tid", getTestById);
 
 // DEPRECATE - functionality to be included in the getTestByCode
-testRouter.post("/code/getquestions", getQuestionsByCode);
+// testRouter.post("/code/getquestions", getQuestionsByCode);
 
-testRouter.get("/code/:code", getTestByCode);
+// ADMIN or student
+testRouter.post("/code/:code", getTestByCode);
+
+// ADMIN
+testRouter.patch("/code/:code", adminAuthHandler, editTest);
+
+// ADMIN
+testRouter.delete("/code/:code", adminAuthHandler, deleteTest);
 
 export default testRouter;

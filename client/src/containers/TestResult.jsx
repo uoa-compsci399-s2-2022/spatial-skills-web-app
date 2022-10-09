@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import axiosAPICaller from "../services/api-service.mjs";
 
 // Test Marking proof of concept.
 
@@ -17,7 +18,7 @@ const TestResult = () => {
   };
 
   useEffect(() => {
-    axios.post(url, body).then(
+    axiosAPICaller.post(url, body).then(
       (res) => {
         console.log(res);
         setData(res.data);
@@ -52,7 +53,7 @@ const TestResult = () => {
     return <div>Loading Test...</div>;
   } else {
     return (
-      <div className="results">
+      <div className="results" style={{marginTop: '5rem'}}>
         <div>
           <h1>Test Result Page</h1>
           <h1>Test Name: {data.testTitle}</h1>
