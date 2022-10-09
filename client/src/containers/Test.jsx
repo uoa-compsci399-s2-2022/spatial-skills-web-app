@@ -63,11 +63,8 @@ const Test = (props) => {
 
   const nextQuestion = () => {
     if (currentQuestion < questionBank.length) {
-      // setSelectedAnswer(userAnswers[currentQuestion].aId);
-      // setCurrentQuestion(currentQuestion + 1);
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
-        // setTimeLeft(questionTimeBank[currentQuestion]);
         setTimeLeft(getCurrentQuestion().time);
       }
       return;
@@ -78,11 +75,8 @@ const Test = (props) => {
 
   const previousQuestion = () => {
     if (currentQuestion > 1 && allowBackTraversal) {
-      // setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
-      // setCurrentQuestion(currentQuestion - 1);
       goToQuestion(currentQuestion - 1);
       if (!allowBackTraversal) {
-        // setTimeLeft(questionTimeBank[currentQuestion]);
         setTimeLeft(getCurrentQuestion().time);
       }
     }
@@ -106,9 +100,9 @@ const Test = (props) => {
   }
 
   const submitAnswer = (event) => {
-    // if (questionTypeBank[questionNum - 1] === "entry") {
-    //   event.preventDefault(); // Prevent form entry submission when pressing enter
-    // }
+    if (getCurrentQuestion().questionType == "TEXT") {
+      event.preventDefault(); // Prevent form entry submission when pressing enter
+    }
     let answers = userAnswers;
     answers[currentQuestion - 1].aId = event.target.value;
     setSelectedAnswer(event.target.value);

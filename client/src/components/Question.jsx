@@ -2,20 +2,20 @@ const Question = (props) => {
   // const { type, questionImage, text, answers, selected } = props;
   const { question, submit, selected } = props;
 
+  console.log(question);
+
   const renderMultiChoiceAnswers = () => {
-    const labels = ["a", "b", "c", "d", "e"];
     const answerChoices = [];
-    // The images cannot be retrieved through their filename (array, not object)
-    for (let i = 0; i < question.multi; i++) {
+    for (let i = 0; i < question.multi.length; i++) {
       answerChoices.push(
-        <div className="answer__choice" key={labels[i]}>
-          <label htmlFor={labels[i]}>
-            <img src={question.image} alt="" />
+        <div className="answer__choice" key={i}>
+          <label htmlFor={i}>
+            <img src={question.multi[i].image} alt="" />
           </label>
           <input
             type="radio"
-            id={labels[i]}
-            value={question._id}
+            id={i}
+            value={question.multi[i]._id}
             name="answer"
             onChange={submit}
             checked={selected === question.multi[i]._id}
@@ -55,7 +55,7 @@ const Question = (props) => {
         onSubmit={submit}
         autoComplete="off"
       >
-        {question.questionType === "MULTICHOICE-MULTI"
+        {question.questionType == "MULTICHOICE"
           ? renderMultiChoiceAnswers()
           : renderTextEntryAnswer()}
       </form>
