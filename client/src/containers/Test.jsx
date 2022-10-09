@@ -13,7 +13,6 @@ const Test = (props) => {
   const { userData } = props;
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
-  // const [questionTimeBank, setQuestionTimeBank] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -24,15 +23,9 @@ const Test = (props) => {
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
   const [testId, setTestId] = useState(null);
   
-  const data = {
-    code: sessionStorage.getItem("code"),
-    shuffleQuestions: false,
-    shuffleAnswers: false,
-  };
-
   // Get test question data from backend API.
   useEffect(() => {
-    axiosAPICaller.post(`/test/code/${sessionStorage.getItem("code")}`, data).then(
+    axiosAPICaller.get(`/test/code/${sessionStorage.getItem("code")}`).then(
       (res) => {
         console.log(res);
         setTestId(res.data.tId);
@@ -44,7 +37,7 @@ const Test = (props) => {
           setTimeLeft(res.data.totalTime);
         } else {
           // setTimeLeft(res.data.times[currentQuestion - 1]);
-          setTimeLeft(res.data.questions[0].time);
+          setTimeLeft(res.data.questions[0].time.$numberDecimal);
         }
         
         let defaultAns = [];
@@ -65,7 +58,7 @@ const Test = (props) => {
     if (currentQuestion < questionBank.length) {
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(getCurrentQuestion().time);
+        setTimeLeft(getCurrentQuestion().time.$numberDecimal);
       }
       return;
     } else {
@@ -76,9 +69,10 @@ const Test = (props) => {
   const previousQuestion = () => {
     if (currentQuestion > 1 && allowBackTraversal) {
       goToQuestion(currentQuestion - 1);
-      if (!allowBackTraversal) {
-        setTimeLeft(getCurrentQuestion().time);
-      }
+      // if (!allowBackTraversal) {
+      //   // They shouldn't be able to reach here (no back on linear test)
+      //   setTimeLeft(getCurrentQuestion().time.$numberDecimal);
+      // }
     }
   }
 
@@ -100,7 +94,7 @@ const Test = (props) => {
   }
 
   const submitAnswer = (event) => {
-    if (getCurrentQuestion().questionType == "TEXT") {
+    if (getCurrentQuestion().questionType === "TEXT") {
       event.preventDefault(); // Prevent form entry submission when pressing enter
     }
     let answers = userAnswers;
@@ -163,48 +157,21 @@ const Test = (props) => {
       if (!allowBackTraversal) {
         clearInterval(Ref.current)  // Stop timer if the test is linear.
       }
-      if (getCurrentQuestion().title === "MatchingGame") {
-        testQuestion = <MatchingGame
-            // timeAllowed={questionTimeBank[currentQuestion - 1]}
-            timeAllowed={getCurrentQuestion().time}
-            submit={submitAnswerValue}
-            next={nextQuestion}
-          />
-      }
-      else if (getCurrentQuestion().title === "PatternGame") {
-        testQuestion = <PatternGame 
-          gameDim={6}       // width and height of grid
-          order={true}        // pattern order/no-order
-          maxHealth={5}
-          timerState={false}       // set timer on/off
-          timeAllowed={10}          // total time if timer on
-          patternFlashTime={0.5}      // time to flash each pattern block
-          randomLevelOrder={false}      // each level is randomized
-          randomSeed={"just a seed"}
-          next={nextQuestion}
-          submit={submitAnswerValue}
-        />
-      }
-    } else {
-      testQuestion = <Question
-          // type={"multichoice"} // Change when the DB has question type.
-          // questionImage={getCurrentQuestion().image}
-          // text={getCurrentQuestion().description}
-          // answers={getCurrentQuestion().multi}
-          question={getCurrentQuestion()}
-          submit={submitAnswer}
-          selected={selectedAnswer}
-        />
     }
+    testQuestion = <Question
+        question={getCurrentQuestion()}
+        submit={submitAnswer}
+        selected={selectedAnswer}
+    />
     
     return (
       <div className="test">
-        { getCurrentQuestion().category === "Spatial Memory" && !allowBackTraversal
+        { getCurrentQuestion().category === "MEMORY" && !allowBackTraversal
          ? null : 
           <TimerDisplay seconds={timeLeft} />
         }
         
-        {allowBackTraversal && currentQuestion != 1 ? 
+        {allowBackTraversal && currentQuestion !== 1 ? 
           <button
             className="test__previous"
             onClick={() => previousQuestion()}

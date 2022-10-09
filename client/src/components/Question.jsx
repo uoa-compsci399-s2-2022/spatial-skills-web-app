@@ -1,10 +1,12 @@
+import MatchingGame from "../components/MatchingGame/MatchingGame";
+import PatternGame from "../components/PatternGame/PatternGame";
+
 const Question = (props) => {
-  // const { type, questionImage, text, answers, selected } = props;
   const { question, submit, selected } = props;
 
-  console.log(question);
+  // console.log(question);
 
-  const renderMultiChoiceAnswers = () => {
+  const renderMultiChoiceSingleAnswer = () => {
     const answerChoices = [];
     for (let i = 0; i < question.multi.length; i++) {
       answerChoices.push(
@@ -42,6 +44,62 @@ const Question = (props) => {
     );
   };
 
+  const renderMatchingGame = () => {
+    return (
+      <MatchingGame
+        pairs={question.size}
+        gameStartDelay={question.gameStartDelay.$numberDecimal}
+        selectionDelay={question.selectionDelay.$numberDecimal}
+        maxHealth={question.lives}
+        timerState={question.time.$numberDecimal === 0 ? true : false}
+        timeAllowed={question.time.$numberDecimal}
+        randomSeed={question.seed}
+        // submit={submitAnswerValue}
+        // next={nextQuestion}
+      />
+    )
+  }
+
+  const renderPatternGame = () => {
+    return (
+      <PatternGame 
+        gameDim={question.size}  // width and height of grid
+        order={true}  // pattern order/no-order
+        maxHealth={question.lives}
+        timerState={question.time.$numberDecimal === 0 ? true : false}  // set timer on/off
+        timeAllowed={question.time.$numberDecimal}  // total time if timer on
+        patternFlashTime={question.flashtime.$numberDecimal}  // time to flash each pattern block
+        randomLevelOrder={question.randomLevelOrder}  // each level is randomized
+        randomSeed={question.seed}
+        reverse={question.reverse}
+        // next={nextQuestion}
+        // submit={submitAnswerValue}
+      />
+    )
+  }
+
+  // Conditionally render answer format based on question type
+  const renderAnswer = () => {
+    switch (question.questionType) {
+      case 'MULTICHOICE-SINGLE':
+        return renderMultiChoiceSingleAnswer();
+      case 'MULTICHOICE-MULTI':
+        return renderMultiChoiceSingleAnswer();
+      case 'TEXT':
+        return renderTextEntryAnswer();
+      case 'DYNAMIC-MEMORY':
+        return renderMatchingGame();
+      case 'DYNAMIC-PATTERN':
+        return renderPatternGame();
+      default:
+        console.log(`ERROR: Invalid question type ${question.questionType}.`);
+        return;
+    }
+  }
+
+  if (question.category === "MEMORY") {
+    return renderAnswer();
+  }
   return (
     <>
       <div className="test__question">
@@ -55,9 +113,7 @@ const Question = (props) => {
         onSubmit={submit}
         autoComplete="off"
       >
-        {question.questionType == "MULTICHOICE"
-          ? renderMultiChoiceAnswers()
-          : renderTextEntryAnswer()}
+        {renderAnswer()}
       </form>
     </>
   );
