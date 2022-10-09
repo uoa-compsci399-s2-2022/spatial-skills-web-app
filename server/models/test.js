@@ -10,7 +10,7 @@ const testSchema = new mongoose.Schema({
   published: { type: Boolean, required: true },
   code: { type: String, required: true },
   allowBackTraversal: { type: Boolean, required: false, default: false },
-  totalTime: { type: Number, required: false, default: null },
+  totalTime: { type: mongoose.Decimal128, required: false, default: null },
   individualTime: { type: Boolean, required: false, default: true },
   shuffleAnswers: { type: Boolean, required: false, default: false },
   shuffleQuestions: { type: Boolean, required: false, default: false },
