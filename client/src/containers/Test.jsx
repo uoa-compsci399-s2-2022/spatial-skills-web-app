@@ -10,7 +10,7 @@ import axiosAPICaller from "../services/api-service.mjs";
 const Test = (props) => {
   const { userData } = props;
   const Ref = useRef(null); // Used for countdown timer
-  const [questionBank, setQuestionBank] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -21,20 +21,20 @@ const Test = (props) => {
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
   const [testId, setTestId] = useState(null);
   
-  // Get test question data from backend API.
+  // Load test data from backend API
   useEffect(() => {
     axiosAPICaller.get(`/test/code/${sessionStorage.getItem("code")}`).then(
       (res) => {
         console.log(res);
         setTestId(res.data.tId);
-        setQuestionBank(res.data.questions);
-        // setQuestionTimeBank(res.data.times);
+        setQuestions(res.data.questions);
         setTotalTime(res.data.totalTime);
         setAllowBackTraversal(res.data.allowBackTraversal);
         if (res.data.allowBackTraversal) {
-          setTimeLeft(res.data.totalTime);
+          // setTimeLeft(res.data.totalTime);
+          setTimeLeft(res.data.questions.map(q => parseInt(q.time.$numberDecimal)).reduce((partialSum, a) => partialSum + a, 0))
+          setTotalTime(res.data.questions.map(q => parseInt(q.time.$numberDecimal)).reduce((partialSum, a) => partialSum + a, 0));
         } else {
-          // setTimeLeft(res.data.times[currentQuestion - 1]);
           setTimeLeft(res.data.questions[0].time.$numberDecimal);
         }
         
@@ -53,14 +53,14 @@ const Test = (props) => {
   }, []);
 
   const nextQuestion = () => {
-    if (currentQuestion < questionBank.length) {
+    if (currentQuestion < questions.length) {
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
         setTimeLeft(getCurrentQuestion().time.$numberDecimal);
       }
       return;
     } else {
-      finishTest();  // No more questions.
+      finishTest();  // No more questions
     }
   };
 
@@ -114,7 +114,7 @@ const Test = (props) => {
   }
 
   const getCurrentQuestion = () => {
-    return questionBank[currentQuestion - 1];
+    return questions[currentQuestion - 1];
   };
 
   const goToQuestion = (num) => {
@@ -189,7 +189,7 @@ const Test = (props) => {
         {testQuestion}
 
         <div className="test__progress" title="Progress">
-          {currentQuestion} / {questionBank.length}
+          {currentQuestion} / {questions.length}
         </div>
 
         {!selectedAnswer && !allowBackTraversal ? null : ( // Hide next button if no answer selected
@@ -204,14 +204,13 @@ const Test = (props) => {
 
         {allowBackTraversal ? 
         <QuestionNavigation 
-          numberOfQuestions={questionBank.length}
+          numberOfQuestions={questions.length}
           onClick={goToQuestion}
           answers={userAnswers}
           currentQuestion={currentQuestion}
         /> :
         <Timer
         questionTime={ allowBackTraversal ? 
-          // questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
           totalTime :
           getCurrentQuestion().time}
         timeLeft={timeLeft}
@@ -223,40 +222,3 @@ const Test = (props) => {
 };
 
 export default Test;
-
-// // ----------- Local Question Importing
-
-// // Function to get all images from a folder as an array.
-// // Array order corresponds to folder order (question is last).
-// function importAll(r) {
-//   let images = [];
-//   r.keys().map((item, index) => {
-//     images.push(r(item));
-//   });
-//   return images;
-
-//   ////Use these line if you want to access each image using the file name.
-//   //let images = {};
-//   //r.keys().map((item, index) => { images[item.replace('./','')] = r(item); });
-// }
-// const images = importAll(
-//   require.context(
-//     "../assets/questions/perception1",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
-// const images2 = importAll(
-//   require.context(
-//     "../assets/questions/perception4",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
-// const images3 = importAll(
-//   require.context(
-//     "../assets/questions/perception12",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
