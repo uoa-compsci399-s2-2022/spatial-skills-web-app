@@ -244,12 +244,12 @@ const getTestByCode = async (req, res, next) => {
 
   //Different outputs depending on whether admin or student
   if (req.permissions.includes("admin")) {
-    res.json(await testOutStudent(test));
-    // try{
-    //   res.json(await testOutAdmin(test));
-    // }catch(e){
-    //   return next(e);
-    // }
+    // res.json(await testOutStudent(test));
+    try{
+      res.json(await testOutAdmin(test));
+    }catch(e){
+      return next(e);
+    }
   } else {
     if (!test.published) {
       return next(new APIError("Cannot do unpublished test.", 403));
