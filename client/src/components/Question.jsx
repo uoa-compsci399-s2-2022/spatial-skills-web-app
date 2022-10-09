@@ -2,7 +2,7 @@ import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
 
 const Question = (props) => {
-  const { question, submit, selected } = props;
+  const { question, submit, submitValue, nextQuestion, selected } = props;
 
   // console.log(question);
 
@@ -54,8 +54,8 @@ const Question = (props) => {
         timerState={question.time.$numberDecimal === 0 ? true : false}
         timeAllowed={question.time.$numberDecimal}
         randomSeed={question.seed}
-        // submit={submitAnswerValue}
-        // next={nextQuestion}
+        submit={submitValue}
+        next={nextQuestion}
       />
     )
   }
@@ -68,12 +68,12 @@ const Question = (props) => {
         maxHealth={question.lives}
         timerState={question.time.$numberDecimal === 0 ? true : false}  // set timer on/off
         timeAllowed={question.time.$numberDecimal}  // total time if timer on
-        patternFlashTime={question.flashtime.$numberDecimal}  // time to flash each pattern block
+        patternFlashTime={question.patternFlashTime.$numberDecimal}  // time to flash each pattern block
         randomLevelOrder={question.randomLevelOrder}  // each level is randomized
         randomSeed={question.seed}
         reverse={question.reverse}
-        // next={nextQuestion}
-        // submit={submitAnswerValue}
+        next={nextQuestion}
+        submit={submitValue}
       />
     )
   }

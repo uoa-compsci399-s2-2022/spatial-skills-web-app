@@ -170,7 +170,7 @@ const MatchingGame = ({
     if(gameOver){
       showAllCards(true)
       setTimerOn(false)
-      // submit(matchedPair)
+      submit(matchedPair.current)
     }
   }, [gameOver])
 

@@ -5,8 +5,6 @@ import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
 import QuestionNavigation from "../components/QuestionNavigation";
-import MatchingGame from "../components/MatchingGame/MatchingGame";
-import PatternGame from "../components/PatternGame/PatternGame";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
@@ -94,17 +92,21 @@ const Test = (props) => {
   }
 
   const submitAnswer = (event) => {
-    if (getCurrentQuestion().questionType === "TEXT") {
-      event.preventDefault(); // Prevent form entry submission when pressing enter
-    }
+    // Updates answers whenever user selects / enters new answer
     let answers = userAnswers;
-    answers[currentQuestion - 1].aId = event.target.value;
+    if (getCurrentQuestion().questionType === "TEXT") {
+      event.preventDefault();  // Prevent form entry submission when pressing enter
+      answers[currentQuestion - 1].value = event.target.value;
+    } 
+    else {
+      answers[currentQuestion - 1].aId = event.target.value;
+    }
     setSelectedAnswer(event.target.value);
     setUserAnswers(answers);
   };
 
   const submitAnswerValue = (value) => {
-    // For memory game
+    // For memory games where there is no answer ID
     let answers = userAnswers;
     answers[currentQuestion - 1].value = value;
     setSelectedAnswer(true);
@@ -161,6 +163,8 @@ const Test = (props) => {
     testQuestion = <Question
         question={getCurrentQuestion()}
         submit={submitAnswer}
+        submitValue={submitAnswerValue}
+        nextQuestion={nextQuestion}
         selected={selectedAnswer}
     />
     
@@ -188,7 +192,7 @@ const Test = (props) => {
           {currentQuestion} / {questionBank.length}
         </div>
 
-        {selectedAnswer === null && !allowBackTraversal ? null : ( // Hide next button if no answer selected
+        {!selectedAnswer && !allowBackTraversal ? null : ( // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
