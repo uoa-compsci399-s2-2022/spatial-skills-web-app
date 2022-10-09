@@ -35,7 +35,7 @@ const questionSchema = new mongoose.Schema({
     }),
   ],
   numMulti: { type: Number, required: false, default: null },
-  totalMultiGrade: {type: mongoose.Decimal128, required: false},
+  totalMultiGrade: {type: mongoose.Decimal128, required: false, default: null},
 
   // questionType TEXT
   answer: { type: String, required: false, default: null },

@@ -286,38 +286,43 @@ const updateMCQ = async (req, question) => {
     }
     question.totalMultiGrade = newGradeTotal;
   }
-
 };
 
 const updateTQ = async (req, question) => {
   question.answer = req.body.answer == null ? question.answer : req.body.answer;
   question.textGrade =
     req.body.textGrade == null ? question.textGrade : req.body.textGrade;
-
 };
 
 const updateDMQ = async (req, question) => {
-  question.size = req.body.size == null ? question.size: req.body.size;
-  question.lives = req.body.lives == null ? question.lives: req.body.lives;
-  question.seed = req.body.seed == null ? question.seed: req.body.seed;
-  question.gameStartDelay = req.body.gameStartDelay == null ? question.gameStartDelay: req.body.gameStartDelay;
-  question.selectionDelay = req.body.selectionDelay == null ? question.selectionDelay: req.body.selectionDelay;
-
-
+  question.size = req.body.size == null ? question.size : req.body.size;
+  question.lives = req.body.lives == null ? question.lives : req.body.lives;
+  question.seed = req.body.seed == null ? question.seed : req.body.seed;
+  question.gameStartDelay =
+    req.body.gameStartDelay == null
+      ? question.gameStartDelay
+      : req.body.gameStartDelay;
+  question.selectionDelay =
+    req.body.selectionDelay == null
+      ? question.selectionDelay
+      : req.body.selectionDelay;
 };
 
 const updateDPQ = async (req, question) => {
-  question.title = req.body.title;
-  question.description = req.body.description;
-  question.category = req.body.category;
-  question.size = req.body.size;
-  question.lives = req.body.lives;
-  question.seed = req.body.seed;
-  question.randomLevelOrder = req.body.randomLevelOrder;
-  question.patternFlashTime = req.body.patternFlashTime;
-  question.corsi = req.body.corsi;
-  question.reverse = req.body.reverse;
-
+  question.size = req.body.size == null ? question.size : req.body.size;
+  question.lives = req.body.lives == null ? question.lives : req.body.lives;
+  question.seed = req.body.seed == null ? question.seed : req.body.seed;
+  question.randomLevelOrder =
+    req.body.randomLevelOrder == null
+      ? question.randomLevelOrder
+      : req.body.randomLevelOrder;
+  question.patternFlashTime =
+    req.body.patternFlashTime == null
+      ? question.patternFlashTime
+      : req.body.patternFlashTime;
+  question.corsi = req.body.corsi == null ? question.corsi : question.corsi;
+  question.reverse =
+    req.body.reverse == null ? question.reverse : question.reverse;
 };
 
 ////////////////////////
@@ -349,8 +354,31 @@ const updateQuestion = async (req, res, next) => {
     req.body.category == null ? question.category : req.body.category;
   question.citation =
     req.body.citation == null ? question.citation : req.body.citation;
-  question.time = req.body.time == null ? question.time : req.body.time;
 
+  //Change time in test
+  let test;
+  try {
+    test = await Test.findById(question.tId).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+
+  try {
+    if (test.individualTime && !(req.body.time == null)) {
+      test.totalTime =
+        parseFloat(test.totalTime) +
+        parseFloat(req.body.time) -
+        parseFloat(question.time ? question.time : 0);
+    }
+    await test.save();
+  } catch (e) {
+    throw new APIError("Failed to save changes in test.", 500);
+  }
+
+  question.time = req.body.time == null ? question.time : req.body.time;
 
   try {
     if (
@@ -437,11 +465,11 @@ const createQuestion = async (req, res, next) => {
     test.questions.push(createdQuestion._id.toString());
     if (test.individualTime) {
       test.totalTime =
-        test.totalTime + Number(req.body.time ? req.body.time : 0);
+        parseFloat(test.totalTime) + parseFloat(req.body.time ? req.body.time : 0);
     }
     await test.save();
   } catch (e) {
-    throw new APIError("Failed to save in question in test.", 500);
+    throw new APIError("Failed to save question in test.", 500);
   }
 
   try {
@@ -485,7 +513,7 @@ const deleteQuestionById = async (req, res, next) => {
       (q) => q !== question._id.toString()
     );
     if (test.individualTime) {
-      test.totalTime = test.totalTime - question.time;
+      test.totalTime = parseFloat(test.totalTime) - parseFloat(question.time);
     }
     test.save();
   } catch (e) {
