@@ -12,24 +12,34 @@ const questionSchema = new mongoose.Schema({
   },
   questionType: {
     type: String,
-    enum: ["MULTICHOICE", "TEXT", "DYNAMIC-MEMORY", "DYNAMIC-PATTERN"],
+    enum: [
+      "MULTICHOICE-MULTI",
+      "MULTICHOICE-SINGLE",
+      "TEXT",
+      "DYNAMIC-MEMORY",
+      "DYNAMIC-PATTERN",
+    ],
     required: true,
   },
   creator: { type: String, required: true },
   citation: { type: String, required: false, default: null },
+  tId: { type: String, required: true },
+  time: { type: mongoose.Decimal128, required: false},
 
   //REQUIREMENTS FOR DIFFERENT QUESTION TYPES WILL BE VALIDATED IN MIDDLEWARE
   // questionType MULTICHOICE fields
   multi: [
     new mongoose.Schema({
       image: { type: String, required: false },
-      trueAnswer: { type: Boolean, required: false },
+      grade: { type: mongoose.Decimal128, required: false },
     }),
   ],
   numMulti: { type: Number, required: false, default: null },
+  totalMultiGrade: {type: mongoose.Decimal128, required: false, default: null},
 
   // questionType TEXT
   answer: { type: String, required: false, default: null },
+  textGrade: { type: mongoose.Decimal128, required: false, default: null },
 
   // questionType DYNAMIC-MEMORY and DYNAMIC-PATTERN
   size: { type: Number, required: false, default: null },
