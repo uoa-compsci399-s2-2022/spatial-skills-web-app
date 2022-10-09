@@ -7,14 +7,14 @@ import Question from "../components/Question";
 import QuestionNavigation from "../components/QuestionNavigation";
 import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
-// import axios from "axios";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
   const { userData } = props;
   const Ref = useRef(null); // Used for countdown timer
   const [questionBank, setQuestionBank] = useState([]);
-  const [questionTimeBank, setQuestionTimeBank] = useState([]);
+  // const [questionTimeBank, setQuestionTimeBank] = useState([]);
+  const [totalTime, setTotalTime] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
@@ -32,17 +32,19 @@ const Test = (props) => {
 
   // Get test question data from backend API.
   useEffect(() => {
-    axiosAPICaller.post('/test/code/getquestions', data).then(
+    axiosAPICaller.post(`/test/code/${sessionStorage.getItem("code")}`, data).then(
       (res) => {
         console.log(res);
         setTestId(res.data.tId);
         setQuestionBank(res.data.questions);
-        setQuestionTimeBank(res.data.times);
+        // setQuestionTimeBank(res.data.times);
+        setTotalTime(res.data.totalTime);
         setAllowBackTraversal(res.data.allowBackTraversal);
         if (res.data.allowBackTraversal) {
           setTimeLeft(res.data.totalTime);
         } else {
-          setTimeLeft(res.data.times[currentQuestion - 1]);
+          // setTimeLeft(res.data.times[currentQuestion - 1]);
+          setTimeLeft(res.data.questions[0].time);
         }
         
         let defaultAns = [];
@@ -65,7 +67,8 @@ const Test = (props) => {
       // setCurrentQuestion(currentQuestion + 1);
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questionTimeBank[currentQuestion]);
+        // setTimeLeft(questionTimeBank[currentQuestion]);
+        setTimeLeft(getCurrentQuestion().time);
       }
       return;
     } else {
@@ -79,7 +82,8 @@ const Test = (props) => {
       // setCurrentQuestion(currentQuestion - 1);
       goToQuestion(currentQuestion - 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questionTimeBank[currentQuestion]);
+        // setTimeLeft(questionTimeBank[currentQuestion]);
+        setTimeLeft(getCurrentQuestion().time);
       }
     }
   }
@@ -167,7 +171,8 @@ const Test = (props) => {
       }
       if (getCurrentQuestion().title === "MatchingGame") {
         testQuestion = <MatchingGame
-            timeAllowed={questionTimeBank[currentQuestion - 1]}
+            // timeAllowed={questionTimeBank[currentQuestion - 1]}
+            timeAllowed={getCurrentQuestion().time}
             submit={submitAnswerValue}
             next={nextQuestion}
           />
@@ -188,10 +193,11 @@ const Test = (props) => {
       }
     } else {
       testQuestion = <Question
-          type={"multichoice"} // Change when the DB has question type.
-          questionImage={getCurrentQuestion().image}
-          text={getCurrentQuestion().description}
-          answers={getCurrentQuestion().answer}
+          // type={"multichoice"} // Change when the DB has question type.
+          // questionImage={getCurrentQuestion().image}
+          // text={getCurrentQuestion().description}
+          // answers={getCurrentQuestion().multi}
+          question={getCurrentQuestion()}
           submit={submitAnswer}
           selected={selectedAnswer}
         />
@@ -240,8 +246,9 @@ const Test = (props) => {
         /> :
         <Timer
         questionTime={ allowBackTraversal ? 
-          questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
-          questionTimeBank[currentQuestion - 1]}
+          // questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
+          totalTime :
+          getCurrentQuestion().time}
         timeLeft={timeLeft}
         />}
 
