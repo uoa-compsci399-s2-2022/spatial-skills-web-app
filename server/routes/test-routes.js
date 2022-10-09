@@ -38,7 +38,7 @@ testRouter.get("/mytests", adminAuthHandler, getMyTests);
 // testRouter.post("/code/getquestions", getQuestionsByCode);
 
 // ADMIN or student
-testRouter.post("/code/:code", getTestByCode);
+testRouter.get("/code/:code", getTestByCode);
 
 // ADMIN
 testRouter.patch("/code/:code", adminAuthHandler, editTest);

@@ -65,16 +65,17 @@ const validateQuestions = async (questions) => {
   }
 };
 
-const questionOutAdmin = async (question) => {
+const questionOutAdmin = async (qId) => {
   let adminQ;
   try {
-    adminQ = await Question.findById(question.qId).lean().exec();
+    adminQ = await Question.findById(qId).lean().exec();
     if (!adminQ) {
       throw new Error();
     }
   } catch (e) {
-    throw new APIError(`Could not find question ${question.qId}.`, 404);
+    throw new APIError(`Could not find question with id ${qId}.`, 404);
   }
+  const question = {};
   question.title = adminQ.title;
   question.description = adminQ.description;
   question.image = adminQ.image;
@@ -85,6 +86,8 @@ const questionOutAdmin = async (question) => {
   question.multi = adminQ.multi;
   question.numMulti = adminQ.numMulti;
   question.answer = adminQ.answer;
+  question.textGrade = adminQ.textGrade;
+  question.totalMultiGrade = adminQ.totalMultiGrade;
   question.size = adminQ.size;
   question.lives = adminQ.lives;
   question.seed = adminQ.seed;
@@ -94,30 +97,30 @@ const questionOutAdmin = async (question) => {
   question.reverse = adminQ.reverse;
   question.gameStartDelay = adminQ.gameStartDelay;
   question.selectionDelay = adminQ.selectionDelay;
-  question.multiGrades.forEach((e) => {
-    delete e._id;
-  });
-  delete question._id;
+  question.tId = adminQ.tId;
+  question.qId = adminQ._id;
+  question.time = adminQ.time;
+
   return question;
 };
 
-const questionOutStudent = async (req, question) => {
+const questionOutStudent = async (test, qId) => {
   const studentQ = {};
   let adminQ;
   try {
-    adminQ = await Question.findById(question.qId).lean().exec();
+    adminQ = await Question.findById(qId).lean().exec();
     if (!adminQ) {
       throw new Error();
     }
   } catch (e) {
-    throw new APIError(`Could not find question ${question.qId}.`, 404);
+    throw new APIError(`Could not find question ${qId}.`, 404);
   }
 
-  const multi = req.body.shuffleAnswers
+  const multi = test.shuffleAnswers
     ? FisherYatesShuffle(adminQ.multi)
     : adminQ.multi;
   multi.forEach((m) => {
-    delete m.trueAnswer;
+    delete m.grade;
   });
 
   studentQ.title = adminQ.title;
@@ -139,19 +142,20 @@ const questionOutStudent = async (req, question) => {
   studentQ.gameStartDelay = adminQ.gameStartDelay;
   studentQ.selectionDelay = adminQ.selectionDelay;
   studentQ.qId = adminQ._id;
+  studentQ.tId = adminQ.tId;
+  studentQ.time = adminQ.time;
 
-  delete question._id;
   return studentQ;
 };
 
 const testOutAdmin = async (test) => {
   test.questions = await Promise.all(
-    test.questions.map(async (q) => await questionOutAdmin(q))
+    test.questions.map(async (qId) => await questionOutAdmin(qId))
   );
   return test;
 };
 
-const testOutStudent = async (req, test) => {
+const testOutStudent = async (test) => {
   const testOut = {};
   testOut.title = test.title;
   testOut.creator = test.creator;
@@ -161,10 +165,10 @@ const testOutStudent = async (req, test) => {
   testOut.individualTime = test.individualTime;
 
   testOut.questions = await Promise.all(
-    test.questions.map(async (q) => await questionOutStudent(req, q))
+    test.questions.map(async (qId) => await questionOutStudent(test, qId))
   );
 
-  testOut.questions = req.body.shuffleQuestions
+  testOut.questions = test.shuffleQuestions
     ? FisherYatesShuffle(testOut.questions)
     : testOut.questions;
 
@@ -176,48 +180,27 @@ const testOutStudent = async (req, test) => {
 ////////////////////////
 
 const createTest = async (req, res, next) => {
-  if (req.body.allowBackTraversal && !req.body.totalTime) {
-    return next(
-      new APIError("To allow backward traversal must have total time.", 400)
-    );
-  }
-
   if (req.body.allowBackTraversal && req.body.individualTime) {
     return next(
       new APIError("Cannot have individual time and backwards traversal.", 400)
     );
   }
-
-  //Validate questions field
-  if (req.body.questions) {
-    try {
-      await validateQuestions(req.body.questions);
-    } catch (e) {
-      return next(e);
-    }
-  }
-
   const createdTest = new Test({
     title: req.body.title,
     creator: req.name,
-    questions: !req.body.questions
-      ? []
-      : req.body.questions.map((q) => ({
-          qId: q.qId,
-          time: q.time,
-          multiGrades: q.multiGrades,
-          textGrade: q.textGrade,
-        })),
+    questions: [],
     studentAnswers: [],
     published: false,
-    allowBackTraversal: req.body.allowBackTraversal,
-    totalTime: !req.body.individualTime
-      ? req.body.totalTime
-      : req.body.questions
-          .map((q) => q.time)
-          .reduce((total, t) => total + t, 0),
+    allowBackTraversal:
+      req.body.allowBackTraversal == null ? false : req.body.allowBackTraversal,
+    totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
     code: await createCode(),
-    individualTime: req.body.individualTime,
+    individualTime:
+      req.body.individualTime == null ? true : req.body.individualTime,
+    shuffleAnswers:
+      req.body.shuffleAnswers == null ? false : req.body.shuffleAnswers,
+    shuffleQuestions:
+      req.body.shuffleQuestions == null ? false : req.body.shuffleQuestions,
   });
 
   try {
@@ -261,13 +244,22 @@ const getTestByCode = async (req, res, next) => {
 
   //Different outputs depending on whether admin or student
   if (req.permissions.includes("admin")) {
-    // res.json(await testOutStudent(req, test));
-    res.json(await testOutAdmin(test));
+    res.json(await testOutStudent(test));
+    // try{
+    //   res.json(await testOutAdmin(test));
+    // }catch(e){
+    //   return next(e);
+    // }
   } else {
     if (!test.published) {
       return next(new APIError("Cannot do unpublished test.", 403));
     }
-    res.json(await testOutStudent(req, test));
+
+    try {
+      res.json(await testOutStudent(test));
+    } catch (e) {
+      return next(e);
+    }
   }
 };
 
@@ -324,9 +316,9 @@ const editTest = async (req, res, next) => {
     }
   }
 
-  test.title = !req.body.title ? test.title : req.body.title;
-  test.questions = !req.body.questions ? test.questions : req.body.questions;
-  test.published = !req.body.published ? test.published : req.body.published;
+  test.title = req.body.title == null ? test.title : req.body.title;
+  test.published =
+    req.body.published == null ? test.published : req.body.published;
   test.allowBackTraversal =
     req.body.allowBackTraversal == null
       ? test.allowBackTraversal
@@ -335,12 +327,16 @@ const editTest = async (req, res, next) => {
     req.body.individualTime == null
       ? test.individualTime
       : req.body.individualTime;
-  test.totalTime = !test.individualTime
-    ? !req.body.totalTime
-      ? test.totalTime
-      : req.body.totalTime
-    : req.body.questions.map((q) => q.time).reduce((total, t) => total + t, 0);
-
+  test.totalTime = test.individualTime ? test.totalTime : req.body.totalTime;
+  test.shuffleAnswers =
+    req.body.shuffleAnswers == null
+      ? test.shuffleAnswers
+      : req.body.shuffleAnswers;
+  test.shuffleQuestions =
+    req.body.shuffleQuestions == null
+      ? test.shuffleQuestions
+      : req.body.shuffleQuestions;
+      
   try {
     await test.validate();
   } catch (e) {
