@@ -20,15 +20,15 @@ const Editor = (props) => {
     title: "",
     description: "",
     published: false,
-    timeLimit: null,
+    totalTime: null,
     noTimeLimit: false,
     allowBackTraversal: false,
-    shuffleTestQuestions: false,
-    shuffleMCQAnswers: false,
+    shuffleAnswers: false,
+    shuffleQuestions: false,
     image: "",
     question: null,
     category: "",
-    type: "",
+    questionType: "",
     citation: "",
     multi: [],
     answer: "",
@@ -39,6 +39,9 @@ const Editor = (props) => {
     previewDuration: null,
     randomLevelOder: false,
     seed: "",
+    creator: userData.name,
+    gameStartDelay: null,
+    selectionDelay: null,
   });
   const MODE = code === "create" || questionId === "create" ? "CREATE" : "EDIT";
   const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
@@ -46,7 +49,7 @@ const Editor = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       await axiosAPICaller
-        .post(
+        .get(
           `${baseURL}/${
             CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
           }`
@@ -62,32 +65,23 @@ const Editor = (props) => {
             image: response.data.image,
             answer: response.data.answer,
             citation: response.data.citation,
-            type: response.data.questionType,
-            timeLimit: response.data.totalTime,
+            questionType: response.data.questionType,
+            totalTime: response.data.totalTime,
             allowBackTraversal: response.data.allowBackTraversal,
+            shuffleAnswers: response.data.shuffleAnswers,
+            shuffleQuestions: response.data.shuffleQuestions,
           });
         });
     };
-
-    fetchData();
+    if (MODE === "EDIT") {
+      fetchData();
+    }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     window.scrollTo(0, 0);
     let noErrors = true;
-    const data = {
-      title: settings.title,
-      description: settings.description,
-      category: settings.category,
-      questionType: settings.type,
-      creator: userData.name,
-      answer: settings.answer,
-      question: settings.question,
-      citation: settings.citation,
-      published: settings.published,
-      totalTime: settings.timeLimit,
-    };
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -99,7 +93,7 @@ const Editor = (props) => {
           `${baseURL}/${
             CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
           }`,
-          data,
+          settings,
           config
         )
         .catch((e) => {
@@ -109,21 +103,25 @@ const Editor = (props) => {
     } else {
       await axiosAPICaller.post(
         `${baseURL}/${CONTEXT === "TEST" ? `test` : `question`}`,
-        data,
+        settings,
         config
       );
     }
 
     // Only navigate back if there is no errors
     if (noErrors) {
-      navigate(-1);
+      navigate("/dashboard");
     }
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    await axiosAPICaller.delete(`${baseURL}/question/${questionId}`);
-    navigate(-1);
+    await axiosAPICaller.delete(
+      `${baseURL}/${
+        CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
+      }`
+    );
+    navigate("/dashboard");
   };
 
   useEffect(() => {
@@ -176,6 +174,30 @@ const Editor = (props) => {
                 setSettings({
                   ...settings,
                   allowBackTraversal: e.target.checked,
+                });
+              }}
+            />
+            <label>Shuffle Answers</label>
+            <input
+              type="checkbox"
+              style={{ width: "min-content" }}
+              defaultChecked={settings.shuffleAnswers}
+              onChange={(e) => {
+                setSettings({
+                  ...settings,
+                  shuffleAnswers: e.target.checked,
+                });
+              }}
+            />
+            <label>Shuffle Questions</label>
+            <input
+              type="checkbox"
+              style={{ width: "min-content" }}
+              defaultChecked={settings.shuffleQuestions}
+              onChange={(e) => {
+                setSettings({
+                  ...settings,
+                  shuffleQuestions: e.target.checked,
                 });
               }}
             />
@@ -264,12 +286,12 @@ const Editor = (props) => {
             <label>Type</label>
             <select
               onChange={(e) =>
-                setSettings({ ...settings, type: e.target.value })
+                setSettings({ ...settings, questionType: e.target.value })
               }
-              defaultValue={settings.type}
+              defaultValue={settings.questionType}
               required
             >
-              <option selected={settings.type === ""}>
+              <option selected={settings.questionType === ""}>
                 Select question type
               </option>
 
@@ -280,14 +302,23 @@ const Editor = (props) => {
                 </>
               ) : (
                 <>
-                  <option value="TEXT" selected={settings.type === "TEXT"}>
+                  <option
+                    value="TEXT"
+                    selected={settings.questionType === "TEXT"}
+                  >
                     Text
                   </option>
                   <option
-                    value="MULTICHOICE"
-                    selected={settings.type === "MULTICHOICE"}
+                    value="MULTICHOICE-SINGLE"
+                    selected={settings.questionType === "MULTICHOICE-SINGLE"}
                   >
                     Multichoice
+                  </option>
+                  <option
+                    value="MULTICHOICE-MULTI"
+                    selected={settings.questionType === "MULTICHOICE-MULTI"}
+                  >
+                    Multiple Response
                   </option>
                 </>
               )}
@@ -296,7 +327,7 @@ const Editor = (props) => {
               <>
                 <label>Grid Size</label>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="5"
                   className="editor__input editor__input"
                   onChange={(e) =>
@@ -347,7 +378,7 @@ const Editor = (props) => {
                   }}
                 />
               </>
-            ) : settings.type === "MULTI" ? (
+            ) : settings.questionType.includes("MULTICHOICE") ? (
               <>
                 <label>Number of Answers</label>
                 <input
@@ -406,13 +437,13 @@ const Editor = (props) => {
         )}
         <label>Time Limit</label>
         <input
-          type="text"
+          type="number"
           placeholder="60"
           className="editor__input editor__input"
           disabled={settings.noTimeLimit}
-          defaultValue={settings.timeLimit}
+          defaultValue={settings.totalTime}
           onChange={(e) =>
-            setSettings({ ...settings, timeLimit: e.target.value })
+            setSettings({ ...settings, totalTime: parseInt(e.target.value) })
           }
           required
         />
@@ -436,7 +467,7 @@ const Editor = (props) => {
           <FaTrash size={iconSize} />
         </button>
         <button className="button button--filled">
-          Save
+          {MODE === "EDIT" ? "Save" : "Create"}
           <FaSave size={iconSize} />
         </button>
       </div>

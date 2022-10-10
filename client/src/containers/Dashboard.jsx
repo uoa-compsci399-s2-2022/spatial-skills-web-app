@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axiosAPICaller
-      .get("http://localhost:3001/api/test/all")
+      .get("http://localhost:3001/api/test/mytests")
       .then((response) => {
         console.log(response);
         setData(response.data);

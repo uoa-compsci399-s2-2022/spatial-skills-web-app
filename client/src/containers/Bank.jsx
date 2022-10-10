@@ -29,7 +29,7 @@ const Bank = () => {
   const [testData, setTestData] = useState([]);
 
   useEffect(() => {
-    axiosAPICaller.post(tURL).then((response) => {
+    axiosAPICaller.get(tURL).then((response) => {
       setTestData(response.data);
       setIsLoadedTest(true);
     });
