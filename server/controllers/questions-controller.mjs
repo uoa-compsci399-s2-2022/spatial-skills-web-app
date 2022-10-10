@@ -117,7 +117,7 @@ const createMCQ = async (req) => {
       creator: req.name,
       citation: req.body.citation == null ? null : req.body.citation,
       time: req.body.time == null ? 0 : req.body.time,
-      tId: req.body.tId,
+      testCode: req.body.testCode,
       totalMultiGrade: totalMultiGrade,
     });
     await createdQuestion.validate();
@@ -180,7 +180,7 @@ const createTQ = async (req) => {
       creator: req.name,
       citation: req.body.citation == null ? null : req.body.citation,
       time: req.body.time == null ? 0 : req.body.time,
-      tId: req.body.tId,
+      testCode: req.body.testCode,
       textGrade: req.body.textGrade == null ? 0 : req.body.textGrade,
     });
     await createdQuestion.validate();
@@ -218,7 +218,7 @@ const createDMQ = async (req) => {
       gameStartDelay: req.body.gameStartDelay,
       selectionDelay: req.body.selectionDelay,
       time: 0,
-      tId: req.body.tId,
+      testCode: req.body.testCode,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -259,7 +259,7 @@ const createDPQ = async (req) => {
       corsi: req.body.corsi,
       reverse: req.body.reverse,
       time: 0,
-      tId: req.body.tId,
+      testCode: req.body.testCode,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -358,7 +358,7 @@ const updateQuestion = async (req, res, next) => {
   //Change time in test
   let test;
   try {
-    test = await Test.findById(question.tId).exec();
+    test = await Test.findOne({ code: question.testCode }).exec();
     if (!test) {
       throw new Error();
     }
@@ -427,15 +427,16 @@ const createQuestion = async (req, res, next) => {
       "TEXT",
       "DYNAMIC-MEMORY",
       "DYNAMIC-PATTERN",
-    ].includes(req.body.questionType)
+    ].includes(req.body.questionType) ||
+    !req.body.testCode
   ) {
     return next(new APIError("Missing or invalid fields", 400));
   }
 
-  //Check if tId given is valid
+  //Check if test code given is valid
   let test;
   try {
-    test = await Test.findById(req.body.tId).exec();
+    test = await Test.findOne({ code: req.body.testCode }).exec();
     if (!test) {
       throw new Error();
     }
@@ -465,7 +466,8 @@ const createQuestion = async (req, res, next) => {
     test.questions.push(createdQuestion._id.toString());
     if (test.individualTime) {
       test.totalTime =
-        parseFloat(test.totalTime) + parseFloat(req.body.time ? req.body.time : 0);
+        parseFloat(test.totalTime) +
+        parseFloat(req.body.time ? req.body.time : 0);
     }
     await test.save();
   } catch (e) {
@@ -500,7 +502,7 @@ const deleteQuestionById = async (req, res, next) => {
 
   let test;
   try {
-    test = await Test.findById(question.tId).exec();
+    test = await Test.findByOne({ code: question.testCode }).exec();
     if (!test) {
       throw new Error();
     }
