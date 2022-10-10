@@ -14,6 +14,7 @@ const Test = (props) => {
   const [totalTime, setTotalTime] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
+  // const [timerOn, setTimerOn] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -28,12 +29,10 @@ const Test = (props) => {
         console.log(res);
         setTestId(res.data.tId);
         setQuestions(res.data.questions);
-        setTotalTime(res.data.totalTime);
+        setTotalTime(res.data.totalTime.$numberDecimal);
         setAllowBackTraversal(res.data.allowBackTraversal);
         if (res.data.allowBackTraversal) {
-          // setTimeLeft(res.data.totalTime);
-          setTimeLeft(res.data.questions.map(q => parseInt(q.time.$numberDecimal)).reduce((partialSum, a) => partialSum + a, 0))
-          setTotalTime(res.data.questions.map(q => parseInt(q.time.$numberDecimal)).reduce((partialSum, a) => partialSum + a, 0));
+          setTimeLeft(res.data.totalTime.$numberDecimal);
         } else {
           setTimeLeft(res.data.questions[0].time.$numberDecimal);
         }
@@ -56,7 +55,7 @@ const Test = (props) => {
     if (currentQuestion < questions.length) {
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(getCurrentQuestion().time.$numberDecimal);
+        setTimeLeft(questions[currentQuestion].time.$numberDecimal);
       }
       return;
     } else {
@@ -67,10 +66,10 @@ const Test = (props) => {
   const previousQuestion = () => {
     if (currentQuestion > 1 && allowBackTraversal) {
       goToQuestion(currentQuestion - 1);
-      // if (!allowBackTraversal) {
-      //   // They shouldn't be able to reach here (no back on linear test)
-      //   setTimeLeft(getCurrentQuestion().time.$numberDecimal);
-      // }
+      if (!allowBackTraversal) {
+        // They shouldn't be able to reach here (no back on linear test).
+        setTimeLeft(getCurrentQuestion().time.$numberDecimal);
+      }
     }
   }
 
@@ -82,9 +81,9 @@ const Test = (props) => {
         sId: userData.name,
         answers: userAnswers,
       };
-      axiosAPICaller.post("http://localhost:3001/api/answer", testData).then(
-        window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
-      );
+      // axiosAPICaller.post("http://localhost:3001/api/answer", testData).then(
+      //   // window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
+      // );
     } else {
       alert("Test Finished. You are not logged in, so your results wont be saved.")
       // window.location.href(`http://localhost:3000/`);
@@ -154,11 +153,12 @@ const Test = (props) => {
   } else {  
     // Test loaded successfully
     let testQuestion;
-    startTimer();
-    if (getCurrentQuestion().category === "MEMORY") {
-      if (!allowBackTraversal) {
-        clearInterval(Ref.current)  // Stop timer if the test is linear.
-      }
+    
+    if (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) {
+      clearInterval(Ref.current);
+    } 
+    else {
+      startTimer();
     }
     testQuestion = <Question
         question={getCurrentQuestion()}
@@ -170,12 +170,14 @@ const Test = (props) => {
     
     return (
       <div className="test">
-        { getCurrentQuestion().category === "MEMORY" && !allowBackTraversal
-         ? null : 
+        { 
+          getCurrentQuestion().category === "MEMORY" && !allowBackTraversal ?
+          null : 
           <TimerDisplay seconds={timeLeft} />
         }
         
-        {allowBackTraversal && currentQuestion !== 1 ? 
+        {
+          allowBackTraversal && currentQuestion !== 1 ? 
           <button
             className="test__previous"
             onClick={() => previousQuestion()}
@@ -192,7 +194,9 @@ const Test = (props) => {
           {currentQuestion} / {questions.length}
         </div>
 
-        {!selectedAnswer && !allowBackTraversal ? null : ( // Hide next button if no answer selected
+        {
+          !selectedAnswer && !allowBackTraversal ? 
+          null : ( // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
@@ -202,19 +206,28 @@ const Test = (props) => {
           </button>
         )}
 
-        {allowBackTraversal ? 
-        <QuestionNavigation 
-          numberOfQuestions={questions.length}
-          onClick={goToQuestion}
-          answers={userAnswers}
-          currentQuestion={currentQuestion}
-        /> :
-        <Timer
-        questionTime={ allowBackTraversal ? 
-          totalTime :
-          getCurrentQuestion().time}
-        timeLeft={timeLeft}
-        />}
+        {
+          allowBackTraversal ? 
+          <QuestionNavigation 
+            numberOfQuestions={questions.length}
+            onClick={goToQuestion}
+            answers={userAnswers}
+            currentQuestion={currentQuestion}
+          /> :
+          null
+        }
+        {
+          !allowBackTraversal && getCurrentQuestion().category === "MEMORY" ?
+          <Timer
+            questionTime={ allowBackTraversal ? 
+              totalTime :
+              getCurrentQuestion().time.$numberDecimal}
+            timeLeft={timeLeft}
+          /> :
+          null
+        }
+          
+        
 
       </div>
     );

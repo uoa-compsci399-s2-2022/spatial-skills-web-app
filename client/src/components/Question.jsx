@@ -28,6 +28,28 @@ const Question = (props) => {
     return answerChoices;
   };
 
+  const renderMultiChoiceMultiAnswer = () => {
+    const answerChoices = [];
+    for (let i = 0; i < question.multi.length; i++) {
+      answerChoices.push(
+        <div className="answer__choice" key={i}>
+          <label htmlFor={i}>
+            <img src={question.multi[i].image} alt="" />
+          </label>
+          <input
+            type="checkbox"
+            id={i}
+            value={question.multi[i]._id}
+            name="answer"
+            onChange={submit}
+            checked={selected === question.multi[i]._id}
+          />
+        </div>
+      );
+    }
+    return answerChoices;
+  };
+
   const renderTextEntryAnswer = () => {
     return (
       <div className="answer__text-entry">
@@ -84,7 +106,7 @@ const Question = (props) => {
       case 'MULTICHOICE-SINGLE':
         return renderMultiChoiceSingleAnswer();
       case 'MULTICHOICE-MULTI':
-        return renderMultiChoiceSingleAnswer();
+        return renderMultiChoiceMultiAnswer();
       case 'TEXT':
         return renderTextEntryAnswer();
       case 'DYNAMIC-MEMORY':
