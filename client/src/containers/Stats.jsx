@@ -28,6 +28,7 @@ const Stats = () => {
 
   useEffect(() => {
     axiosAPICaller.get(qURL).then((response) => {
+      console.log(response.data);
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
     });

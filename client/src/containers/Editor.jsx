@@ -16,6 +16,8 @@ const Editor = (props) => {
   const { userData } = props;
   const { code, questionId } = useParams();
   const navigate = useNavigate();
+  const MODE = code === "create" || questionId === "create" ? "CREATE" : "EDIT";
+  const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
   const [settings, setSettings] = useState({
     title: "",
     description: "",
@@ -32,19 +34,19 @@ const Editor = (props) => {
     citation: "",
     multi: [],
     answer: "",
-    grade: null,
+    textGrade: null,
     size: null,
-    order: true,
     lives: null,
-    previewDuration: null,
-    randomLevelOder: false,
-    seed: "",
+    seed: null,
+    corsi: false,
+    reverse: false,
+    randomLevelOrder: false,
+    patternFlashTime: null,
     creator: userData.name,
     gameStartDelay: null,
     selectionDelay: null,
+    testCode: code,
   });
-  const MODE = code === "create" || questionId === "create" ? "CREATE" : "EDIT";
-  const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,10 +68,15 @@ const Editor = (props) => {
             answer: response.data.answer,
             citation: response.data.citation,
             questionType: response.data.questionType,
-            totalTime: response.data.totalTime,
+            totalTime: response.data.time,
             allowBackTraversal: response.data.allowBackTraversal,
             shuffleAnswers: response.data.shuffleAnswers,
             shuffleQuestions: response.data.shuffleQuestions,
+            textGrade: response.data.textGrade,
+            corsi: response.data.corsi,
+            reverse: response.data.reverse,
+            randomLevelOrder: response.data.randomLevelOrder,
+            patternFlashTime: response.data.patternFlashTime,
           });
         });
     };
@@ -335,23 +342,10 @@ const Editor = (props) => {
                   }
                   required
                 />
-                <label>Preview Duration</label>
-                <input
-                  type="text"
-                  placeholder="1"
-                  className="editor__input editor__input"
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      previewDuration: e.target.value,
-                    })
-                  }
-                  required
-                />
                 <label>Seed</label>
                 <input
-                  type="text"
-                  placeholder="SEED"
+                  type="number"
+                  placeholder="12345"
                   className="editor__input editor__input"
                   onChange={(e) =>
                     setSettings({ ...settings, seed: e.target.value })
@@ -360,7 +354,7 @@ const Editor = (props) => {
                 />
                 <label>Lives</label>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="3"
                   className="editor__input editor__input"
                   onChange={(e) =>
@@ -368,15 +362,88 @@ const Editor = (props) => {
                   }
                   required
                 />
-                <label>Ordered</label>
-                <input
-                  type="checkbox"
-                  style={{ width: "min-content" }}
-                  defaultChecked={settings.order}
-                  onChange={(e) => {
-                    setSettings({ ...settings, order: e.target.checked });
-                  }}
-                />
+                {settings.questionType === "DYNAMIC-PATTERN" ? (
+                  <>
+                    <label>Corsi</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      defaultChecked={settings.corsi}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          corsi: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Reverse</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      defaultChecked={settings.reverse}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          reverse: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Random Level Order</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      defaultChecked={settings.randomLevelOrder}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          randomLevelOrder: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Pattern Flash Time</label>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="editor__input editor__input"
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          patternFlashTime: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </>
+                ) : (
+                  <>
+                    <label>Start Delay</label>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="editor__input editor__input"
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          gameStartDelay: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                    <label>Selection Delay</label>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="editor__input editor__input"
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          selectionDelay: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </>
+                )}
               </>
             ) : settings.questionType.includes("MULTICHOICE") ? (
               <>
@@ -391,7 +458,7 @@ const Editor = (props) => {
                   <>
                     <label>Grade</label>
                     <input
-                      type="text"
+                      type="number"
                       placeholder="1.0"
                       className="editor__input editor__input"
                       required
@@ -419,16 +486,16 @@ const Editor = (props) => {
                 />
                 <label>Grade</label>
                 <input
-                  type="text"
+                  type="number"
                   className="editor__input editor__input"
                   placeholder="1.0"
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      grade: e.target.value,
+                      textGrade: e.target.value,
                     })
                   }
-                  defaultValue={settings.grade}
+                  defaultValue={settings.textGrade}
                   required
                 />
               </>
