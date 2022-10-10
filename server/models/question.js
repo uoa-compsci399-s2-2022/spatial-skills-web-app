@@ -24,7 +24,7 @@ const questionSchema = new mongoose.Schema({
   creator: { type: String, required: true },
   citation: { type: String, required: false, default: null },
   testCode: { type: String, required: true },
-  time: { type: mongoose.Decimal128, required: false},
+  totalTime: { type: mongoose.Decimal128, required: false},
 
   //REQUIREMENTS FOR DIFFERENT QUESTION TYPES WILL BE VALIDATED IN MIDDLEWARE
   // questionType MULTICHOICE fields

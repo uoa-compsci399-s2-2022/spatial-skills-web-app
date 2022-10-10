@@ -116,7 +116,7 @@ const createMCQ = async (req) => {
       questionType: req.body.questionType,
       creator: req.name,
       citation: req.body.citation == null ? null : req.body.citation,
-      time: req.body.time == null ? 0 : req.body.time,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
       totalMultiGrade: totalMultiGrade,
     });
@@ -179,7 +179,7 @@ const createTQ = async (req) => {
       questionType: req.body.questionType,
       creator: req.name,
       citation: req.body.citation == null ? null : req.body.citation,
-      time: req.body.time == null ? 0 : req.body.time,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
       textGrade: req.body.textGrade == null ? 0 : req.body.textGrade,
     });
@@ -217,7 +217,7 @@ const createDMQ = async (req) => {
       citation: "Jack Huang - The University of Auckland (2022)",
       gameStartDelay: req.body.gameStartDelay,
       selectionDelay: req.body.selectionDelay,
-      time: 0,
+      totalTime: 0,
       testCode: req.body.testCode,
     });
     await createdQuestion.validate();
@@ -258,7 +258,7 @@ const createDPQ = async (req) => {
       randomLevelOrder: req.body.randomLevelOrder,
       corsi: req.body.corsi,
       reverse: req.body.reverse,
-      time: 0,
+      totalTime: 0,
       testCode: req.body.testCode,
     });
     await createdQuestion.validate();
@@ -367,18 +367,18 @@ const updateQuestion = async (req, res, next) => {
   }
 
   try {
-    if (test.individualTime && !(req.body.time == null)) {
+    if (test.individualTime && !(req.body.totalTime == null)) {
       test.totalTime =
         parseFloat(test.totalTime) +
-        parseFloat(req.body.time) -
-        parseFloat(question.time ? question.time : 0);
+        parseFloat(req.body.totalTime) -
+        parseFloat(question.totalTime ? question.totalTime : 0);
     }
     await test.save();
   } catch (e) {
     throw new APIError("Failed to save changes in test.", 500);
   }
 
-  question.time = req.body.time == null ? question.time : req.body.time;
+  question.totalTime = req.body.totalTime == null ? question.totalTime : req.body.totalTime;
 
   try {
     if (
@@ -467,7 +467,7 @@ const createQuestion = async (req, res, next) => {
     if (test.individualTime) {
       test.totalTime =
         parseFloat(test.totalTime) +
-        parseFloat(req.body.time ? req.body.time : 0);
+        parseFloat(req.body.totalTime ? req.body.totalTime : 0);
     }
     await test.save();
   } catch (e) {
@@ -502,7 +502,7 @@ const deleteQuestionById = async (req, res, next) => {
 
   let test;
   try {
-    test = await Test.findByOne({ code: question.testCode }).exec();
+    test = await Test.findOne({ code: question.testCode }).exec();
     if (!test) {
       throw new Error();
     }
@@ -515,7 +515,7 @@ const deleteQuestionById = async (req, res, next) => {
       (q) => q !== question._id.toString()
     );
     if (test.individualTime) {
-      test.totalTime = parseFloat(test.totalTime) - parseFloat(question.time);
+      test.totalTime = parseFloat(test.totalTime) - parseFloat(question.totalTime);
     }
     test.save();
   } catch (e) {
