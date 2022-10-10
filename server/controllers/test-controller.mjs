@@ -97,7 +97,7 @@ const questionOutAdmin = async (qId) => {
   question.reverse = adminQ.reverse;
   question.gameStartDelay = adminQ.gameStartDelay;
   question.selectionDelay = adminQ.selectionDelay;
-  question.tId = adminQ.tId;
+  question.testCode = adminQ.testCode;
   question.qId = adminQ._id;
   question.time = adminQ.time;
 
@@ -142,7 +142,7 @@ const questionOutStudent = async (test, qId) => {
   studentQ.gameStartDelay = adminQ.gameStartDelay;
   studentQ.selectionDelay = adminQ.selectionDelay;
   studentQ.qId = adminQ._id;
-  studentQ.tId = adminQ.tId;
+  studentQ.testCode = adminQ.testCode;
   studentQ.time = adminQ.time;
 
   return studentQ;
@@ -157,6 +157,7 @@ const testOutAdmin = async (test) => {
 
 const testOutStudent = async (test) => {
   const testOut = {};
+  testOut.tId = test._id;
   testOut.title = test.title;
   testOut.creator = test.creator;
   testOut.code = test.code;
@@ -245,9 +246,9 @@ const getTestByCode = async (req, res, next) => {
   //Different outputs depending on whether admin or student
   if (req.permissions.includes("admin")) {
     // res.json(await testOutStudent(test));
-    try{
+    try {
       res.json(await testOutAdmin(test));
-    }catch(e){
+    } catch (e) {
       return next(e);
     }
   } else {
@@ -327,7 +328,11 @@ const editTest = async (req, res, next) => {
     req.body.individualTime == null
       ? test.individualTime
       : req.body.individualTime;
-  test.totalTime = test.individualTime ? test.totalTime : req.body.totalTime;
+  test.totalTime = test.individualTime
+    ? test.totalTime
+    : req.body.totalTime
+    ? req.body.totalTime
+    : test.totalTime;
   test.shuffleAnswers =
     req.body.shuffleAnswers == null
       ? test.shuffleAnswers
@@ -336,7 +341,7 @@ const editTest = async (req, res, next) => {
     req.body.shuffleQuestions == null
       ? test.shuffleQuestions
       : req.body.shuffleQuestions;
-      
+
   try {
     await test.validate();
   } catch (e) {
