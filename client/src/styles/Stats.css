@@ -15,6 +15,7 @@
 .stats__image {
     width: 100px;
     height: 100px;
+    color: var(--accent-color)
 }
 
 .stats__col {
@@ -32,4 +33,9 @@
     display: flex;
     gap: 2rem;
     justify-content: flex-end;
+}
+
+.barChart {
+    width: 1000px;
+    font-size: 20px;
 }

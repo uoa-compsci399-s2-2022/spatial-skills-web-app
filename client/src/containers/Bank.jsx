@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Bank.css";
 import { Link, useParams } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
@@ -51,10 +51,10 @@ const Bank = () => {
             style={{ width: "100%" }}
           >
             <option value="All">All</option>
-            <option value="Memory">Memory</option>
-            <option value="Perception">Perception</option>
-            <option value="Rotation">Rotation</option>
-            <option value="Visualisation">Visualisation</option>
+            <option value="MEMORY">MEMORY</option>
+            <option value="PERCEPTION">PERCEPTION</option>
+            <option value="ROTATION">ROTATION</option>
+            <option value="VISUALISATION">VISUALISATION</option>
           </select>
           <label>Name</label>
           <input
@@ -82,23 +82,38 @@ const Bank = () => {
                           .toLowerCase()
                           .includes(data.toLowerCase())
                       ) {
-                        return (
-                          <Link
-                            className="dashboard__item section"
-                            to={`/dashboard/test/${testId}/question/${_question._id}`}
-                            key={_question._id}
-                          >
-                            <img
-                              alt=""
-                              src={_question.image}
-                              className="bank__question"
-                            />
-                            <div className="bank__test-text">
-                              <h4>{_question.title}</h4>
-                              <p>{_question.category}</p>
-                            </div>
-                          </Link>
-                        );
+                        if(_question.category !== "MEMORY"){
+                          return (
+                            <Link
+                              className="dashboard__item section"
+                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                            >
+                              <img
+                                alt=""
+                                src={_question.image}
+                                className="bank__question"
+                              />
+                              <div className="bank__test-text">
+                                <h4>{_question.title}</h4>
+                                <p>{_question.category}</p>
+                              </div>
+                            </Link>
+                          );
+
+                        } else {
+                          return (
+                            <Link
+                              className="dashboard__item section"
+                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                            >
+                              <FaGamepad class="bank-game__question"/>
+                              <div className="bank__test-text">
+                                <h4>{_question.title}</h4>
+                                <p>{_question.category}</p>
+                              </div>
+                            </Link>
+                          );
+                        }
                       }
                     }
                   })
