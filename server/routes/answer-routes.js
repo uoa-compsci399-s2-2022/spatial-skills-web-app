@@ -21,11 +21,14 @@ answerRouter.get("/all", adminAuthHandler, getAllStudentAnswers);
 //add student answer
 answerRouter.post("/", createStudentAnswer);
 
-//get student answer by test id and student id
-// answerRouter.post("/getStudentAnswer/", getStudentAnswerBytIdsId);
-
 // get student answer by test code and student name
 answerRouter.post("/getStudentAnswer/", adminAuthHandler, getStudentAnswerByCodeName);
 // answerRouter.post("/getStudentAnswer/", getStudentAnswerByCodeName);
+
+// DEPRECATED FOR getStudentAnswerByCodeName
+//get student answer by test id and student id
+// answerRouter.post("/getStudentAnswer/", getStudentAnswerBytIdsId);
+
+
 
 export default answerRouter;
