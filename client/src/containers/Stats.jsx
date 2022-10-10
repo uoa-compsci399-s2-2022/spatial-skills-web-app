@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
 import "../styles/Stats.css";
 import axios from "axios";
@@ -20,15 +19,12 @@ import XAxis from 'reactochart/XAxis';
 import YAxis from 'reactochart/YAxis';
 import 'reactochart/styles.css';
 
-
-
-
 const iconSize = "1.25em";
 
 const Stats = () => {
   const { testId } = useParams();
-  const [isLoadedTest, setIsLoadedTest] = React.useState(false);
-  const [isLoadedQuestion, setIsLoadedQuestion] = React.useState(false);
+  const [isLoadedTest, setIsLoadedTest] = useState(false);
+  const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const baseURL = "http://localhost:3001/api/test/all";
   const [data, setData] = React.useState([]);
   var csvArray = [];
@@ -50,7 +46,7 @@ const Stats = () => {
   const test = data.filter((test) => test._id === testId)[0];
 
   const qURL = "http://localhost:3001/api/question/all";
-  const [questionData, setQuestionData] = React.useState([]);
+  const [questionData, setQuestionData] = useState([]);
 
   React.useEffect(() => {
     axiosAPICaller.get(qURL).then((response) => {
@@ -184,7 +180,6 @@ const BarChartWithDefs = (props) => {
                               );
 
                             }
-                            
                           }
                         })
                       );

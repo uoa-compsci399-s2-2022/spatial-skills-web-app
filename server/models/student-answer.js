@@ -6,12 +6,12 @@ const studentAnswerSchema = new mongoose.Schema({
   answers: [
     new mongoose.Schema({
       qId: { type: String, required: true },
-      aId: { type: String, required: false },
-      value: { type: String, required: false },
-      correct: { type: Boolean, required: true },
+      aId: { type: String, required: false, default: null },
+      value: { type: String, required: false, default: null  },
+      correct: { type: Boolean, required: false, default: null },
     }),
   ],
-  grade: {type: Number, required: true}
+  grade: {type: Number, required: false, default: null}
 });
 
 export default mongoose.models?.StudentAnswer ||

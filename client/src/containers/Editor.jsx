@@ -3,6 +3,7 @@ import { FaSave, FaTrash } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const baseURL = "http://localhost:3001/api"; // change later for prod with .env
@@ -30,7 +31,7 @@ const Editor = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await axios
+      await axiosAPICaller
         .get(
           `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
         )
@@ -54,7 +55,7 @@ const Editor = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post(
+    await axiosAPICaller.post(
       `${baseURL}/${isTest ? "test" : "question"}`,
       isTest
         ? {
@@ -167,10 +168,27 @@ const Editor = (props) => {
               }
               required
             >
-              <option value="visual">Visualisation</option>
-              <option value="rotation">Rotation</option>
-              <option value="perception">Perception</option>
-              <option value="memory">Memory</option>
+              <option
+                value="VISUALISATION"
+                selected={settings.category === "VISUALISATION"}
+              >
+                Visualisation
+              </option>
+              <option
+                value="ROTATION"
+                selected={settings.category === "ROTATION"}
+              >
+                Rotation
+              </option>
+              <option
+                value="PERCEPTION"
+                selected={settings.category === "PERCEPTION"}
+              >
+                Perception
+              </option>
+              <option value="MEMORY" selected={settings.category === "MEMORY"}>
+                Memory
+              </option>
             </select>
             <label>Type</label>
             <select

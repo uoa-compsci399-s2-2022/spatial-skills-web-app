@@ -5,6 +5,7 @@ import {
   getAllQuestions,
   getQuestionById,
   deleteQuestionById,
+  updateQuestion
 } from "../controllers/questions-controller.mjs";
 import jwtHandler from "../handlers/jwt-handler.js";
 import adminAuthHandler from "../handlers/admin-auth-handler.js";
@@ -25,7 +26,11 @@ questionRouter.get("/:qid", getQuestionById);
 //delete question by id (ADMIN)
 questionRouter.delete("/:qid", adminAuthHandler, deleteQuestionById);
 
-//add question
+//get question by id - includes sensitive information (ADMIN)
+questionRouter.patch("/:qid", adminAuthHandler, updateQuestion);
+
+//Create question (ADMIN)
 questionRouter.post("/", adminAuthHandler, createQuestion);
+
 
 export default questionRouter;

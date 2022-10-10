@@ -4,6 +4,10 @@ import QuestionOut from "../models/question-out.js";
 import Question from "../models/question.js";
 import APIError from "../handlers/APIError.js";
 
+//////////////////////////
+//// HELPER FUNCTIONS ////
+//////////////////////////
+
 const createCode = async () => {
   //Creates alphanumeric code of length 6
   let c = Math.random().toString(36).substring(2, 8);
@@ -28,20 +32,176 @@ const FisherYatesShuffle = (questions) => {
   return questions;
 };
 
+const validateQuestions = async (questions) => {
+  let q;
+  for (let i = 0; i < questions.length; i++) {
+    try {
+      q = await Question.findById(questions[i].qId).lean().exec();
+      if (!q) {
+        throw new Error();
+      }
+    } catch (e) {
+      throw new APIError(`Could not find question ${questions[i].qId}`, 400);
+    }
+
+    if (q.questionType === "MULTICHOICE") {
+      if (q.multi.length !== questions[i].multiGrades.length) {
+        throw new APIError(
+          `Answer array given for ${questions[i].qId} does not match actual answer array`,
+          400
+        );
+      }
+
+      for (let j = 0; j < questions[i].multiGrades.length; j++) {
+        if (
+          q.multi.filter(
+            (a) => a._id.toString() === questions[i].multiGrades[j].aId
+          ).length !== 1
+        ) {
+          throw new APIError(`Answer not found`, 400);
+        }
+      }
+    }
+  }
+};
+
+const questionOutAdmin = async (qId) => {
+  let adminQ;
+  try {
+    adminQ = await Question.findById(qId).lean().exec();
+    if (!adminQ) {
+      throw new Error();
+    }
+  } catch (e) {
+    throw new APIError(`Could not find question with id ${qId}.`, 404);
+  }
+  const question = {};
+  question.title = adminQ.title;
+  question.description = adminQ.description;
+  question.image = adminQ.image;
+  question.category = adminQ.category;
+  question.questionType = adminQ.questionType;
+  question.creator = adminQ.creator;
+  question.citation = adminQ.citation;
+  question.multi = adminQ.multi;
+  question.numMulti = adminQ.numMulti;
+  question.answer = adminQ.answer;
+  question.textGrade = adminQ.textGrade;
+  question.totalMultiGrade = adminQ.totalMultiGrade;
+  question.size = adminQ.size;
+  question.lives = adminQ.lives;
+  question.seed = adminQ.seed;
+  question.patternFlashTime = adminQ.patternFlashTime;
+  question.randomLevelOrder = adminQ.randomLevelOrder;
+  question.corsi = adminQ.corsi;
+  question.reverse = adminQ.reverse;
+  question.gameStartDelay = adminQ.gameStartDelay;
+  question.selectionDelay = adminQ.selectionDelay;
+  question.testCode = adminQ.testCode;
+  question.qId = adminQ._id;
+  question.totalTime = adminQ.totalTime;
+
+  return question;
+};
+
+const questionOutStudent = async (test, qId) => {
+  const studentQ = {};
+  let adminQ;
+  try {
+    adminQ = await Question.findById(qId).lean().exec();
+    if (!adminQ) {
+      throw new Error();
+    }
+  } catch (e) {
+    throw new APIError(`Could not find question ${qId}.`, 404);
+  }
+
+  const multi = test.shuffleAnswers
+    ? FisherYatesShuffle(adminQ.multi)
+    : adminQ.multi;
+  multi.forEach((m) => {
+    delete m.grade;
+  });
+
+  studentQ.title = adminQ.title;
+  studentQ.description = adminQ.description;
+  studentQ.image = adminQ.image;
+  studentQ.category = adminQ.category;
+  studentQ.questionType = adminQ.questionType;
+  studentQ.creator = adminQ.creator;
+  studentQ.citation = adminQ.citation;
+  studentQ.multi = multi;
+  studentQ.numMulti = adminQ.numMulti;
+  studentQ.size = adminQ.size;
+  studentQ.lives = adminQ.lives;
+  studentQ.seed = adminQ.seed;
+  studentQ.patternFlashTime = adminQ.patternFlashTime;
+  studentQ.randomLevelOrder = adminQ.randomLevelOrder;
+  studentQ.corsi = adminQ.corsi;
+  studentQ.reverse = adminQ.reverse;
+  studentQ.gameStartDelay = adminQ.gameStartDelay;
+  studentQ.selectionDelay = adminQ.selectionDelay;
+  studentQ.qId = adminQ._id;
+  studentQ.testCode = adminQ.testCode;
+  studentQ.totalTime = adminQ.totalTime;
+
+  return studentQ;
+};
+
+const testOutAdmin = async (test) => {
+  test.questions = await Promise.all(
+    test.questions.map(async (qId) => await questionOutAdmin(qId))
+  );
+  return test;
+};
+
+const testOutStudent = async (test) => {
+  const testOut = {};
+  testOut.tId = test._id;
+  testOut.title = test.title;
+  testOut.creator = test.creator;
+  testOut.code = test.code;
+  testOut.allowBackTraversal = test.allowBackTraversal;
+  testOut.totalTime = test.totalTime;
+  testOut.individualTime = test.individualTime;
+
+  testOut.questions = await Promise.all(
+    test.questions.map(async (qId) => await questionOutStudent(test, qId))
+  );
+
+  testOut.questions = test.shuffleQuestions
+    ? FisherYatesShuffle(testOut.questions)
+    : testOut.questions;
+
+  return testOut;
+};
+
+////////////////////////
+//// MAIN FUNCTIONS ////
+////////////////////////
+
 const createTest = async (req, res, next) => {
+  if (req.body.allowBackTraversal && req.body.individualTime) {
+    return next(
+      new APIError("Cannot have individual time and backwards traversal.", 400)
+    );
+  }
   const createdTest = new Test({
     title: req.body.title,
-    creator: req.body.creator,
-    questions: req.body.questions.map((q) => ({
-      qId: q.qId,
-      time: q.time,
-      grade: q.grade,
-    })),
+    creator: req.name,
+    questions: [],
     studentAnswers: [],
-    published: req.body.published,
-    allowBackTraversal: req.body.allowBackTraversal,
-    totalTime: req.body.totalTime,
+    published: false,
+    allowBackTraversal:
+      req.body.allowBackTraversal == null ? false : req.body.allowBackTraversal,
+    totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
     code: await createCode(),
+    individualTime:
+      req.body.individualTime == null ? true : req.body.individualTime,
+    shuffleAnswers:
+      req.body.shuffleAnswers == null ? false : req.body.shuffleAnswers,
+    shuffleQuestions:
+      req.body.shuffleQuestions == null ? false : req.body.shuffleQuestions,
   });
 
   try {
@@ -57,108 +217,180 @@ const createTest = async (req, res, next) => {
     return next(new APIError("Could not save test.", 500));
   }
 
+  // res.status(201).json(createdTest);
   res.status(201).json(result);
 };
 
-const getAllTests = async (req, res, next) => {
-  const tests = await Test.find().exec();
-  res.json(tests);
-};
-
 const getTestByCode = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
-  if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.params.code)
-  ) {
-    return next(new APIError("Forbidden.", 403));
-  }
-
   let test;
   try {
-    test = await Test.findOne({ code: req.params.code }).exec();
+    test = await Test.findOne({ code: req.params.code }).lean().exec();
     if (!test) {
       throw new Error();
     }
   } catch (e) {
     return next(new APIError("Test not found.", 404));
   }
-  const testOut = new TestOut(test);
-  res.json(testOut);
-};
 
-const getQuestionsByCode = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
+  //Can only access test if creator for admin or test permissions for students
   if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.body.code)
+    !(req.permissions.includes("admin") && req.name === test.creator) &&
+    !(
+      !req.permissions.includes("admin") &&
+      req.permissions.includes(req.params.code)
+    )
   ) {
     return next(new APIError("Forbidden.", 403));
   }
 
+  //Different outputs depending on whether admin or student
+  if (req.permissions.includes("admin")) {
+    // res.json(await testOutStudent(test));
+    try {
+      res.json(await testOutAdmin(test));
+    } catch (e) {
+      return next(e);
+    }
+  } else {
+    if (!test.published) {
+      return next(new APIError("Cannot do unpublished test.", 403));
+    }
+
+    try {
+      res.json(await testOutStudent(test));
+    } catch (e) {
+      return next(e);
+    }
+  }
+};
+
+const getMyTests = async (req, res, next) => {
+  let tests;
+  try {
+    //lean to get plain old javascript object
+    tests = await Test.find({ creator: req.name }).lean().exec();
+    if (!tests) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("No test not found.", 404));
+  }
+
+  const testsOut = await Promise.all(tests.map((t) => testOutAdmin(t)));
+  res.json(testsOut);
+};
+
+const editTest = async (req, res, next) => {
   let test;
   try {
-    test = await Test.findOne({ code: req.body.code }).exec();
-  } catch (e) {
-    return next(new APIError("Test not found.", 404));
-  }
-
-  const qidArr = test.questions.map((q) => q.qId);
-
-  // Questions will be in order of creation date
-  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
-  if (questions.length < qidArr.length) {
-    return next(new APIError("Could not find all test questions.", 404));
-  }
-  // Sort the questions in the original order.
-  var orderedQuestions = [];
-  for (let i = 0; i < qidArr.length; i++) {
-    let question = questions.find(q => q._id == qidArr[i]);
-    if (req.body.shuffleAnswers) {
-      question.answer = FisherYatesShuffle(question.answer);
+    test = await Test.findOne({
+      creator: req.name,
+      code: req.params.code,
+    }).exec();
+    if (!test) {
+      throw new Error();
     }
-    orderedQuestions.push(question);
+  } catch (e) {
+    return next(
+      new APIError(
+        "No test not found or user does not have permission to edit test.",
+        404
+      )
+    );
   }
-  
-  let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
-  if (req.body.shuffleQuestions) {
-    questionsOut = FisherYatesShuffle(questionsOut);
-  }
-  const timeOut = questionsOut.map(
-    (qo) => test.questions.find((q) => q.qId === qo.id).time
-  );
 
-  const combined = { questions: questionsOut,
-    times: timeOut, 
-    allowBackTraversal: test.allowBackTraversal,
-    // totalTime: test.totalTime,
-    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0)
-  };
-  res.json(combined);
+  if (test.published) {
+    return next(new APIError("Cannot edit published test", 404));
+  }
+
+  if (req.body.allowBackTraversal && req.body.individualTime) {
+    return next(
+      new APIError("Cannot have individual time and backwards traversal.", 400)
+    );
+  }
+  //Validate questions field
+  if (req.body.questions) {
+    try {
+      await validateQuestions(req.body.questions);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  test.title = req.body.title == null ? test.title : req.body.title;
+  test.published =
+    req.body.published == null ? test.published : req.body.published;
+  test.allowBackTraversal =
+    req.body.allowBackTraversal == null
+      ? test.allowBackTraversal
+      : req.body.allowBackTraversal;
+  test.individualTime =
+    req.body.individualTime == null
+      ? test.individualTime
+      : req.body.individualTime;
+  test.totalTime = test.individualTime
+    ? test.totalTime
+    : req.body.totalTime
+    ? req.body.totalTime
+    : test.totalTime;
+  test.shuffleAnswers =
+    req.body.shuffleAnswers == null
+      ? test.shuffleAnswers
+      : req.body.shuffleAnswers;
+  test.shuffleQuestions =
+    req.body.shuffleQuestions == null
+      ? test.shuffleQuestions
+      : req.body.shuffleQuestions;
+
+  try {
+    await test.validate();
+  } catch (e) {
+    return next(new APIError("Invalid or missing inputs.", 400));
+  }
+
+  let result;
+  try {
+    result = await test.save();
+  } catch (e) {
+    return next(new APIError("Failed to save in database.", 500));
+  }
+
+  res.status(201).json(result);
 };
 
-//DEPRECATE IN FAVOUR OF get test by code enpoints
-const getTestById = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
-  if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.params.tid)
-  ) {
-    return next(new APIError("Forbidden.", 403));
-  }
-
+const deleteTest = async (req, res, next) => {
   let test;
-  try{
-    test = await Test.findById(req.params.tid).exec();
-    if (!test){
-      throw new Error;
+  try {
+    test = await Test.findOne({ creator: req.name, code: req.params.code })
+      .lean()
+      .exec();
+    if (!test) {
+      throw new Error();
     }
   } catch (e) {
-    return next(new APIError("Test not found.", 404));
+    return next(
+      new APIError(
+        "No test not found or user does not have permission to delete test.",
+        404
+      )
+    );
   }
-  const testOut = new TestOut(test);
-  res.json(testOut);
+
+  try {
+    await Test.findOneAndDelete({
+      creator: req.name,
+      code: req.params.code,
+    }).exec();
+  } catch (e) {
+    return next(new APIError("Could not delete test", 400));
+  }
+
+  res.json({ message: "Successfully deleted test" });
 };
+
+/////////////////////////////
+//// DEPRECATED FUNCTIONS ///
+/////////////////////////////
 
 //DEPRECATE IN FAVOUR OF get test by code enpoints
 const getQuestionsBytId = async (req, res, next) => {
@@ -195,6 +427,88 @@ const getQuestionsBytId = async (req, res, next) => {
   res.json(combined);
 };
 
+//DEPRECATE IN FAVOUR OF get test by code endpoints
+const getTestById = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.params.tid)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
+  let test;
+  try {
+    test = await Test.findById(req.params.tid).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+  const testOut = new TestOut(test);
+  res.json(testOut);
+};
+
+//DEPRECATE - functionality included in getTestByCode
+const getQuestionsByCode = async (req, res, next) => {
+  //Can only access test if have admin or test permissions
+  if (
+    !req.permissions.includes("admin") &&
+    !req.permissions.includes(req.body.code)
+  ) {
+    return next(new APIError("Forbidden.", 403));
+  }
+
+  let test;
+  try {
+    test = await Test.findOne({ code: req.body.code }).exec();
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+
+  const qidArr = test.questions.map((q) => q.qId);
+
+  // Questions will be in order of creation date
+  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
+  if (questions.length < qidArr.length) {
+    return next(new APIError("Could not find all test questions.", 404));
+  }
+  // Sort the questions in the original order.
+  var orderedQuestions = [];
+  for (let i = 0; i < qidArr.length; i++) {
+    let question = questions.find((q) => q._id == qidArr[i]);
+    if (req.body.shuffleAnswers) {
+      question.answer = FisherYatesShuffle(question.answer);
+    }
+    orderedQuestions.push(question);
+  }
+
+  let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
+  if (req.body.shuffleQuestions) {
+    questionsOut = FisherYatesShuffle(questionsOut);
+  }
+  const timeOut = questionsOut.map(
+    (qo) => test.questions.find((q) => q.qId === qo.id).time
+  );
+
+  const combined = {
+    questions: questionsOut,
+    times: timeOut,
+    allowBackTraversal: test.allowBackTraversal,
+    // totalTime: test.totalTime,
+    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0), // Sum of question times
+    tId: test._id,
+  };
+  res.json(combined);
+};
+
+//DEPRECATE in favour of get my tests
+const getAllTests = async (req, res, next) => {
+  const tests = await Test.find().exec();
+  res.json(tests);
+};
+
 export {
   createTest,
   getAllTests,
@@ -202,4 +516,7 @@ export {
   getQuestionsBytId,
   getQuestionsByCode,
   getTestByCode,
+  getMyTests,
+  editTest,
+  deleteTest,
 };

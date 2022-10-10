@@ -11,7 +11,9 @@
   color: #19e0b2;
   background-color: var(--contrast-color);
   color: var(--accent-color);
-  height: 100vh;
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }
 
 .matching-game_start-button{
@@ -81,27 +83,38 @@
 }
 
 .matching-game__lives-div__hearts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  top: 55%;
+  position: relative;
 
 }
 
-/* .matching-game__lives-text {
-  margin-left: 50%;
-} */
+.matching-game__timer-text{
+  top: 50%;
+  position: relative;
+}
+
+.matching-game__score{
+  top: 50%;
+  position: relative;
+}
+
+.matching-game__lives-text {
+  top: 50%;
+  position: relative;
+} 
 
 .matching-game__lives-div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: fit-content;
+  display: flex;
+  column-gap: 30px;
+
 }
 
 .matching-game__information-div-show {
   width: fit-content;
   margin: auto;
-  margin-top: 80px;
+  margin-top: 65px;
   display: grid;
+  height: 150px;
   grid-template-columns: 1fr 1fr 1fr;
 
   

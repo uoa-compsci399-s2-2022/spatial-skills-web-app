@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors"; // https://www.npmjs.com/package/cors
+import fileUpload from "express-fileupload";
 
 import connectDB from "./db/db.js";
 import authRouter from "./routes/auth-routes.js";
@@ -21,6 +22,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true })); // Allows
 app.use(express.json());
 //parse cookies
 app.use(cookieParser());
+app.use(fileUpload());
 
 //authentication APIs
 app.use("/api/auth", authRouter);

@@ -1,3 +1,5 @@
+//DEPRECATED
+
 class TestIn {
   constructor(test) {
     this.title = test.title;
