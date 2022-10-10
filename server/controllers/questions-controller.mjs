@@ -59,6 +59,8 @@ const createMCQ = async (req) => {
     throw e;
   }
 
+  let totalMultiGrade = 0;
+
   // Save in CDN
   for (const i in fKeys) {
     file = req.files[fKeys[i]];
@@ -86,8 +88,18 @@ const createMCQ = async (req) => {
     } else {
       multi.push({
         image: bucketURL + fileUri,
-        trueAnswer: req.body.trueAnswer === fKeys[i],
+        grade:
+          req.body[`${fKeys[i]}-grade`] == null
+            ? 0
+            : req.body[`${fKeys[i]}-grade`],
       });
+      totalMultiGrade =
+        totalMultiGrade +
+        Number(
+          req.body[`${fKeys[i]}-grade`] == null
+            ? 0
+            : req.body[`${fKeys[i]}-grade`]
+        );
     }
   }
 
@@ -103,20 +115,17 @@ const createMCQ = async (req) => {
       category: req.body.category,
       questionType: req.body.questionType,
       creator: req.name,
-      citation: req.body.citation ? req.body.citation : null,
+      citation: req.body.citation == null ? null : req.body.citation,
+      time: req.body.time == null ? 0 : req.body.time,
+      tId: req.body.tId,
+      totalMultiGrade: totalMultiGrade,
     });
     await createdQuestion.validate();
   } catch (e) {
     throw new APIError("Invalid or missing inputs.", 400);
   }
 
-  try {
-    result = await createdQuestion.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
+  return createdQuestion;
 };
 
 const createTQ = async (req) => {
@@ -172,20 +181,17 @@ const createTQ = async (req) => {
       category: req.body.category,
       questionType: req.body.questionType,
       creator: req.name,
-      citation: req.body.citation ? req.body.citation : null,
+      citation: req.body.citation == null ? null : req.body.citation,
+      time: req.body.time == null ? 0 : req.body.time,
+      tId: req.body.tId,
+      textGrade: req.body.textGrade == null ? 0 : req.body.textGrade,
     });
     await createdQuestion.validate();
   } catch (e) {
     throw new APIError("Invalid or missing inputs.", 400);
   }
 
-  try {
-    result = await createdQuestion.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
+  return createdQuestion;
 };
 
 const createDMQ = async (req) => {
@@ -214,19 +220,15 @@ const createDMQ = async (req) => {
       citation: "Jack Huang - The University of Auckland (2022)",
       gameStartDelay: req.body.gameStartDelay,
       selectionDelay: req.body.selectionDelay,
+      time: 0,
+      tId: req.body.tId,
     });
     await createdQuestion.validate();
   } catch (e) {
     throw new APIError("Invalid or missing inputs.", 400);
   }
 
-  let result;
-  try {
-    result = await createdQuestion.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-  return result;
+  return createdQuestion;
 };
 
 const createDPQ = async (req) => {
@@ -259,122 +261,71 @@ const createDPQ = async (req) => {
       randomLevelOrder: req.body.randomLevelOrder,
       corsi: req.body.corsi,
       reverse: req.body.reverse,
+      time: 0,
+      tId: req.body.tId,
     });
     await createdQuestion.validate();
   } catch (e) {
     throw new APIError("Invalid or missing inputs.", 400);
   }
 
-  let result;
-  try {
-    result = await createdQuestion.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-  return result;
+  return createdQuestion;
 };
 
 const updateMCQ = async (req, question) => {
-  question.title = req.body.title;
-  question.description = req.body.description;
-  question.category = req.body.category;
-  question.citation = req.body.citation;
+  let newGradeTotal = 0;
 
-  for (let i = 0; i < question.numMulti; i++) {
-    question.multi[i].trueAnswer = req.body.multi[i].trueAnswer;
+  if (req.body.multi != null) {
+    if (question.multi.length !== req.body.multi.length) {
+      throw new APIError("Multi array lengths do not match.", 400);
+    }
+    for (let i = 0; i < question.numMulti; i++) {
+      for (let j = 0; j < question.numMulti; j++) {
+        if (question.multi[j]._id.toString() == req.body.multi[i]._id) {
+          question.multi[j].grade = req.body.multi[i].grade;
+          newGradeTotal = newGradeTotal + req.body.multi[i].grade;
+        }
+      }
+    }
+    question.totalMultiGrade = newGradeTotal;
   }
-
-  try {
-    await question.validate();
-  } catch (e) {
-    throw new APIError("Invalid or missing inputs.", 400);
-  }
-
-  let result;
-  try {
-    result = await question.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
 };
 
 const updateTQ = async (req, question) => {
-  question.title = req.body.title;
-  question.description = req.body.description;
-  question.category = req.body.category;
-  question.citation = req.body.citation;
-  question.answer = req.body.answer;
-
-  try {
-    await question.validate();
-  } catch (e) {
-    throw new APIError("Invalid or missing inputs.", 400);
-  }
-
-  let result;
-  try {
-    result = await question.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
+  question.answer = req.body.answer == null ? question.answer : req.body.answer;
+  question.textGrade =
+    req.body.textGrade == null ? question.textGrade : req.body.textGrade;
 };
 
 const updateDMQ = async (req, question) => {
-  question.title = req.body.title;
-  question.description = req.body.description;
-  question.category = req.body.category;
-  question.size = req.body.size;
-  question.lives = req.body.lives;
-  question.seed = req.body.seed;
-  question.gameStartDelay = req.body.gameStartDelay;
-  question.selectionDelay = req.body.selectionDelay;
-
-  try {
-    await question.validate();
-  } catch (e) {
-    throw new APIError("Invalid or missing inputs.", 400);
-  }
-
-  let result;
-  try {
-    result = await question.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
+  question.size = req.body.size == null ? question.size : req.body.size;
+  question.lives = req.body.lives == null ? question.lives : req.body.lives;
+  question.seed = req.body.seed == null ? question.seed : req.body.seed;
+  question.gameStartDelay =
+    req.body.gameStartDelay == null
+      ? question.gameStartDelay
+      : req.body.gameStartDelay;
+  question.selectionDelay =
+    req.body.selectionDelay == null
+      ? question.selectionDelay
+      : req.body.selectionDelay;
 };
 
 const updateDPQ = async (req, question) => {
-  question.title = req.body.title;
-  question.description = req.body.description;
-  question.category = req.body.category;
-  question.size = req.body.size;
-  question.lives = req.body.lives;
-  question.seed = req.body.seed;
-  question.randomLevelOrder = req.body.randomLevelOrder;
-  question.patternFlashTime = req.body.patternFlashTime;
-  question.corsi = req.body.corsi;
-  question.reverse = req.body.reverse;
-
-  try {
-    await question.validate();
-  } catch (e) {
-    throw new APIError("Invalid or missing inputs.", 400);
-  }
-
-  let result;
-  try {
-    result = await question.save();
-  } catch (e) {
-    throw new APIError("Failed to save in database.", 500);
-  }
-
-  return result;
+  question.size = req.body.size == null ? question.size : req.body.size;
+  question.lives = req.body.lives == null ? question.lives : req.body.lives;
+  question.seed = req.body.seed == null ? question.seed : req.body.seed;
+  question.randomLevelOrder =
+    req.body.randomLevelOrder == null
+      ? question.randomLevelOrder
+      : req.body.randomLevelOrder;
+  question.patternFlashTime =
+    req.body.patternFlashTime == null
+      ? question.patternFlashTime
+      : req.body.patternFlashTime;
+  question.corsi = req.body.corsi == null ? question.corsi : question.corsi;
+  question.reverse =
+    req.body.reverse == null ? question.reverse : question.reverse;
 };
 
 ////////////////////////
@@ -386,7 +337,7 @@ const updateQuestion = async (req, res, next) => {
   try {
     question = await Question.findById(req.params.qid).exec();
     if (!question) {
-      return next(new APIError("Could not find question", 400));
+      throw new Error();
     }
   } catch (e) {
     return next(new APIError("Could not find question", 400));
@@ -398,20 +349,70 @@ const updateQuestion = async (req, res, next) => {
     );
   }
 
-  let result;
+  // Generic settings
+  question.title = req.body.title == null ? question.title : req.body.title;
+  question.description =
+    req.body.description == null ? question.description : req.body.description;
+  question.category =
+    req.body.category == null ? question.category : req.body.category;
+  question.citation =
+    req.body.citation == null ? question.citation : req.body.citation;
+
+  //Change time in test
+  let test;
   try {
-    if (req.body.questionType === "MULTICHOICE") {
-      result = await updateMCQ(req, question);
-    } else if (req.body.questionType === "TEXT") {
-      result = await updateTQ(req, question);
-    } else if (req.body.questionType === "DYNAMIC-MEMORY") {
-      result = await updateDMQ(req, question);
-    } else {
-      result = await updateDPQ(req, question);
+    test = await Test.findById(question.tId).exec();
+    if (!test) {
+      throw new Error();
     }
   } catch (e) {
-    return next(e);
+    return next(new APIError("Test not found.", 404));
   }
+
+  try {
+    if (test.individualTime && !(req.body.time == null)) {
+      test.totalTime =
+        parseFloat(test.totalTime) +
+        parseFloat(req.body.time) -
+        parseFloat(question.time ? question.time : 0);
+    }
+    await test.save();
+  } catch (e) {
+    throw new APIError("Failed to save changes in test.", 500);
+  }
+
+  question.time = req.body.time == null ? question.time : req.body.time;
+
+  try {
+    if (
+      question.questionType === "MULTICHOICE-MULTI" ||
+      question.questionType === "MULTICHOICE-SINGLE"
+    ) {
+      await updateMCQ(req, question);
+    } else if (question.questionType === "TEXT") {
+      await updateTQ(req, question);
+    } else if (question.questionType === "DYNAMIC-MEMORY") {
+      await updateDMQ(req, question);
+    } else {
+      await updateDPQ(req, question);
+    }
+  } catch (e) {
+    return next(new APIError("Error editing fields", 400));
+  }
+
+  try {
+    await question.validate();
+  } catch (e) {
+    throw new APIError("Invalid or missing inputs.", 400);
+  }
+
+  let result;
+  try {
+    result = await question.save();
+  } catch (e) {
+    throw new APIError("Failed to save in database.", 500);
+  }
+
   res.status(201).json(result);
 };
 
@@ -424,27 +425,63 @@ const createQuestion = async (req, res, next) => {
     !["PERCEPTION", "ROTATION", "VISUALISATION", "MEMORY"].includes(
       req.body.category
     ) ||
-    !["MULTICHOICE", "TEXT", "DYNAMIC-MEMORY", "DYNAMIC-PATTERN"].includes(
-      req.body.questionType
-    )
+    ![
+      "MULTICHOICE-MULTI",
+      "MULTICHOICE-SINGLE",
+      "TEXT",
+      "DYNAMIC-MEMORY",
+      "DYNAMIC-PATTERN",
+    ].includes(req.body.questionType)
   ) {
-    return next(new APIError("Missing fields", 400));
+    return next(new APIError("Missing or invalid fields", 400));
   }
 
-  let result;
+  //Check if tId given is valid
+  let test;
   try {
-    if (req.body.questionType === "MULTICHOICE") {
-      result = await createMCQ(req);
+    test = await Test.findById(req.body.tId).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("Test not found.", 404));
+  }
+
+  let result, createdQuestion;
+  try {
+    if (
+      req.body.questionType === "MULTICHOICE-MULTI" ||
+      req.body.questionType === "MULTICHOICE-SINGLE"
+    ) {
+      createdQuestion = await createMCQ(req, test);
     } else if (req.body.questionType === "TEXT") {
-      result = await createTQ(req);
+      createdQuestion = await createTQ(req, test);
     } else if (req.body.questionType === "DYNAMIC-MEMORY") {
-      result = await createDMQ(req);
+      createdQuestion = await createDMQ(req, test);
     } else {
-      result = await createDPQ(req);
+      createdQuestion = await createDPQ(req, test);
     }
   } catch (e) {
     return next(e);
   }
+
+  try {
+    test.questions.push(createdQuestion._id.toString());
+    if (test.individualTime) {
+      test.totalTime =
+        parseFloat(test.totalTime) + parseFloat(req.body.time ? req.body.time : 0);
+    }
+    await test.save();
+  } catch (e) {
+    throw new APIError("Failed to save question in test.", 500);
+  }
+
+  try {
+    result = await createdQuestion.save();
+  } catch (e) {
+    throw new APIError("Failed to save in database.", 500);
+  }
+
   res.status(201).json(result);
 };
 
@@ -453,6 +490,9 @@ const deleteQuestionById = async (req, res, next) => {
   let question;
   try {
     question = await Question.findById(req.params.qid).exec();
+    if (!question) {
+      throw new Error();
+    }
   } catch (e) {
     return next(new APIError("Could not find question", 400));
   }
@@ -461,6 +501,28 @@ const deleteQuestionById = async (req, res, next) => {
     return next(
       new APIError("Cannot edit question, you are not the creator.", 403)
     );
+  }
+
+  let test;
+  try {
+    test = await Test.findById(question.tId).exec();
+    if (!test) {
+      throw new Error();
+    }
+  } catch (e) {
+    return next(new APIError("Could not find test", 400));
+  }
+
+  try {
+    test.questions = test.questions.filter(
+      (q) => q !== question._id.toString()
+    );
+    if (test.individualTime) {
+      test.totalTime = parseFloat(test.totalTime) - parseFloat(question.time);
+    }
+    test.save();
+  } catch (e) {
+    return next(new APIError("Could not delete question from test", 400));
   }
 
   try {
