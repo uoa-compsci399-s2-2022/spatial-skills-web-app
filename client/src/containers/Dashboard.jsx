@@ -1,7 +1,6 @@
 import "../styles/Dashboard.css";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import axiosAPICaller from "../services/api-service.mjs";
 
@@ -10,10 +9,12 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axiosAPICaller.get("http://localhost:3001/api/test/all").then((response) => {
-      console.log(response);
-      setData(response.data);
-    });
+    axiosAPICaller
+      .get("http://localhost:3001/api/test/all")
+      .then((response) => {
+        console.log(response);
+        setData(response.data);
+      });
   }, []);
 
   // we'll need to authenticate users below this route, maybe check
@@ -24,7 +25,7 @@ const Dashboard = () => {
         <Link
           className="dashboard__item section"
           key={test._id + test.code}
-          to={`/dashboard/test/${test._id}/stats`}
+          to={`/dashboard/test/${test.code}/stats`}
           title="Edit/View"
         >
           <h3>{test.title}</h3>

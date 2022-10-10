@@ -14,7 +14,7 @@ const errorTree = {
 const Editor = (props) => {
   const [error, setError] = useState(null);
   const { userData } = props;
-  const { testId, questionId } = useParams();
+  const { code, questionId } = useParams();
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
     title: "",
@@ -22,7 +22,7 @@ const Editor = (props) => {
     published: false,
     timeLimit: null,
     noTimeLimit: false,
-    linearProgression: false,
+    allowBackTraversal: false,
     shuffleTestQuestions: false,
     shuffleMCQAnswers: false,
     image: "",
@@ -40,16 +40,15 @@ const Editor = (props) => {
     randomLevelOder: false,
     seed: "",
   });
-  const MODE =
-    testId === "create" || questionId === "create" ? "CREATE" : "EDIT";
+  const MODE = code === "create" || questionId === "create" ? "CREATE" : "EDIT";
   const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
 
   useEffect(() => {
-    const fetchQuestionData = async () => {
+    const fetchData = async () => {
       await axiosAPICaller
-        .get(
+        .post(
           `${baseURL}/${
-            CONTEXT === "TEST" ? `test/${testId}` : `question/${questionId}`
+            CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
           }`
         )
         .then((response) => {
@@ -65,14 +64,12 @@ const Editor = (props) => {
             citation: response.data.citation,
             type: response.data.questionType,
             timeLimit: response.data.totalTime,
+            allowBackTraversal: response.data.allowBackTraversal,
           });
         });
     };
 
-    // fetch question data
-    if (testId !== "create" && questionId !== "create") {
-      fetchQuestionData();
-    }
+    fetchData();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -88,6 +85,8 @@ const Editor = (props) => {
       answer: settings.answer,
       question: settings.question,
       citation: settings.citation,
+      published: settings.published,
+      totalTime: settings.timeLimit,
     };
     const config = {
       headers: {
@@ -96,14 +95,23 @@ const Editor = (props) => {
     };
     if (MODE === "EDIT") {
       await axiosAPICaller
-        .patch(`${baseURL}/question/${questionId}`, data, config)
+        .patch(
+          `${baseURL}/${
+            CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
+          }`,
+          data,
+          config
+        )
         .catch((e) => {
           setError(e.response.status);
           noErrors = false;
         });
     } else {
-      console.log(settings.question);
-      await axiosAPICaller.post(`${baseURL}/question`, data, config);
+      await axiosAPICaller.post(
+        `${baseURL}/${CONTEXT === "TEST" ? `test` : `question`}`,
+        data,
+        config
+      );
     }
 
     // Only navigate back if there is no errors
@@ -159,15 +167,15 @@ const Editor = (props) => {
                 });
               }}
             />
-            <label>Linear Progression</label>
+            <label>Back Traversal</label>
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.linearProgression}
+              defaultChecked={settings.allowBackTraversal}
               onChange={(e) => {
                 setSettings({
                   ...settings,
-                  linearProgression: e.target.checked,
+                  allowBackTraversal: e.target.checked,
                 });
               }}
             />
@@ -267,8 +275,8 @@ const Editor = (props) => {
 
               {settings.category === "MEMORY" ? (
                 <>
-                  <option value="MATCH">Match</option>
-                  <option value="PATTERN">Pattern</option>
+                  <option value="DYNAMIC-MEMORY">Match</option>
+                  <option value="DYNAMIC-PATTERN">Pattern</option>
                 </>
               ) : (
                 <>

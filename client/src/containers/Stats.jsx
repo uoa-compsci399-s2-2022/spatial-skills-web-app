@@ -8,7 +8,7 @@ import axiosAPICaller from "../services/api-service.mjs";
 const iconSize = "1.25em";
 
 const Stats = () => {
-  const { testId } = useParams();
+  const { code } = useParams();
   const [isLoadedTest, setIsLoadedTest] = useState(false);
   const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const baseURL = "http://localhost:3001/api/test/all";
@@ -21,7 +21,7 @@ const Stats = () => {
     });
   }, []);
 
-  const test = data.filter((test) => test._id === testId)[0];
+  const test = data.filter((test) => test.code === code)[0];
 
   const qURL = "http://localhost:3001/api/question/all";
   const [questionData, setQuestionData] = useState([]);
@@ -86,7 +86,7 @@ const Stats = () => {
                 <Link
                   className="button button--outlined"
                   title="Edit"
-                  to={`/dashboard/test/${testId}/question`}
+                  to={`/dashboard/test/${code}/question`}
                 >
                   Edit
                   <FaEdit size={iconSize} />
@@ -126,7 +126,7 @@ const Stats = () => {
 
         <div className="stats__action-container">
           <Link
-            to={`/dashboard/test/${testId}`}
+            to={`/dashboard/test/${code}`}
             className="button button--outlined"
           >
             Edit

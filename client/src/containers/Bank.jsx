@@ -6,7 +6,7 @@ import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const Bank = () => {
-  const { testId } = useParams();
+  const { code } = useParams();
   const [optionValue, setOptionValue] = useState("All");
   const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const [isLoadedTest, setIsLoadedTest] = useState(false);
@@ -25,11 +25,11 @@ const Bank = () => {
     });
   }, []);
 
-  const tURL = "http://localhost:3001/api/test/" + testId;
+  const tURL = "http://localhost:3001/api/test/code/" + code;
   const [testData, setTestData] = useState([]);
 
   useEffect(() => {
-    axiosAPICaller.get(tURL).then((response) => {
+    axiosAPICaller.post(tURL).then((response) => {
       setTestData(response.data);
       setIsLoadedTest(true);
     });
@@ -51,10 +51,10 @@ const Bank = () => {
             style={{ width: "100%" }}
           >
             <option value="All">All</option>
-            <option value="Memory">Memory</option>
-            <option value="Perception">Perception</option>
-            <option value="Rotation">Rotation</option>
-            <option value="Visualisation">Visualisation</option>
+            <option value="MEMORY">Memory</option>
+            <option value="PERCEPTION">Perception</option>
+            <option value="ROTATION">Rotation</option>
+            <option value="VISUALISATION">Visualisation</option>
           </select>
           <label>Name</label>
           <input
@@ -74,7 +74,7 @@ const Bank = () => {
                 return (
                   QuestionList &&
                   QuestionList.map((_question) => {
-                    if (question.qId === _question._id || testId === "bank") {
+                    if (question.qId === _question._id || code === "bank") {
                       if (
                         (_question.category === optionValue ||
                           optionValue === "All") &&
@@ -85,7 +85,7 @@ const Bank = () => {
                         return (
                           <Link
                             className="dashboard__item section"
-                            to={`/dashboard/test/${testId}/question/${_question._id}`}
+                            to={`/dashboard/test/${code}/question/${_question._id}`}
                             key={_question._id}
                           >
                             <img
@@ -105,7 +105,7 @@ const Bank = () => {
                 );
               })}
             <Link
-              to={`/dashboard/test/${testId}/question/create`}
+              to={`/dashboard/test/${code}/question/create`}
               className="dashboard__create"
             >
               <FaPlus size={iconSize} />
