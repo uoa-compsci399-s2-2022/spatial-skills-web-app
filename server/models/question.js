@@ -23,7 +23,7 @@ const questionSchema = new mongoose.Schema({
   },
   creator: { type: String, required: true },
   citation: { type: String, required: false, default: null },
-  tId: { type: String, required: true },
+  testCode: { type: String, required: true },
   time: { type: mongoose.Decimal128, required: false},
 
   //REQUIREMENTS FOR DIFFERENT QUESTION TYPES WILL BE VALIDATED IN MIDDLEWARE
