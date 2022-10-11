@@ -89,16 +89,16 @@ const createMCQ = async (req) => {
       multi.push({
         image: bucketURL + fileUri,
         grade:
-          req.body[`${fKeys[i]}-grade`] == null
+          req.body[`${fKeys[i]}Grade`] == null
             ? 0
-            : req.body[`${fKeys[i]}-grade`],
+            : req.body[`${fKeys[i]}Grade`],
       });
       totalMultiGrade =
         totalMultiGrade +
         Number(
-          req.body[`${fKeys[i]}-grade`] == null
+          req.body[`${fKeys[i]}Grade`] == null
             ? 0
-            : req.body[`${fKeys[i]}-grade`]
+            : req.body[`${fKeys[i]}Grade`]
         );
     }
   }
