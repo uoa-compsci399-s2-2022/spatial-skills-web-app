@@ -34,7 +34,7 @@ const Test = (props) => {
         if (res.data.allowBackTraversal) {
           setTimeLeft(res.data.totalTime.$numberDecimal);
         } else {
-          setTimeLeft(res.data.questions[0].time.$numberDecimal);
+          setTimeLeft(res.data.questions[0].totalTime.$numberDecimal);
         }
         
         let defaultAns = [];
@@ -55,7 +55,7 @@ const Test = (props) => {
     if (currentQuestion < questions.length) {
       goToQuestion(currentQuestion + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questions[currentQuestion].time.$numberDecimal);
+        setTimeLeft(questions[currentQuestion].totalTime.$numberDecimal);
       }
       return;
     } else {
@@ -68,7 +68,7 @@ const Test = (props) => {
       goToQuestion(currentQuestion - 1);
       if (!allowBackTraversal) {
         // They shouldn't be able to reach here (no back on linear test).
-        setTimeLeft(getCurrentQuestion().time.$numberDecimal);
+        setTimeLeft(getCurrentQuestion().totalTime.$numberDecimal);
       }
     }
   }
@@ -221,7 +221,7 @@ const Test = (props) => {
           <Timer
             questionTime={ allowBackTraversal ? 
               totalTime :
-              getCurrentQuestion().time.$numberDecimal}
+              getCurrentQuestion().totalTime.$numberDecimal}
             timeLeft={timeLeft}
           /> :
           null

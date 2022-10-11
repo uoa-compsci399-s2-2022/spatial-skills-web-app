@@ -73,8 +73,8 @@ const Question = (props) => {
         gameStartDelay={question.gameStartDelay.$numberDecimal}
         selectionDelay={question.selectionDelay.$numberDecimal}
         maxHealth={question.lives}
-        timerState={question.time.$numberDecimal === 0 ? true : false}
-        timeAllowed={question.time.$numberDecimal}
+        timerState={question.totalTime.$numberDecimal === 0 ? true : false}
+        timeAllowed={question.totalTime.$numberDecimal}
         randomSeed={question.seed}
         submit={submitValue}
         next={nextQuestion}
@@ -88,8 +88,8 @@ const Question = (props) => {
         gameDim={question.size}  // width and height of grid
         order={true}  // pattern order/no-order
         maxHealth={question.lives}
-        timerState={question.time.$numberDecimal === 0 ? true : false}  // set timer on/off
-        timeAllowed={question.time.$numberDecimal}  // total time if timer on
+        timerState={question.totalTime.$numberDecimal === 0 ? true : false}  // set timer on/off
+        timeAllowed={question.totalTime.$numberDecimal}  // total time if timer on
         patternFlashTime={question.patternFlashTime.$numberDecimal}  // time to flash each pattern block
         randomLevelOrder={question.randomLevelOrder}  // each level is randomized
         randomSeed={question.seed}
