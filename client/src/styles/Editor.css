@@ -61,3 +61,19 @@
     align-items: center;
     gap: 1rem;
 }
+
+.editor__multi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    border: 1px dashed var(--shadow-color);
+    color: var(--mid-color);
+    grid-column: 2;
+}
+
+.editor__multi:hover {
+    border: 1px dashed var(--accent-color);
+    color: var(--accent-color);
+}

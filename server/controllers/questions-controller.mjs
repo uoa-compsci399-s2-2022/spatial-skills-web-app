@@ -417,7 +417,6 @@ const updateQuestion = async (req, res, next) => {
 };
 
 const createQuestion = async (req, res, next) => {
-  console.log(req.body);
   // Check if missing any required generic fields
   if (
     !req.body.title ||

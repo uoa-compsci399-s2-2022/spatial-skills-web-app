@@ -1,5 +1,5 @@
 import "../styles/Editor.css";
-import { FaSave, FaTrash } from "react-icons/fa";
+import { FaSave, FaTrash, FaPlus } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ const baseURL = "http://localhost:3001/api"; // change later for prod with .env
 const errorTree = {
   403: "ERROR: Unauthorized!",
 };
+const mutliAnswerMap = ["a", "b", "c", "d", "e"];
 
 const Editor = (props) => {
   const [error, setError] = useState(null);
@@ -32,7 +33,6 @@ const Editor = (props) => {
     category: "",
     questionType: "",
     citation: "",
-    multi: [],
     answer: "",
     textGrade: null,
     size: null,
@@ -46,6 +46,21 @@ const Editor = (props) => {
     gameStartDelay: null,
     selectionDelay: null,
     testCode: code,
+    a: null,
+    aImage: "",
+    aGrade: null,
+    b: null,
+    bImage: "",
+    bGrade: null,
+    c: null,
+    cImage: "",
+    cGrade: null,
+    d: null,
+    dImage: "",
+    dGrade: null,
+    e: null,
+    eImage: "",
+    eGrade: null,
   });
 
   useEffect(() => {
@@ -60,23 +75,7 @@ const Editor = (props) => {
           console.log(response.data);
           setSettings({
             ...settings,
-            title: response.data.title,
-            published: response.data.published,
-            description: response.data.description,
-            category: response.data.category,
-            image: response.data.image,
-            answer: response.data.answer,
-            citation: response.data.citation,
-            questionType: response.data.questionType,
-            totalTime: response.data.time,
-            allowBackTraversal: response.data.allowBackTraversal,
-            shuffleAnswers: response.data.shuffleAnswers,
-            shuffleQuestions: response.data.shuffleQuestions,
-            textGrade: response.data.textGrade,
-            corsi: response.data.corsi,
-            reverse: response.data.reverse,
-            randomLevelOrder: response.data.randomLevelOrder,
-            patternFlashTime: response.data.patternFlashTime,
+            ...response.data,
           });
         });
     };
@@ -304,8 +303,18 @@ const Editor = (props) => {
 
               {settings.category === "MEMORY" ? (
                 <>
-                  <option value="DYNAMIC-MEMORY">Match</option>
-                  <option value="DYNAMIC-PATTERN">Pattern</option>
+                  <option
+                    selected={settings.questionType === "DYNAMIC-MEMORY"}
+                    value="DYNAMIC-MEMORY"
+                  >
+                    Match
+                  </option>
+                  <option
+                    selected={settings.questionType === "DYNAMIC-PATTERN"}
+                    value="DYNAMIC-PATTERN"
+                  >
+                    Pattern
+                  </option>
                 </>
               ) : (
                 <>
@@ -337,6 +346,7 @@ const Editor = (props) => {
                   type="number"
                   placeholder="5"
                   className="editor__input editor__input"
+                  defaultValue={settings.size}
                   onChange={(e) =>
                     setSettings({ ...settings, size: e.target.value })
                   }
@@ -347,6 +357,7 @@ const Editor = (props) => {
                   type="number"
                   placeholder="12345"
                   className="editor__input editor__input"
+                  defaultValue={settings.seed}
                   onChange={(e) =>
                     setSettings({ ...settings, seed: e.target.value })
                   }
@@ -357,6 +368,7 @@ const Editor = (props) => {
                   type="number"
                   placeholder="3"
                   className="editor__input editor__input"
+                  defaultValue={settings.lives}
                   onChange={(e) =>
                     setSettings({ ...settings, lives: e.target.value })
                   }
@@ -405,6 +417,7 @@ const Editor = (props) => {
                       type="number"
                       placeholder="1"
                       className="editor__input editor__input"
+                      defaultValue={settings.patternFlashTime}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
@@ -421,6 +434,7 @@ const Editor = (props) => {
                       type="number"
                       placeholder="1"
                       className="editor__input editor__input"
+                      defaultValue={settings.gameStartDelay}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
@@ -434,6 +448,7 @@ const Editor = (props) => {
                       type="number"
                       placeholder="1"
                       className="editor__input editor__input"
+                      defaultValue={settings.selectionDelay}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
@@ -446,28 +461,50 @@ const Editor = (props) => {
                 )}
               </>
             ) : settings.questionType.includes("MULTICHOICE") ? (
-              <>
-                <label>Number of Answers</label>
-                <input
-                  type="text"
-                  placeholder="4"
-                  className="editor__input editor__input"
-                  required
-                />
-                {[1, 2, 3, 4].map((index) => (
-                  <>
-                    <label>Grade</label>
+              ["a", "b", "c", "d", "e"].map((it) => (
+                <>
+                  <label
+                    style={{ gridColumn: "span 2" }}
+                  >{`${it.toUpperCase()}`}</label>
+                  <label>Grade</label>
+                  <input
+                    type="number"
+                    className="editor__input editor__input"
+                    placeholder="1.0"
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        [`${it}Grade`]: e.target.value,
+                      })
+                    }
+                    defaultValue={settings[it]}
+                    required
+                  />
+                  <label>Image</label>
+                  <div className="editor__image-container">
                     <input
-                      type="number"
-                      placeholder="1.0"
-                      className="editor__input editor__input"
-                      required
+                      type="file"
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          [it]: e.target.files[0],
+                          [`${it}Image`]: URL.createObjectURL(
+                            e.target.files[0]
+                          ),
+                        });
+                      }}
+                      required={MODE === "CREATE"}
                     />
-                    <label>Image</label>
-                    <input type="file" required />
-                  </>
-                ))}
-              </>
+                    {settings[it] !== "" ? (
+                      <img
+                        src={settings[`${it}Image`]}
+                        className="editor__image"
+                        alt=""
+                      />
+                    ) : null}
+                  </div>
+                </>
+              ))
             ) : (
               <>
                 <label>Answer</label>
@@ -510,7 +547,7 @@ const Editor = (props) => {
           disabled={settings.noTimeLimit}
           defaultValue={settings.totalTime}
           onChange={(e) =>
-            setSettings({ ...settings, totalTime: parseInt(e.target.value) })
+            setSettings({ ...settings, totalTime: e.target.value })
           }
           required
         />
