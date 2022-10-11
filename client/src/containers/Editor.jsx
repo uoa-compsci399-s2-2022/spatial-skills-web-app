@@ -73,10 +73,15 @@ const Editor = (props) => {
         )
         .then((response) => {
           console.log(response.data);
-          setSettings({
+          const newSettings = {
             ...settings,
             ...response.data,
+          };
+          response.data.multi.map((it, index) => {
+            newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
+            newSettings[`${mutliAnswerMap[index]}Grade`] = it.grade;
           });
+          setSettings(newSettings);
         });
     };
     if (MODE === "EDIT") {
@@ -461,7 +466,7 @@ const Editor = (props) => {
                 )}
               </>
             ) : settings.questionType.includes("MULTICHOICE") ? (
-              ["a", "b", "c", "d", "e"].map((it) => (
+              mutliAnswerMap.map((it) => (
                 <>
                   <label
                     style={{ gridColumn: "span 2" }}
@@ -478,7 +483,6 @@ const Editor = (props) => {
                       })
                     }
                     defaultValue={settings[it]}
-                    required
                   />
                   <label>Image</label>
                   <div className="editor__image-container">
@@ -493,7 +497,6 @@ const Editor = (props) => {
                           ),
                         });
                       }}
-                      required={MODE === "CREATE"}
                     />
                     {settings[it] !== "" ? (
                       <img
