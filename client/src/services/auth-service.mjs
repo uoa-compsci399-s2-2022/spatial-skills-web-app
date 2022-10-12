@@ -1,11 +1,17 @@
 import axios from "axios";
 
-const url = "http://localhost:3001/api/auth/";
+let url;
+
+//DEV
+url = "http://localhost:3001/api/"
+
+//PROD
+// url = "api/";
 
 const createStudent = async (name, code) => {
       return axios
       .post(
-        "http://localhost:3001/api/user/createStudent",
+        url + "user/createStudent",
         {
           name: name,
           permissions: [code]
@@ -23,7 +29,7 @@ const studentLogin = async (name, code) => {
 
     return axios
     .post(
-      url + "studentLogin",
+      url + "auth/studentLogin",
       {
         name: name,
         permissions: [code]
@@ -43,7 +49,7 @@ const studentLogin = async (name, code) => {
 const adminLogin = async (name,gIdToken) => {
   return axios
   .post(
-    url+'adminLogin',
+    url+'auth/adminLogin',
     {
       name,
       gIdToken
@@ -62,7 +68,7 @@ const adminLogin = async (name,gIdToken) => {
 const logout = async () => {
   return axios
     .post(
-      url + "logout",
+      url + "auth/logout",
       {},
       {
         withCredentials: true,
@@ -78,7 +84,7 @@ const logout = async () => {
 const refreshToken = async () => {
   return axios
   .get(
-    url + "refresh",
+    url + "auth/refresh",
     {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },

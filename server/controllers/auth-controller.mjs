@@ -77,9 +77,7 @@ const adminLogin = async (req, res, next) => {
       idToken: req.body.gIdToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    console.log(ticket);
   } catch (e) {
-    console.log(e);
     return next(new APIError("Failed to verify Google ID.", 400));
   }
 

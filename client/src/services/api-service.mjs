@@ -1,8 +1,16 @@
 import axios from "axios";
 import { refreshToken } from "./auth-service.mjs";
 
+let BASE_URL;
+
+// DEV
+BASE_URL = "http://localhost:3001/api/"
+
+// PROD
+// BASE_URL = "https:hydrohomiebeerbro.com/api";
+
 const axiosAPICaller = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
