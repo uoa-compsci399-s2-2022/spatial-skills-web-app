@@ -12,22 +12,23 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questions, setQuestions] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(5);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [timeTaken, setTimeTaken] = useState(0);
   // const [timerOn, setTimerOn] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
-  const [testId, setTestId] = useState(null);
+  const testCode = sessionStorage.getItem("code");
   
   // Load test data from backend API
   useEffect(() => {
-    axiosAPICaller.get(`/test/code/${sessionStorage.getItem("code")}`).then(
+    axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
         console.log(res);
-        setTestId(res.data.tId);
+        // setTestId(res.data.tId);
         setQuestions(res.data.questions);
         setTotalTime(res.data.totalTime.$numberDecimal);
         setAllowBackTraversal(res.data.allowBackTraversal);
@@ -39,7 +40,7 @@ const Test = (props) => {
         
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.id, aId: null, value: null });
+          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
@@ -49,7 +50,7 @@ const Test = (props) => {
         setError(error);
       }
     );
-  }, []);
+  }, [testCode]);
 
   const nextQuestion = () => {
     if (currentQuestion < questions.length) {
@@ -77,13 +78,16 @@ const Test = (props) => {
     if (userData.name) {
       // Create answer in DB if user logged in
       let testData = {
-        tId: testId,
-        sId: userData.name,
+        testCode: testCode,
+        studentName: userData.name,
         answers: userAnswers,
       };
-      // axiosAPICaller.post("http://localhost:3001/api/answer", testData).then(
-      //   // window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
-      // );
+      console.log(testData)
+      axiosAPICaller.post("http://localhost:3001/api/answer/", testData).then(
+        // window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
+        console.log("Answer Submitted")
+      );
+      
     } else {
       alert("Test Finished. You are not logged in, so your results wont be saved.")
       // window.location.href(`http://localhost:3000/`);
@@ -91,21 +95,34 @@ const Test = (props) => {
   }
 
   const submitAnswer = (event) => {
-    // Updates answers whenever user selects / enters new answer
     let answers = userAnswers;
-    if (getCurrentQuestion().questionType === "TEXT") {
-      event.preventDefault();  // Prevent form entry submission when pressing enter
-      answers[currentQuestion - 1].value = event.target.value;
-    } 
-    else {
-      answers[currentQuestion - 1].aId = event.target.value;
+    switch (getCurrentQuestion().questionType) {
+      case "TEXT":
+        event.preventDefault();  // Prevent form entry submission when pressing enter
+        answers[currentQuestion - 1].textAnswer = event.target.value;
+        console.log(event.target.value);
+        break;
+      case "MULTICHOICE-MULTI":
+        let checked = document.querySelectorAll('input[type="checkbox"]:checked');
+        let values = [];
+        checked.forEach(ans => { values.push(ans.value) })
+        console.log(values)
+        answers[currentQuestion - 1].aIds = values;
+        break;
+      case "MULTICHOICE-SINGLE":
+        answers[currentQuestion - 1].aIds = [event.target.value];
+        console.log(event.target.value);
+        break;
+      default:
+        console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
     }
+
     setSelectedAnswer(event.target.value);
     setUserAnswers(answers);
   };
 
   const submitAnswerValue = (value) => {
-    // For memory games where there is no answer ID
+    // For memory games
     let answers = userAnswers;
     answers[currentQuestion - 1].value = value;
     setSelectedAnswer(true);
@@ -226,8 +243,6 @@ const Test = (props) => {
           /> :
           null
         }
-          
-        
 
       </div>
     );

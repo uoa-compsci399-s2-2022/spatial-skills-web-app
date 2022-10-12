@@ -42,7 +42,7 @@ const Question = (props) => {
             value={question.multi[i]._id}
             name="answer"
             onChange={submit}
-            checked={selected === question.multi[i]._id}
+            // checked={selected === question.multi[i]._id}
           />
         </div>
       );
