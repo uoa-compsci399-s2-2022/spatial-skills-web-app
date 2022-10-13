@@ -487,7 +487,6 @@ const createQuestion = async (req, res, next) => {
 };
 
 const deleteQuestionById = async (req, res, next) => {
-  console.log("DELETING QUESTION");
   let question;
   try {
     question = await Question.findById(req.params.qid).exec();
@@ -506,7 +505,7 @@ const deleteQuestionById = async (req, res, next) => {
 
   let test;
   try {
-    test = await Test.findByOne({ code: question.testCode }).exec();
+    test = await Test.findOne({ code: question.testCode }).exec();
     if (!test) {
       throw new Error();
     }
