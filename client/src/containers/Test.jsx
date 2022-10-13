@@ -15,11 +15,11 @@ const Test = (props) => {
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeTaken, setTimeTaken] = useState(0);
-  const [timerOn, setTimerOn] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
+  const [currentAnswer, setCurrentAnswer] = useState(null); 
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
   const testCode = sessionStorage.getItem("code");
   
@@ -28,7 +28,6 @@ const Test = (props) => {
     axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
         console.log(res);
-        // setTestId(res.data.tId);
         setQuestions(res.data.questions);
         setTotalTime(res.data.totalTime.$numberDecimal);
         setAllowBackTraversal(res.data.allowBackTraversal);
@@ -36,6 +35,7 @@ const Test = (props) => {
           setTimeLeft(res.data.totalTime.$numberDecimal);
         } else {
           setTimeLeft(res.data.questions[0].totalTime.$numberDecimal);
+          // setTimeLeft(10);
         }
         
         let defaultAns = [];
@@ -43,8 +43,8 @@ const Test = (props) => {
           defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
         }
         setUserAnswers(defaultAns);
+        // setCurrentAnswer(defaultAns[currentQuestion]);
         setIsLoaded(true);
-        setTimerOn(true);
       },
       (error) => {
         setIsLoaded(true);
@@ -54,52 +54,15 @@ const Test = (props) => {
   }, [testCode]);
 
   // Timer for time taken.
-  // useEffect(() => {
-  //   Ref.current = setInterval(() => timeCountDown(), 1000);
-
-  //   return () => clearInterval(Ref.current);
-  // }, );
-
   useEffect(() => {
-    let interval = null;
-
     if (isLoaded) {
-      if (timerOn) {
-        interval = setInterval(() => {
-          setTimeTaken((prevTime) => prevTime + 1);
-          if (!(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
-            setTimeLeft((prevTime) => prevTime - 1)
-          }
-        }, 1000);
-      } else {
-        clearInterval(interval);
-      }
+      Ref.current = setInterval(() => {
+        setTimeTaken((prevTime) => prevTime + 1);
+        setTimeLeft((prevTime) => prevTime - 1)
+      }, 1000);
     }
-    return () => clearInterval(interval);
-  }, [isLoaded, timerOn, allowBackTraversal]);
-
-  console.log(timeLeft, timeTaken);
-
-  const timeCountDown = () => {
-    if (isLoaded) {
-      // if (Ref.current) {
-      //   clearInterval(Ref.current);
-      // }
-      if ((getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
-        if (timeLeft <= 0) {
-          if (allowBackTraversal) {
-            finishTest();
-            clearInterval(Ref.current);
-          } else {
-            nextQuestion();
-          }
-        } else {
-          setTimeTaken(timeTaken + 1);
-          setTimeLeft(timeLeft - 1);
-        }
-      }
-    }
-  };
+    return () => clearInterval(Ref.current);
+  }, [isLoaded, allowBackTraversal]);
 
   const nextQuestion = () => {
     if (currentQuestion < questions.length) {
@@ -124,48 +87,58 @@ const Test = (props) => {
   }
 
   const finishTest = () => {
-    if (userData.name) {
-      // Create answer in DB if user logged in
-      let testData = {
-        testCode: testCode,
-        studentName: userData.name,
-        answers: userAnswers,
-      };
-      console.log(testData)
-      axiosAPICaller.post("http://localhost:3001/api/answer/", testData).then(
-        // window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
-        console.log("Answer Submitted")
-      );
+    console.log("Already Submitted: ", submitted);
+    if (!submitted) {
       
-    } else {
-      alert("Test Finished. You are not logged in, so your results wont be saved.")
-      // window.location.href(`http://localhost:3000/`);
+      if (userData.name) {
+        // Create answer in DB if user logged in
+        let testData = {
+          testCode: testCode,
+          studentName: userData.name,
+          answers: userAnswers,
+          totalTimeTaken: timeTaken
+        };
+        console.log(testData)
+        
+        axiosAPICaller.post("http://localhost:3001/api/answer/", testData)
+        .then(setSubmitted(true))
+        .then(window.location.href = `http://localhost:3000/`)
+        
+      } else {
+        console.log("Test Finished, Not User Found");
+        window.location.href = `http://localhost:3000/`;
+      }
     }
   }
 
   const submitAnswer = (event) => {
     let answers = userAnswers;
+    let ans;
     switch (getCurrentQuestion().questionType) {
       case "TEXT":
         event.preventDefault();  // Prevent form entry submission when pressing enter
         answers[currentQuestion - 1].textAnswer = event.target.value;
-        console.log(event.target.value);
+        ans = event.target.value;
         break;
+
       case "MULTICHOICE-MULTI":
         let checked = document.querySelectorAll('input[type="checkbox"]:checked');
         let values = [];
         checked.forEach(ans => { values.push(ans.value) })
-        console.log(values)
         answers[currentQuestion - 1].aIds = values;
+        ans = values.length > 0;
         break;
+
       case "MULTICHOICE-SINGLE":
         answers[currentQuestion - 1].aIds = [event.target.value];
-        console.log(event.target.value);
+        ans = event.target.value;
         break;
+
       default:
         console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
     }
-    setSelectedAnswer(event.target.value);
+    console.log(ans)
+    setCurrentAnswer(ans);
     setUserAnswers(answers);
   };
 
@@ -173,7 +146,7 @@ const Test = (props) => {
     // For memory games
     let answers = userAnswers;
     answers[currentQuestion - 1].value = value;
-    setSelectedAnswer(true);
+    setCurrentAnswer(true);
     setUserAnswers(answers);
   }
 
@@ -183,7 +156,7 @@ const Test = (props) => {
 
   const goToQuestion = (num) => {
     setCurrentQuestion(num);
-    setSelectedAnswer(userAnswers[num - 1].aId);
+    setCurrentAnswer(null);  // In the future, change this to conditionally render existing answer
     console.log(userAnswers); // for debugging
   }
 
@@ -197,7 +170,9 @@ const Test = (props) => {
     // Logic if time runs out
     if (timeLeft <= 0 && !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
       if (allowBackTraversal) {
-        finishTest();
+        if (!submitted) {
+          finishTest();
+        }
         clearInterval(Ref.current);
       } else {
         nextQuestion();
@@ -209,7 +184,7 @@ const Test = (props) => {
         submit={submitAnswer}
         submitValue={submitAnswerValue}
         nextQuestion={nextQuestion}
-        selected={selectedAnswer}
+        userAnswer={userAnswers[currentQuestion - 1]}
     />
     
     return (
@@ -239,8 +214,8 @@ const Test = (props) => {
         </div>
 
         {
-          !selectedAnswer && !allowBackTraversal ? 
-          null : ( // Hide next button if no answer selected
+          !(currentAnswer) && !allowBackTraversal ? 
+          null :  // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
@@ -248,7 +223,7 @@ const Test = (props) => {
           >
             <FaCaretRight size={60} />
           </button>
-        )}
+        }
 
         {
           allowBackTraversal ? 
@@ -261,14 +236,14 @@ const Test = (props) => {
           null
         }
         {
-          !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) ?
+          (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) || allowBackTraversal ?
+          null :
           <Timer
             questionTime={ allowBackTraversal ? 
               totalTime :
               getCurrentQuestion().totalTime.$numberDecimal}
             timeLeft={timeLeft}
-          /> :
-          null
+          /> 
         }
 
       </div>

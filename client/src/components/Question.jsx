@@ -2,7 +2,7 @@ import MatchingGame from "../components/MatchingGame/MatchingGame";
 import PatternGame from "../components/PatternGame/PatternGame";
 
 const Question = (props) => {
-  const { question, submit, submitValue, nextQuestion, selected } = props;
+  const { question, submit, submitValue, nextQuestion, userAnswer } = props;
 
   // console.log(question);
 
@@ -20,7 +20,7 @@ const Question = (props) => {
             value={question.multi[i]._id}
             name="answer"
             onChange={submit}
-            checked={selected === question.multi[i]._id}
+            checked={userAnswer.aIds.includes(question.multi[i]._id)}
           />
         </div>
       );
@@ -42,7 +42,7 @@ const Question = (props) => {
             value={question.multi[i]._id}
             name="answer"
             onChange={submit}
-            // checked={selected === question.multi[i]._id}
+            checked={userAnswer.aIds.includes(question.multi[i]._id)}
           />
         </div>
       );
@@ -61,6 +61,7 @@ const Question = (props) => {
           autoComplete="off"
           name="answer"
           onChange={submit}
+          value={userAnswer.textAnswer}
         />
       </div>
     );
