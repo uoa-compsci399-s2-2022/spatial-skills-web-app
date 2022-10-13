@@ -26,7 +26,8 @@ const MatchingGame = ({
   randomSeed = null,
   description,
   next, 
-  submit 
+  submit,
+  firstVisit
   }) => {
 
   const [cards, setCards] = useState([])
@@ -37,7 +38,7 @@ const MatchingGame = ({
   const [bothMatched, setBothMatched] = useState(true)
   const [gameOver, setGameOver] = useState(false)
   const [started, setStarted] = useState(false)
-  const [firstVisit, setFirstvisit] = useState(true)
+  // const [firstVisit, setFirstvisit] = useState(true)
   const [time, setTime] = useState(timeAllowed)
   const [timerOn, setTimerOn] = useState(false)
   const health = useRef(maxHealth)
@@ -70,7 +71,8 @@ const MatchingGame = ({
       setTimerOn(true)
     }, gameStartDelay * 1000)
     setStarted(true)
-    setFirstvisit(false)
+    // setFirstvisit(false)
+    submit(0);  // Let test know user has started the question
   }
 
   // choosing a card
@@ -199,12 +201,18 @@ const MatchingGame = ({
 
   return (
     <div className="matching-game">
-      {firstVisit ? 
-        <div className="matching-game__instructions">
-          <h1>Memory Test: Card Matching</h1>
-          <p>{description}</p>
+      {/* Disable start if they already started the game before. */}
+      <div className="matching-game__instructions" style={{display: started ? 'none' : 'block'}}>
+        <h1>Memory Test: Card Matching</h1>
+        <p>{description}</p>
+        <p>Once you start, you cannot redo the question!</p>
+        { firstVisit ? 
           <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
-        </div> : null}
+          :
+          <p style={{marginTop: "3rem"}}>You have already done this question!</p>
+        }
+      </div> 
+
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
       
         <div className='matching-game__lives-div'>
@@ -218,7 +226,7 @@ const MatchingGame = ({
           <h2 className='matching-game__score'>Score: {matchedPair.current}</h2>
       </div>
 
-      {gameOver ? 
+      {gameOver && firstVisit ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {matchedPair.current}</h2>
           {/* <button onClick={next}>Next Question</button> */}

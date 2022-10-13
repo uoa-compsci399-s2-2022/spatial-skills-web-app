@@ -80,6 +80,7 @@ const Question = (props) => {
         randomSeed={question.seed}
         submit={submitValue}
         next={nextQuestion}
+        firstVisit={userAnswer.value === null}
       />
     )
   }
@@ -101,6 +102,7 @@ const Question = (props) => {
         reverse={question.reverse}
         next={nextQuestion}
         submit={submitValue}
+        firstVisit={userAnswer.value === null}
       />
     )
   }

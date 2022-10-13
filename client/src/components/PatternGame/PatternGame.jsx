@@ -21,6 +21,7 @@ function PatternGame({
   tested,
   next,
   submit,
+  firstVisit
 }) {
 
   console.log(tested)
@@ -421,6 +422,7 @@ function PatternGame({
 
   const startGame = () => {
     setStarted(true);
+    submit(0);
     if (!order) {
       setTimeout(() => {
         generatePattern();
