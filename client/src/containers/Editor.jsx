@@ -74,14 +74,28 @@ const Editor = (props) => {
         )
         .then((response) => {
           console.log(response.data);
-          const newSettings = {
+          let newSettings = {
             ...settings,
             ...response.data,
           };
+          const decimalFields = ["totalTime", "textGrade", "patternFlashTime"];
+          if (CONTEXT === "TEST") {
+            newSettings = {
+              ...newSettings,
+              totalTime: response.data.totalTime.$numberDecimal,
+            };
+          } else if (response.data.questionType === "TEXT") {
+            newSettings = {
+              ...newSettings,
+              textGrade: response.data.textGrade.$numberDecimal,
+              totalTime: response.data.time.$numberDecimal,
+            };
+          }
           if (response.data.multi !== undefined) {
             response.data.multi.map((it, index) => {
               newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
-              newSettings[`${mutliAnswerMap[index]}Grade`] = it.grade;
+              newSettings[`${mutliAnswerMap[index]}Grade`] =
+                it.grade.$numberDecimal;
             });
           }
           setPublished(response.data.published);
@@ -125,7 +139,7 @@ const Editor = (props) => {
 
     // Only navigate back if there is no errors
     if (noErrors) {
-      navigate("/dashboard");
+      navigate(-1);
     }
   };
 
@@ -136,7 +150,10 @@ const Editor = (props) => {
         CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
       }`
     );
-    navigate("/dashboard");
+    if (CONTEXT === "TEST") {
+      navigate("/dashboard");
+    }
+    navigate(-1);
   };
 
   useEffect(() => {
@@ -246,6 +263,7 @@ const Editor = (props) => {
                 <label>Image</label>
                 <div className="editor__image-container">
                   <input
+                    disabled={MODE === "EDIT"}
                     type="file"
                     onChange={(e) => {
                       setSettings({
@@ -268,6 +286,7 @@ const Editor = (props) => {
             ) : null}
             <label>Category</label>
             <select
+              disabled={MODE === "EDIT"}
               onChange={(e) =>
                 setSettings({ ...settings, category: e.target.value })
               }
@@ -301,6 +320,7 @@ const Editor = (props) => {
             </select>
             <label>Type</label>
             <select
+              disabled={MODE === "EDIT"}
               onChange={(e) =>
                 setSettings({ ...settings, questionType: e.target.value })
               }
@@ -487,11 +507,12 @@ const Editor = (props) => {
                         [`${it}Grade`]: e.target.value,
                       })
                     }
-                    defaultValue={settings[it]}
+                    defaultValue={settings[`${it}Grade`]}
                   />
                   <label>Image</label>
                   <div className="editor__image-container">
                     <input
+                      disabled={MODE === "EDIT"}
                       type="file"
                       onChange={(e) => {
                         setSettings({

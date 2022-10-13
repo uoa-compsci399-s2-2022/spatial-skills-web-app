@@ -323,9 +323,9 @@ const updateDPQ = async (req, question) => {
     req.body.patternFlashTime == null
       ? question.patternFlashTime
       : req.body.patternFlashTime;
-  question.corsi = req.body.corsi == null ? question.corsi : question.corsi;
+  question.corsi = req.body.corsi == null ? question.corsi : req.body.corsi;
   question.reverse =
-    req.body.reverse == null ? question.reverse : question.reverse;
+    req.body.reverse == null ? question.reverse : req.body.reverse;
 };
 
 ////////////////////////
