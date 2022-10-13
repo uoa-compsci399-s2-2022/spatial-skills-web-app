@@ -9,10 +9,10 @@ import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
   const { userData } = props;
-  const Ref = useRef(null); // Used for countdown timer
+  const timer = useRef(null); // Used for countdown timer
   const [questions, setQuestions] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [questionNum, setQuestionNum] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeTaken, setTimeTaken] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -43,7 +43,6 @@ const Test = (props) => {
           defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
         }
         setUserAnswers(defaultAns);
-        // setCurrentAnswer(defaultAns[currentQuestion]);
         setIsLoaded(true);
       },
       (error) => {
@@ -56,19 +55,19 @@ const Test = (props) => {
   // Timer for time taken.
   useEffect(() => {
     if (isLoaded) {
-      Ref.current = setInterval(() => {
+      timer.current = setInterval(() => {
         setTimeTaken((prevTime) => prevTime + 1);
         setTimeLeft((prevTime) => prevTime - 1)
       }, 1000);
     }
-    return () => clearInterval(Ref.current);
+    return () => clearInterval(timer.current);
   }, [isLoaded, allowBackTraversal]);
 
   const nextQuestion = () => {
-    if (currentQuestion < questions.length) {
-      goToQuestion(currentQuestion + 1);
+    if (questionNum < questions.length) {
+      goToQuestion(questionNum + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questions[currentQuestion].totalTime.$numberDecimal);
+        setTimeLeft(questions[questionNum].totalTime.$numberDecimal);
       }
       return;
     } else {
@@ -77,8 +76,8 @@ const Test = (props) => {
   };
 
   const previousQuestion = () => {
-    if (currentQuestion > 1 && allowBackTraversal) {
-      goToQuestion(currentQuestion - 1);
+    if (questionNum > 1 && allowBackTraversal) {
+      goToQuestion(questionNum - 1);
       if (!allowBackTraversal) {
         // They shouldn't be able to reach here (no back on linear test).
         setTimeLeft(getCurrentQuestion().totalTime.$numberDecimal);
@@ -117,7 +116,7 @@ const Test = (props) => {
     switch (getCurrentQuestion().questionType) {
       case "TEXT":
         event.preventDefault();  // Prevent form entry submission when pressing enter
-        answers[currentQuestion - 1].textAnswer = event.target.value;
+        answers[questionNum - 1].textAnswer = event.target.value;
         ans = event.target.value;
         break;
 
@@ -125,19 +124,18 @@ const Test = (props) => {
         let checked = document.querySelectorAll('input[type="checkbox"]:checked');
         let values = [];
         checked.forEach(ans => { values.push(ans.value) })
-        answers[currentQuestion - 1].aIds = values;
+        answers[questionNum - 1].aIds = values;
         ans = values.length > 0;
         break;
 
       case "MULTICHOICE-SINGLE":
-        answers[currentQuestion - 1].aIds = [event.target.value];
+        answers[questionNum - 1].aIds = [event.target.value];
         ans = event.target.value;
         break;
 
       default:
         console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
     }
-    console.log(ans)
     setCurrentAnswer(ans);
     setUserAnswers(answers);
   };
@@ -145,17 +143,17 @@ const Test = (props) => {
   const submitAnswerValue = (value) => {
     // For memory games
     let answers = userAnswers;
-    answers[currentQuestion - 1].value = value;
+    answers[questionNum - 1].value = value;
     setCurrentAnswer(true);
     setUserAnswers(answers);
   }
 
   const getCurrentQuestion = () => {
-    return questions[currentQuestion - 1];
+    return questions[questionNum - 1];
   };
 
   const goToQuestion = (num) => {
-    setCurrentQuestion(num);
+    setQuestionNum(num);
     setCurrentAnswer(null);  // In the future, change this to conditionally render existing answer
     console.log(userAnswers); // for debugging
   }
@@ -173,7 +171,7 @@ const Test = (props) => {
         if (!submitted) {
           finishTest();
         }
-        clearInterval(Ref.current);
+        clearInterval(timer.current);
       } else {
         nextQuestion();
       }
@@ -184,19 +182,21 @@ const Test = (props) => {
         submit={submitAnswer}
         submitValue={submitAnswerValue}
         nextQuestion={nextQuestion}
-        userAnswer={userAnswers[currentQuestion - 1]}
+        userAnswer={userAnswers[questionNum - 1]}
     />
     
     return (
       <div className="test">
         { 
+          // Timer Display, mm:ss
           getCurrentQuestion().category === "MEMORY" && !allowBackTraversal ?
           null : 
           <TimerDisplay seconds={timeLeft} />
         }
         
         {
-          allowBackTraversal && currentQuestion !== 1 ? 
+          // Previous Question Button
+          allowBackTraversal && questionNum !== 1 ? 
           <button
             className="test__previous"
             onClick={() => previousQuestion()}
@@ -210,11 +210,13 @@ const Test = (props) => {
         {testQuestion}
 
         <div className="test__progress" title="Progress">
-          {currentQuestion} / {questions.length}
+          {questionNum} / {questions.length}
         </div>
 
         {
-          !(currentAnswer) && !allowBackTraversal ? 
+          // Next Question
+          (!(currentAnswer) && !allowBackTraversal) ||
+          (allowBackTraversal && questionNum === questions.length) ? 
           null :  // Hide next button if no answer selected
           <button
             className="test__next"
@@ -231,10 +233,12 @@ const Test = (props) => {
             numberOfQuestions={questions.length}
             onClick={goToQuestion}
             answers={userAnswers}
-            currentQuestion={currentQuestion}
+            currentQuestion={questionNum}
           /> :
           null
         }
+
+
         {
           (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) || allowBackTraversal ?
           null :
@@ -244,6 +248,15 @@ const Test = (props) => {
               getCurrentQuestion().totalTime.$numberDecimal}
             timeLeft={timeLeft}
           /> 
+        }
+
+
+        {
+          allowBackTraversal ?
+          <button className="test__finish-button" onClick={finishTest}>
+            Finish Test
+          </button> :
+          null
         }
 
       </div>
