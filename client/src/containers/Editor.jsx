@@ -77,10 +77,12 @@ const Editor = (props) => {
             ...settings,
             ...response.data,
           };
-          response.data.multi.map((it, index) => {
-            newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
-            newSettings[`${mutliAnswerMap[index]}Grade`] = it.grade;
-          });
+          if (response.data.multi !== undefined) {
+            response.data.multi.map((it, index) => {
+              newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
+              newSettings[`${mutliAnswerMap[index]}Grade`] = it.grade;
+            });
+          }
           setSettings(newSettings);
         });
     };
@@ -168,7 +170,7 @@ const Editor = (props) => {
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.published}
+              checked={settings.published}
               onChange={(e) => {
                 setSettings({
                   ...settings,
@@ -180,11 +182,12 @@ const Editor = (props) => {
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.allowBackTraversal}
+              checked={settings.allowBackTraversal}
               onChange={(e) => {
                 setSettings({
                   ...settings,
                   allowBackTraversal: e.target.checked,
+                  individualTime: !e.target.checked,
                 });
               }}
             />
@@ -192,7 +195,7 @@ const Editor = (props) => {
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.shuffleAnswers}
+              checked={settings.shuffleAnswers}
               onChange={(e) => {
                 setSettings({
                   ...settings,
@@ -204,7 +207,7 @@ const Editor = (props) => {
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.shuffleQuestions}
+              checked={settings.shuffleQuestions}
               onChange={(e) => {
                 setSettings({
                   ...settings,
@@ -385,7 +388,7 @@ const Editor = (props) => {
                     <input
                       type="checkbox"
                       style={{ width: "min-content" }}
-                      defaultChecked={settings.corsi}
+                      checked={settings.corsi}
                       onChange={(e) => {
                         setSettings({
                           ...settings,
@@ -397,7 +400,7 @@ const Editor = (props) => {
                     <input
                       type="checkbox"
                       style={{ width: "min-content" }}
-                      defaultChecked={settings.reverse}
+                      checked={settings.reverse}
                       onChange={(e) => {
                         setSettings({
                           ...settings,
@@ -409,7 +412,7 @@ const Editor = (props) => {
                     <input
                       type="checkbox"
                       style={{ width: "min-content" }}
-                      defaultChecked={settings.randomLevelOrder}
+                      checked={settings.randomLevelOrder}
                       onChange={(e) => {
                         setSettings({
                           ...settings,
@@ -553,15 +556,6 @@ const Editor = (props) => {
             setSettings({ ...settings, totalTime: e.target.value })
           }
           required
-        />
-        <label>No Time limit</label>
-        <input
-          type="checkbox"
-          style={{ width: "min-content" }}
-          defaultChecked={settings.noTimeLimit}
-          onChange={(e) => {
-            setSettings({ ...settings, noTimeLimit: e.target.checked });
-          }}
         />
       </div>
       <div className="divider" />
