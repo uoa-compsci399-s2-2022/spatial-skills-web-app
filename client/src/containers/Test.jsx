@@ -12,10 +12,10 @@ const Test = (props) => {
   const Ref = useRef(null); // Used for countdown timer
   const [questions, setQuestions] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(5);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeTaken, setTimeTaken] = useState(0);
-  // const [timerOn, setTimerOn] = useState(false);
+  const [timerOn, setTimerOn] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -44,6 +44,7 @@ const Test = (props) => {
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
+        setTimerOn(true);
       },
       (error) => {
         setIsLoaded(true);
@@ -51,6 +52,54 @@ const Test = (props) => {
       }
     );
   }, [testCode]);
+
+  // Timer for time taken.
+  // useEffect(() => {
+  //   Ref.current = setInterval(() => timeCountDown(), 1000);
+
+  //   return () => clearInterval(Ref.current);
+  // }, );
+
+  useEffect(() => {
+    let interval = null;
+
+    if (isLoaded) {
+      if (timerOn) {
+        interval = setInterval(() => {
+          setTimeTaken((prevTime) => prevTime + 1);
+          if (!(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
+            setTimeLeft((prevTime) => prevTime - 1)
+          }
+        }, 1000);
+      } else {
+        clearInterval(interval);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [isLoaded, timerOn, allowBackTraversal]);
+
+  console.log(timeLeft, timeTaken);
+
+  const timeCountDown = () => {
+    if (isLoaded) {
+      // if (Ref.current) {
+      //   clearInterval(Ref.current);
+      // }
+      if ((getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
+        if (timeLeft <= 0) {
+          if (allowBackTraversal) {
+            finishTest();
+            clearInterval(Ref.current);
+          } else {
+            nextQuestion();
+          }
+        } else {
+          setTimeTaken(timeTaken + 1);
+          setTimeLeft(timeLeft - 1);
+        }
+      }
+    }
+  };
 
   const nextQuestion = () => {
     if (currentQuestion < questions.length) {
@@ -116,7 +165,6 @@ const Test = (props) => {
       default:
         console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
     }
-
     setSelectedAnswer(event.target.value);
     setUserAnswers(answers);
   };
@@ -139,45 +187,24 @@ const Test = (props) => {
     console.log(userAnswers); // for debugging
   }
 
-  const timeCountDown = () => {
-    if (timeLeft <= 0) {
-      clearInterval(Ref.current);
-      if (allowBackTraversal) {
-        finishTest();
-      } else {
-        nextQuestion();
-      }
-    } else {
-      setTimeLeft(timeLeft - 1);
-    }
-  };
-
-  const startTimer = () => {
-    if (Ref.current) {
-      clearInterval(Ref.current);
-    }
-    const id = setInterval(() => {
-      timeCountDown();
-    }, 1000);
-    Ref.current = id;
-  };
-
-
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
   } else {  
     // Test loaded successfully
-    let testQuestion;
     
-    if (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) {
-      clearInterval(Ref.current);
-    } 
-    else {
-      startTimer();
+    // Logic if time runs out
+    if (timeLeft <= 0 && !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
+      if (allowBackTraversal) {
+        finishTest();
+        clearInterval(Ref.current);
+      } else {
+        nextQuestion();
+      }
     }
-    testQuestion = <Question
+
+    let testQuestion = <Question
         question={getCurrentQuestion()}
         submit={submitAnswer}
         submitValue={submitAnswerValue}
@@ -234,7 +261,7 @@ const Test = (props) => {
           null
         }
         {
-          !allowBackTraversal && getCurrentQuestion().category === "MEMORY" ?
+          !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) ?
           <Timer
             questionTime={ allowBackTraversal ? 
               totalTime :
