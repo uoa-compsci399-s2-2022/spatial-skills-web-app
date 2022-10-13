@@ -23,7 +23,7 @@ const Test = (props) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
   const [testId, setTestId] = useState(null);
-  
+
   const data = {
     code: sessionStorage.getItem("code"),
     shuffleQuestions: false,
@@ -32,7 +32,7 @@ const Test = (props) => {
 
   // Get test question data from backend API.
   useEffect(() => {
-    axiosAPICaller.post('/test/code/getquestions', data).then(
+    axiosAPICaller.post("/test/code/getquestions", data).then(
       (res) => {
         console.log(res);
         setTestId(res.data.tId);
@@ -44,7 +44,7 @@ const Test = (props) => {
         } else {
           setTimeLeft(res.data.times[currentQuestion - 1]);
         }
-        
+
         let defaultAns = [];
         for (const q of res.data.questions) {
           defaultAns.push({ qId: q.id, aId: null, value: null });
@@ -69,7 +69,7 @@ const Test = (props) => {
       }
       return;
     } else {
-      finishTest();  // No more questions.
+      finishTest(); // No more questions.
     }
   };
 
@@ -82,7 +82,7 @@ const Test = (props) => {
         setTimeLeft(questionTimeBank[currentQuestion]);
       }
     }
-  }
+  };
 
   const finishTest = () => {
     if (userData.name) {
@@ -92,14 +92,20 @@ const Test = (props) => {
         sId: userData.name,
         answers: userAnswers,
       };
-      axiosAPICaller.post("http://localhost:3001/api/answer", testData).then(
-        window.location.replace(`http://localhost:3000/results/${testId}/${userData.name}`)
-      );
+      axiosAPICaller
+        .post("http://localhost:3001/api/answer", testData)
+        .then(
+          window.location.replace(
+            `http://localhost:3000/results/${testId}/${userData.name}`
+          )
+        );
     } else {
-      alert("Test Finished. You are not logged in, so your results wont be saved.")
+      alert(
+        "Test Finished. You are not logged in, so your results wont be saved."
+      );
       // window.location.href(`http://localhost:3000/`);
     }
-  }
+  };
 
   const submitAnswer = (event) => {
     // if (questionTypeBank[questionNum - 1] === "entry") {
@@ -117,7 +123,7 @@ const Test = (props) => {
     answers[currentQuestion - 1].value = value;
     setSelectedAnswer(true);
     setUserAnswers(answers);
-  }
+  };
 
   const getCurrentQuestion = () => {
     return questionBank[currentQuestion - 1];
@@ -127,7 +133,7 @@ const Test = (props) => {
     setCurrentQuestion(num);
     setSelectedAnswer(userAnswers[num - 1].aId);
     console.log(userAnswers); // for debugging
-  }
+  };
 
   const timeCountDown = () => {
     if (timeLeft <= 0) {
@@ -152,42 +158,45 @@ const Test = (props) => {
     Ref.current = id;
   };
 
-
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
-  } else {  
+  } else {
     // Test loaded successfully
     let testQuestion;
     startTimer();
     if (getCurrentQuestion().category === "MEMORY") {
       if (!allowBackTraversal) {
-        clearInterval(Ref.current)  // Stop timer if the test is linear.
+        clearInterval(Ref.current); // Stop timer if the test is linear.
       }
       if (getCurrentQuestion().title === "MatchingGame") {
-        testQuestion = <MatchingGame
+        testQuestion = (
+          <MatchingGame
             timeAllowed={questionTimeBank[currentQuestion - 1]}
             submit={submitAnswerValue}
             next={nextQuestion}
           />
-      }
-      else if (getCurrentQuestion().title === "PatternGame") {
-        testQuestion = <PatternGame 
-          gameDim={6}       // width and height of grid
-          order={true}        // pattern order/no-order
-          maxHealth={5}
-          timerState={false}       // set timer on/off
-          timeAllowed={10}          // total time if timer on
-          patternFlashTime={0.5}      // time to flash each pattern block
-          randomLevelOrder={false}      // each level is randomized
-          randomSeed={"just a seed"}
-          next={nextQuestion}
-          submit={submitAnswerValue}
-        />
+        );
+      } else if (getCurrentQuestion().title === "PatternGame") {
+        testQuestion = (
+          <PatternGame
+            gameDim={6} // width and height of grid
+            order={true} // pattern order/no-order
+            maxHealth={5}
+            timerState={false} // set timer on/off
+            timeAllowed={10} // total time if timer on
+            patternFlashTime={0.5} // time to flash each pattern block
+            randomLevelOrder={false} // each level is randomized
+            randomSeed={"just a seed"}
+            next={nextQuestion}
+            submit={submitAnswerValue}
+          />
+        );
       }
     } else {
-      testQuestion = <Question
+      testQuestion = (
+        <Question
           type={"multichoice"} // Change when the DB has question type.
           questionImage={getCurrentQuestion().image}
           text={getCurrentQuestion().description}
@@ -195,16 +204,17 @@ const Test = (props) => {
           submit={submitAnswer}
           selected={selectedAnswer}
         />
+      );
     }
-    
+
     return (
       <div className="test">
-        { getCurrentQuestion().category === "Spatial Memory" && !allowBackTraversal
-         ? null : 
+        {getCurrentQuestion().category === "Spatial Memory" &&
+        !allowBackTraversal ? null : (
           <TimerDisplay seconds={timeLeft} />
-        }
-        
-        {allowBackTraversal && currentQuestion != 1 ? 
+        )}
+
+        {allowBackTraversal && currentQuestion != 1 ? (
           <button
             className="test__previous"
             onClick={() => previousQuestion()}
@@ -212,8 +222,7 @@ const Test = (props) => {
           >
             <FaCaretLeft size={60} />
           </button>
-          : null
-        }
+        ) : null}
 
         {testQuestion}
 
@@ -231,20 +240,23 @@ const Test = (props) => {
           </button>
         )}
 
-        {allowBackTraversal ? 
-        <QuestionNavigation 
-          numberOfQuestions={questionBank.length}
-          onClick={goToQuestion}
-          answers={userAnswers}
-          currentQuestion={currentQuestion}
-        /> :
-        <Timer
-        questionTime={ allowBackTraversal ? 
-          questionTimeBank.reduce((partialSum, a) => partialSum + a, 0) :
-          questionTimeBank[currentQuestion - 1]}
-        timeLeft={timeLeft}
-        />}
-
+        {allowBackTraversal ? (
+          <QuestionNavigation
+            numberOfQuestions={questionBank.length}
+            onClick={goToQuestion}
+            answers={userAnswers}
+            currentQuestion={currentQuestion}
+          />
+        ) : (
+          <Timer
+            questionTime={
+              allowBackTraversal
+                ? questionTimeBank.reduce((partialSum, a) => partialSum + a, 0)
+                : questionTimeBank[currentQuestion - 1]
+            }
+            timeLeft={timeLeft}
+          />
+        )}
       </div>
     );
   }

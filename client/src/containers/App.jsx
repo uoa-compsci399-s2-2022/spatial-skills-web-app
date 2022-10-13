@@ -64,17 +64,16 @@ function App() {
             }
           />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="dashboard/test/:testId/stats" element={<Stats />} />
-          <Route path="dashboard/test/:testId/question" element={<Bank />} />
+          <Route path="dashboard/test/:code/stats" element={<Stats />} />
+          <Route path="dashboard/test/:code/question" element={<Bank />} />
           <Route
-            path="dashboard/test/:testId/question/:questionId"
-            element={<Editor userData={userData} isTest={false} />}
+            path="dashboard/test/:code/question/:questionId"
+            element={<Editor userData={userData} />}
           />
           <Route
-            path="dashboard/test/:testId"
-            element={<Editor userData={userData} isTest={true} />}
-          />
-          
+            path="dashboard/test/:code"
+            element={<Editor userData={userData} />}
+          />          
           <Route
             path="pattern"
             element={
@@ -117,7 +116,6 @@ function App() {
             }
             />}
           />
-
         </Routes>
         <Footer />
       </BrowserRouter>
