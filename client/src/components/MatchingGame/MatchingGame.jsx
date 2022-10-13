@@ -24,6 +24,7 @@ const MatchingGame = ({
   timerState,
   timeAllowed, 
   randomSeed = null,
+  description,
   next, 
   submit 
   }) => {
@@ -201,9 +202,7 @@ const MatchingGame = ({
       {firstVisit ? 
         <div className="matching-game__instructions">
           <h1>Memory Test: Card Matching</h1>
-          <p>Match those cards in pairs before time runs out!</p>
-          <p>You will lose a life for each mismatch.</p>
-          <p>Click start to begin.</p>
+          <p>{description}</p>
           <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
         </div> : null}
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
@@ -222,7 +221,7 @@ const MatchingGame = ({
       {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {matchedPair.current}</h2>
-          <button onClick={next}>Next Question</button>
+          {/* <button onClick={next}>Next Question</button> */}
         </div> : null}
 
       <div className="card-grid">

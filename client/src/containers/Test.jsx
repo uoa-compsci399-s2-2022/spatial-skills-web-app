@@ -105,7 +105,7 @@ const Test = (props) => {
         
       } else {
         console.log("Test Finished, Not User Found");
-        window.location.href = `http://localhost:3000/`;
+        // window.location.href = `http://localhost:3000/`;
       }
     }
   }

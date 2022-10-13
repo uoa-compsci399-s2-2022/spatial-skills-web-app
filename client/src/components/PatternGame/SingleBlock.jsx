@@ -2,7 +2,7 @@ import { useState } from 'react'
 import '../../styles/SingleBlock.css'
 
 
-const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled, clicked, flash }) => {
+const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled, clicked, flash, corsiMode }) => {
     const [reset, setReset] = useState(false)
 
     const handleClick = () => {
@@ -25,9 +25,21 @@ const SingleBlock = ({ block, handleChoice, blockState, gameOver, disabled, clic
         }
     }
 
+    const corsiGameMode = () => {
+        if (corsiMode){
+            return("block-" + block.id)
+        } else {
+            return ("")
+        }
+        
+    }
+    
+
     return(
         <div>
-            <div className={generateClassName()} onClick={handleClick}><p className='pa'>{block.id}</p></div>
+            <div className={corsiGameMode()}>
+                <div className={generateClassName()} onClick={handleClick}></div>
+            </div>
         </div>
     )
 }

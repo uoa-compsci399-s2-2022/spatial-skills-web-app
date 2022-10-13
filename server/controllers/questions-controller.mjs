@@ -89,16 +89,16 @@ const createMCQ = async (req) => {
       multi.push({
         image: bucketURL + fileUri,
         grade:
-          req.body[`${fKeys[i]}-grade`] == null
+          req.body[`${fKeys[i]}Grade`] == null
             ? 0
-            : req.body[`${fKeys[i]}-grade`],
+            : req.body[`${fKeys[i]}Grade`],
       });
       totalMultiGrade =
         totalMultiGrade +
         Number(
-          req.body[`${fKeys[i]}-grade`] == null
+          req.body[`${fKeys[i]}Grade`] == null
             ? 0
-            : req.body[`${fKeys[i]}-grade`]
+            : req.body[`${fKeys[i]}Grade`]
         );
     }
   }
@@ -129,10 +129,13 @@ const createMCQ = async (req) => {
 };
 
 const createTQ = async (req) => {
+  console.log(req.files);
   // Includes question image
   if (!Object.keys(req.files).includes("question") || !req.body.answer) {
     throw new APIError("Missing question (image)", 400);
   }
+
+  console.log("IMAGE OK");
 
   // Get unique file directory
   let fileDir;
@@ -320,9 +323,9 @@ const updateDPQ = async (req, question) => {
     req.body.patternFlashTime == null
       ? question.patternFlashTime
       : req.body.patternFlashTime;
-  question.corsi = req.body.corsi == null ? question.corsi : question.corsi;
+  question.corsi = req.body.corsi == null ? question.corsi : req.body.corsi;
   question.reverse =
-    req.body.reverse == null ? question.reverse : question.reverse;
+    req.body.reverse == null ? question.reverse : req.body.reverse;
 };
 
 ////////////////////////

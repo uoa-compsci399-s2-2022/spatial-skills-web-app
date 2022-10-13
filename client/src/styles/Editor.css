@@ -24,9 +24,8 @@
 
 .editor__input:focus {
     background-color: var(--contrast-color);
-    outline: 2px solid var(--accent-color);
+    outline: 1px solid var(--accent-color);
     box-shadow: 0 .5rem 1rem var(--shadow-color);
-
 }
 
 .editor__answer {
@@ -51,4 +50,30 @@
 .editor__image {
     max-width: 100%;
     border: 1px solid var(--accent-color);
+}
+
+.editor__error {
+    padding: 1rem;
+    background-color: var(--error-color);
+    border-radius: .5rem;
+    color: var(--contrast-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.editor__multi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    border: 1px dashed var(--shadow-color);
+    color: var(--mid-color);
+    grid-column: 2;
+}
+
+.editor__multi:hover {
+    border: 1px dashed var(--accent-color);
+    color: var(--accent-color);
 }

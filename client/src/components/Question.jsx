@@ -71,6 +71,7 @@ const Question = (props) => {
     return (
       <MatchingGame
         pairs={question.size}
+        description={question.description}
         gameStartDelay={question.gameStartDelay.$numberDecimal}
         selectionDelay={question.selectionDelay.$numberDecimal}
         maxHealth={question.lives}
@@ -86,6 +87,9 @@ const Question = (props) => {
   const renderPatternGame = () => {
     return (
       <PatternGame 
+        // corsi={question.corsi}
+        corsi={true}
+        description={question.description}
         gameDim={question.size}  // width and height of grid
         order={true}  // pattern order/no-order
         maxHealth={question.lives}
