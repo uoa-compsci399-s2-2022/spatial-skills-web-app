@@ -181,11 +181,6 @@ const testOutStudent = async (test) => {
 ////////////////////////
 
 const createTest = async (req, res, next) => {
-  if (req.body.allowBackTraversal && req.body.individualTime) {
-    return next(
-      new APIError("Cannot have individual time and backwards traversal.", 400)
-    );
-  }
   const createdTest = new Test({
     title: req.body.title,
     creator: req.name,

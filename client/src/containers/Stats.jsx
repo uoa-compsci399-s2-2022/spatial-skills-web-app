@@ -129,7 +129,6 @@ const Stats = () => {
           <Link
             to={`/dashboard/test/${code}`}
             className="button button--outlined"
-            style={{ display: test.published ? "none" : "default" }}
           >
             Edit
             <FaEdit size={iconSize} />

@@ -14,6 +14,7 @@ const mutliAnswerMap = ["a", "b", "c", "d", "e"];
 
 const Editor = (props) => {
   const [error, setError] = useState(null);
+  const [published, setPublished] = useState(false);
   const { userData } = props;
   const { code, questionId } = useParams();
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const Editor = (props) => {
               newSettings[`${mutliAnswerMap[index]}Grade`] = it.grade;
             });
           }
+          setPublished(response.data.published);
           setSettings(newSettings);
         });
     };
@@ -567,7 +569,10 @@ const Editor = (props) => {
           Delete
           <FaTrash size={iconSize} />
         </button>
-        <button className="button button--filled">
+        <button
+          className="button button--filled"
+          style={{ display: published ? "none" : "default" }}
+        >
           {MODE === "EDIT" ? "Save" : "Create"}
           <FaSave size={iconSize} />
         </button>
