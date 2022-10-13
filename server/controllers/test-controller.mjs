@@ -99,7 +99,7 @@ const questionOutAdmin = async (qId) => {
   question.selectionDelay = adminQ.selectionDelay;
   question.testCode = adminQ.testCode;
   question.qId = adminQ._id;
-  question.time = adminQ.time;
+  question.totalTime = adminQ.totalTime;
 
   return question;
 };
@@ -143,7 +143,7 @@ const questionOutStudent = async (test, qId) => {
   studentQ.selectionDelay = adminQ.selectionDelay;
   studentQ.qId = adminQ._id;
   studentQ.testCode = adminQ.testCode;
-  studentQ.time = adminQ.time;
+  studentQ.totalTime = adminQ.totalTime;
 
   return studentQ;
 };
