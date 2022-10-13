@@ -488,9 +488,14 @@ function PatternGame({
         <div className="pattern-game__instructions">
           <h1>Memory Test: Block Patterns</h1>
           <p>{description}</p>
-          <button className="pattern-game__start-button" onClick={startGame}>
-            Start
-          </button>
+          <p>Note: once you start, you cannot redo the question!</p>
+          { firstVisit ?
+            <button className="pattern-game__start-button" onClick={startGame}>
+              Start
+            </button> :
+            <p style={{marginTop: "3rem"}}>You have already done this question!</p>
+            
+          }
         </div>
       ) : null}
       <div

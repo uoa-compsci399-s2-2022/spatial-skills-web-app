@@ -201,17 +201,20 @@ const MatchingGame = ({
 
   return (
     <div className="matching-game">
-      {/* Disable start if they already started the game before. */}
-      <div className="matching-game__instructions" style={{display: started ? 'none' : 'block'}}>
-        <h1>Memory Test: Card Matching</h1>
-        <p>{description}</p>
-        <p>Once you start, you cannot redo the question!</p>
-        { firstVisit ? 
-          <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
-          :
-          <p style={{marginTop: "3rem"}}>You have already done this question!</p>
-        }
-      </div> 
+      {
+        !started ? 
+        <div className="matching-game__instructions">
+          <h1>Memory Test: Card Matching</h1>
+          <p>{description}</p>
+          <p>Note: once you start, you cannot redo the question!</p>
+          { firstVisit ? 
+            <button className='matching-game_start-button' onClick={shuffleCards}>Start</button>
+            :
+            <p style={{marginTop: "3rem"}}>You have already done this question!</p>
+          }
+        </div> :
+        null
+      }
 
       <div className={started ? 'matching-game__information-div-show':'matching-game__information-div-hide'}>
       
@@ -226,7 +229,7 @@ const MatchingGame = ({
           <h2 className='matching-game__score'>Score: {matchedPair.current}</h2>
       </div>
 
-      {gameOver && firstVisit ? 
+      {gameOver ? 
         <div className='game-over-div'>
           <h2 className="game-over-text">Your score: {matchedPair.current}</h2>
           {/* <button onClick={next}>Next Question</button> */}
