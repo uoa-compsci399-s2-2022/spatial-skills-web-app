@@ -51,7 +51,7 @@
 
 @keyframes won_flash{
   0% {background-color: white;}
-  50% {background-color: #4de806;}
+  50% {background-color: #86ed56;}
   100% {background-color: white;}
 }
 
@@ -83,13 +83,15 @@
 }
 
 .pattern-game__score {
-  top: 50%;
-  position: relative;
+  top: 10%;
+  left: 65%;
+  position: absolute;
 }
 
 .pattern-game__timer {
-  top: 50%;
-  position: relative;
+  top: 10%;
+  left: 50%;
+  position: absolute;
 }
 
 .pattern-game__blocks-grid {
@@ -103,7 +105,7 @@
 }
 
 .corsi-test__blocks-div {
-  background-color: rgba(255,255,255, 0.9);
+  background-color: rgba(255,255,255, 0);
   position: relative;
   width: 90vh;
   height: 70vh;
@@ -112,9 +114,7 @@
   display: grid;
   place-items: center;
   min-height: 200px;
-  border: 8px solid;
-  padding: 1rem;
-  border-image: linear-gradient(45deg, turquoise, rgba(20, 4, 163, 0.6)) 1;
+  
 
 }
 
@@ -149,8 +149,10 @@
 }
 
 .pattern-game__lives-div__hearts {
-  top: 55%;
-  position: relative;
+  display: flex;
+  position: absolute;
+  top: 30%;
+  left: 110%;
 }
 
 .pattern-game__lives-number {
@@ -161,15 +163,20 @@
 .pattern-game__lives-div {
   display: flex;
   column-gap: 30px;
+  width: fit-content;
+  position: absolute;
+  top: 10%;
+  left: 30%;
 }
 
 .pattern-game__information-div-show {
   width: fit-content;
   margin: auto;
   margin-top: 65px;
-  display: grid;
+  display: flex;
   height: 100px;
-  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
+  column-gap: 100px;
 
 }
 

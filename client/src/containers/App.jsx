@@ -25,6 +25,17 @@ function App() {
     picture: null,
   });
 
+
+  const [test, setTest] = useState(false)
+
+  const changeState = () => {
+    setTest(true)
+    console.log(test)
+  }
+
+
+
+
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <BrowserRouter>
@@ -63,7 +74,7 @@ function App() {
             path="dashboard/test/:testId"
             element={<Editor userData={userData} isTest={true} />}
           />
-
+          
           <Route
             path="pattern"
             element={
@@ -75,7 +86,7 @@ function App() {
             maxHealth={5}
             timerState={true}       // set timer on/off
             timeAllowed={60}          // total time if timer on
-            patternFlashTime={0.1}      // time to flash each pattern block
+            patternFlashTime={0.5}      // time to flash each pattern block
             randomLevelOrder={true}      // each level is randomized
             randomSeed={"just a seed"}
             description={
@@ -83,6 +94,8 @@ function App() {
               You will lose a life for each mismatch. \
               Progress as far as you can! \
               Click start to begin."}
+
+            changeState={changeState}
             />}
           />
 
@@ -105,13 +118,12 @@ function App() {
             />}
           />
 
-
-
         </Routes>
         <Footer />
       </BrowserRouter>
     </GoogleOAuthProvider>
   );
+
 }
 
 export default App;

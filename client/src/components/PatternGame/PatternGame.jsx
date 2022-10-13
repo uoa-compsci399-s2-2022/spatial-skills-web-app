@@ -17,9 +17,13 @@ function PatternGame({
   randomLevelOrder,
   randomSeed = null,
   description,
+  changeState,
+  tested,
   next,
   submit,
 }) {
+
+  console.log(tested)
 
   if (order){
     patternFlashTime = patternFlashTime * 1000;
@@ -381,6 +385,15 @@ function PatternGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [victory]);
 
+  useEffect(() => {
+    
+    if (gameOver){
+      changeState()
+    }
+    
+  }, [gameOver])
+
+
   // timer
   useEffect(() => {
     let interval = null;
@@ -464,6 +477,8 @@ function PatternGame({
       return ("")
     }
   }
+
+
 
   return (
     <div className={victoryAnimation()}>
