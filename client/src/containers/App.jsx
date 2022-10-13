@@ -52,7 +52,7 @@ function App() {
             }
           />
           <Route path="/test" element={<Test userData={userData} />} />
-          <Route path="/results/:tId/:sId" element={<TestResult />} />
+          <Route path="/finish" element={<TestResult />} />
           <Route
             path="*"
             element={

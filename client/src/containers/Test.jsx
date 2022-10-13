@@ -101,11 +101,11 @@ const Test = (props) => {
         
         axiosAPICaller.post("http://localhost:3001/api/answer/", testData)
         .then(setSubmitted(true))
-        .then(window.location.href = `http://localhost:3000/`)
+        .then(window.location.href = `http://localhost:3000/finish`)
         
       } else {
         console.log("Test Finished, Not User Found");
-        // window.location.href = `http://localhost:3000/`;
+        window.location.href = `http://localhost:3000/finish`;
       }
     }
   }
@@ -214,7 +214,7 @@ const Test = (props) => {
         </div>
 
         {
-          // Next Question
+          // Next Question Button
           (!(currentAnswer) && !allowBackTraversal) ||
           (allowBackTraversal && questionNum === questions.length) ? 
           null :  // Hide next button if no answer selected
@@ -253,7 +253,7 @@ const Test = (props) => {
 
         {
           allowBackTraversal ?
-          <button className="test__finish-button" onClick={finishTest}>
+          <button className="test__finish-button" onClick={finishTest} disabled={false}>
             Finish Test
           </button> :
           null
