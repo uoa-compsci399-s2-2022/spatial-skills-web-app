@@ -82,11 +82,11 @@ const Bank = () => {
                           .toLowerCase()
                           .includes(data.toLowerCase())
                       ) {
-                        if(_question.category !== "MEMORY"){
+                        if (_question.category !== "MEMORY") {
                           return (
                             <Link
                               className="dashboard__item section"
-                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                              to={`/dashboard/test/${code}/question/${_question._id}`}
                             >
                               <img
                                 alt=""
@@ -99,14 +99,13 @@ const Bank = () => {
                               </div>
                             </Link>
                           );
-
                         } else {
                           return (
                             <Link
                               className="dashboard__item section"
-                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                              to={`/dashboard/test/${code}/question/${_question._id}`}
                             >
-                              <FaGamepad class="bank-game__question"/>
+                              <FaGamepad class="bank-game__question" />
                               <div className="bank__test-text">
                                 <h4>{_question.title}</h4>
                                 <p>{_question.category}</p>
