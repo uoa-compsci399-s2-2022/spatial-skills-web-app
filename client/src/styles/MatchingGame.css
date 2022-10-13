@@ -1,3 +1,7 @@
+.matching-game__instructions{
+  width: 25%;
+}
+
 .matching-game__instructions h1{
   font-size: 40px;
 }
