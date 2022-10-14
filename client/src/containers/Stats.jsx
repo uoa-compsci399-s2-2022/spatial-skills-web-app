@@ -5,10 +5,6 @@ import React, { useEffect, useState } from "react";
 import { FaEdit, FaShareAlt, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
 import CsvDownload from "react-json-to-csv";
-import BarChart from "reactochart/BarChart";
-import XYPlot from "reactochart/XYPlot";
-import XAxis from "reactochart/XAxis";
-import YAxis from "reactochart/YAxis";
 import "reactochart/styles.css";
 
 const iconSize = "1.25em";
@@ -24,7 +20,6 @@ const Stats = () => {
   var JSONObject = {};
   var arrayIndex = 0;
   var correct = "";
-  var barChartData = [];
   var gradeArray = [];
 
   useEffect(() => {
@@ -57,13 +52,30 @@ const Stats = () => {
 
   if (isLoadedTest && isLoadedQuestion) {
     test.studentAnswers.map((studentAnswer) => {
+      let name = ""
+      let grade = 0
+      let percentage = 0
+      let time = 0
+      if (studentAnswer.studentName !== null && studentAnswer.studentName !== undefined) 
+      {name = studentAnswer.studentName}
+      if (studentAnswer.totalGrade !== null && studentAnswer.totalGrade !== undefined) 
+      {grade = studentAnswer.totalGrade.$numberDecimal}
+      if (studentAnswer.totalPercentage !== null && studentAnswer.totalPercentage !== undefined) 
+      {percentage = studentAnswer.totalPercentage.$numberDecimal}
+      if (studentAnswer.totalTimeTaken !== null && studentAnswer.totalTimeTaken !== undefined) 
+      {time = studentAnswer.totalTimeTaken.$numberDecimal}
+
+      console.log("name", name, "grade", grade, "percentage", percentage, "time", time);
       JSONObject = {
-        Name: studentAnswer.sId,
-        Grade: studentAnswer.grade,
+        Name: name,
+        Grade: grade,
+        Percentage: percentage,
+        Time: time,
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        if (ansArray[arrayIndex + i].correct === true) {
+        console.log(ansArray[arrayIndex + i].grade)
+        if (ansArray[arrayIndex + i].grade.$numberDecimal === '1') {
           correct = "Correct";
         } else {
           correct = "Incorrect";
@@ -72,34 +84,15 @@ const Stats = () => {
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
-      gradeArray.push(studentAnswer.grade);
-
-      barChartData.push({
-        x: studentAnswer.sId.substring(0, 7),
-        y: studentAnswer.grade,
-      });
-
+      gradeArray.push(grade);
       return csvArray.push(JSONObject);
     });
   }
 
-  const BarChartWithDefs = (props) => {
+  const BarChart = (props) => {
     if (isLoadedTest) {
-      const data = barChartData;
       return (
         <div>
-          <svg width="0" height="0" style={{ position: "absolute" }}></svg>
-          <XYPlot width={1050} height={300}>
-            <XAxis title="Students" />
-            <YAxis title="Grade" />
-            <BarChart
-              data={data}
-              x={(d) => d.x}
-              y={(d) => d.y}
-              barThickness={800 / barChartData.length}
-            />
-          </XYPlot>
-          <br></br>
           Mean Grade:{" "}
           {(gradeArray.reduce((a, b) => a + b, 0) / gradeArray.length).toFixed(
             2
@@ -112,6 +105,7 @@ const Stats = () => {
   };
 
   if (isLoadedTest && isLoadedQuestion) {
+    console.log("Running")
     return (
       <div className="stats">
         <h1>{test.title}</h1>
@@ -134,36 +128,40 @@ const Stats = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {test &&
+                {test &&
                     test.questions.map((question) => {
+                      console.log("Running 2")
                       return (
                         questionData &&
                         questionData.map((_question) => {
-                          if (question.qId === _question._id) {
-                            if (_question.category !== "MEMORY") {
-                              console.log(question.category);
-                              return (
-                                <tr key={question._id}>
+                          if (question === _question._id) {
+                            let grade = 0;
+                            let time = 0;
+                            let title = "";
+                            if (_question.totalMultiGrade !== null && _question.totalMultiGrade !== undefined){
+                              grade = _question.totalMultiGrade.$numberDecimal
+                            }
+                            if (_question.totalTime !== null && _question.totalTime !== undefined){
+                              time = _question.totalTime.$numberDecimal
+                            }
+                            if (_question.title !== null && _question.title !== undefined){
+                              title = _question.title
+                            }
+
+                            return (
+                              <tr key={_question._id}>
+                                <td>
                                   <img
                                     alt=""
                                     src={_question.image}
-                                    class="stats__image"
+                                    className="stats__image"
                                   />
-                                  <td>{_question.title}</td>
-                                  <td>{`${question.time}s`}</td>
-                                  <td>{question.grade.toFixed(1)}</td>
-                                </tr>
-                              );
-                            } else {
-                              return (
-                                <tr key={question._id}>
-                                  <FaGamepad class="stats__image" />
-                                  <td>{_question.title}</td>
-                                  <td>{`${question.time}s`}</td>
-                                  <td>{question.grade.toFixed(1)}</td>
-                                </tr>
-                              );
-                            }
+                                </td>
+                                <td>{title}</td>
+                                <td>{`${time}s`}</td>
+                                <td>{grade}</td>
+                              </tr>
+                            );
                           }
                         })
                       );
@@ -183,7 +181,7 @@ const Stats = () => {
             </div>
 
             <div className="barChart">
-              <BarChartWithDefs width="1000" />
+              
             </div>
           </div>
 
@@ -201,8 +199,8 @@ const Stats = () => {
                 <tbody>
                   {test.studentAnswers.map((student) => (
                     <tr key={student._id}>
-                      <td>{student.sId}</td>
-                      <td>{student.grade}</td>
+                      <td>{student.studentName}</td>
+                      <td>{student.totalGrade.$numberDecimal}</td>
                     </tr>
                   ))}
                 </tbody>
