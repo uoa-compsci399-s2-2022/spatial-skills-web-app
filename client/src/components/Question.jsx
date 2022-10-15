@@ -135,7 +135,9 @@ const Question = (props) => {
         <img src={question.image} alt="" className="test__image" />
       </div>
 
-      <h2>{question.description}</h2>
+      <div className="test__question-text">
+        <h2>{question.description}</h2>
+      </div>
 
       <form
         className="test__answers"

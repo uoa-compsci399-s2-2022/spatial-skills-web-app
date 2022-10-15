@@ -110,6 +110,16 @@ const Test = (props) => {
     }
   }
 
+  const openFinishModal = () => {
+    let modal = document.getElementById("finish-modal");
+    modal.style.display = "block";
+  }
+
+  const closeFinishModal = () => {
+    let modal = document.getElementById("finish-modal");
+    modal.style.display = "none";
+  }
+
   const submitAnswer = (event) => {
     let answers = userAnswers;
     let ans;
@@ -253,10 +263,25 @@ const Test = (props) => {
 
         {
           allowBackTraversal ?
-          <button className="test__finish-button" onClick={finishTest} disabled={false}>
+          <button className="test__finish-button" onClick={openFinishModal} disabled={false}
+            title="Finish Test"
+          >
             Finish Test
           </button> :
           null
+        }
+
+        {
+          <div className="finish-modal" id="finish-modal">
+            <div className="modal__content">
+              <h2 style={{padding: "2rem"}}>Do you want to end your test?</h2>
+
+              <div className="modal__buttons">
+                <button onClick={closeFinishModal} className="cancel-button">Cancel</button>
+                <button onClick={finishTest} className="finish-button">Finish Test</button>
+              </div>
+            </div>
+          </div>
         }
 
       </div>
