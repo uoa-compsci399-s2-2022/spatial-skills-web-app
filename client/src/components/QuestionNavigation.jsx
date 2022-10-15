@@ -11,8 +11,10 @@ const QuestionNavigation = (props) => {
           title="Go to question"
           key={i + 1}
           style={{
-            background: (answers[i].aId || answers[i].value) ? "var(--accent-color)" : null,
-            outline: currentQuestion == i + 1 ? "1.5px solid var(--accent-color)" : null,
+            background: (answers[i].aIds.length !== 0 || 
+                        (answers[i].value === 0 || answers[i].value) || 
+                        answers[i].textAnswer) ? "#7aaeeb" : null,
+            outline: currentQuestion === i + 1 ? "3px solid var(--accent-color)" : null,
           }}
         >
           {i + 1}

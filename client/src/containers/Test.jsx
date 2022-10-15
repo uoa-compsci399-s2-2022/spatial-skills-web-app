@@ -5,49 +5,42 @@ import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
 import QuestionNavigation from "../components/QuestionNavigation";
-import MatchingGame from "../components/MatchingGame/MatchingGame";
-import PatternGame from "../components/PatternGame/PatternGame";
-// import axios from "axios";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
   const { userData } = props;
-  const Ref = useRef(null); // Used for countdown timer
-  const [questionBank, setQuestionBank] = useState([]);
-  const [questionTimeBank, setQuestionTimeBank] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const timer = useRef(null); // Used for countdown timer
+  const [questions, setQuestions] = useState([]);
+  const [totalTime, setTotalTime] = useState(null);
+  const [questionNum, setQuestionNum] = useState(1);
   const [timeLeft, setTimeLeft] = useState(null);
+  const [timeTaken, setTimeTaken] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null); // For radio button reset on question change
+  const [currentAnswer, setCurrentAnswer] = useState(null); 
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
-  const [testId, setTestId] = useState(null);
-
-  const data = {
-    code: sessionStorage.getItem("code"),
-    shuffleQuestions: false,
-    shuffleAnswers: false,
-  };
-
-  // Get test question data from backend API.
+  const testCode = sessionStorage.getItem("code");
+  
+  // Load test data from backend API
   useEffect(() => {
-    axiosAPICaller.post("/test/code/getquestions", data).then(
+    axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
         console.log(res);
-        setTestId(res.data.tId);
-        setQuestionBank(res.data.questions);
-        setQuestionTimeBank(res.data.times);
+        setQuestions(res.data.questions);
+        setTotalTime(res.data.totalTime.$numberDecimal);
         setAllowBackTraversal(res.data.allowBackTraversal);
         if (res.data.allowBackTraversal) {
-          setTimeLeft(res.data.totalTime);
+          setTimeLeft(res.data.totalTime.$numberDecimal);
         } else {
-          setTimeLeft(res.data.times[currentQuestion - 1]);
+          setTimeLeft(res.data.questions[0].totalTime.$numberDecimal);
+          // setTimeLeft(10);
         }
-
+        
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.id, aId: null, value: null });
+          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
@@ -57,164 +50,163 @@ const Test = (props) => {
         setError(error);
       }
     );
-  }, []);
+  }, [testCode]);
+
+  // Timer for time taken.
+  useEffect(() => {
+    if (isLoaded) {
+      timer.current = setInterval(() => {
+        setTimeTaken((prevTime) => prevTime + 1);
+        setTimeLeft((prevTime) => prevTime - 1)
+      }, 1000);
+    }
+    return () => clearInterval(timer.current);
+  }, [isLoaded, allowBackTraversal]);
 
   const nextQuestion = () => {
-    if (currentQuestion < questionBank.length) {
-      // setSelectedAnswer(userAnswers[currentQuestion].aId);
-      // setCurrentQuestion(currentQuestion + 1);
-      goToQuestion(currentQuestion + 1);
+    if (questionNum < questions.length) {
+      goToQuestion(questionNum + 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questionTimeBank[currentQuestion]);
+        setTimeLeft(questions[questionNum].totalTime.$numberDecimal);
       }
       return;
     } else {
-      finishTest(); // No more questions.
+      finishTest();  // No more questions
     }
   };
 
   const previousQuestion = () => {
-    if (currentQuestion > 1 && allowBackTraversal) {
-      // setSelectedAnswer(userAnswers[currentQuestion - 2].aId);
-      // setCurrentQuestion(currentQuestion - 1);
-      goToQuestion(currentQuestion - 1);
+    if (questionNum > 1 && allowBackTraversal) {
+      goToQuestion(questionNum - 1);
       if (!allowBackTraversal) {
-        setTimeLeft(questionTimeBank[currentQuestion]);
+        // They shouldn't be able to reach here (no back on linear test).
+        setTimeLeft(getCurrentQuestion().totalTime.$numberDecimal);
       }
     }
-  };
+  }
 
   const finishTest = () => {
-    if (userData.name) {
-      // Create answer in DB if user logged in
-      let testData = {
-        tId: testId,
-        sId: userData.name,
-        answers: userAnswers,
-      };
-      axiosAPICaller
-        .post("http://localhost:3001/api/answer", testData)
-        .then(
-          window.location.replace(
-            `http://localhost:3000/results/${testId}/${userData.name}`
-          )
-        );
-    } else {
-      alert(
-        "Test Finished. You are not logged in, so your results wont be saved."
-      );
-      // window.location.href(`http://localhost:3000/`);
+    console.log("Already Submitted: ", submitted);
+    if (!submitted) {
+      
+      if (userData.name) {
+        // Create answer in DB if user logged in
+        let testData = {
+          testCode: testCode,
+          studentName: userData.name,
+          answers: userAnswers,
+          totalTimeTaken: timeTaken
+        };
+        console.log(testData)
+        
+        axiosAPICaller.post("http://localhost:3001/api/answer/", testData)
+        .then(setSubmitted(true))
+        .then(window.location.href = `http://localhost:3000/finish`)
+        
+      } else {
+        console.log("Test Finished, Not User Found");
+        window.location.href = `http://localhost:3000/finish`;
+      }
     }
-  };
+  }
+
+  const openFinishModal = () => {
+    let modal = document.getElementById("finish-modal");
+    modal.style.display = "block";
+  }
+
+  const closeFinishModal = () => {
+    let modal = document.getElementById("finish-modal");
+    modal.style.display = "none";
+  }
 
   const submitAnswer = (event) => {
-    // if (questionTypeBank[questionNum - 1] === "entry") {
-    //   event.preventDefault(); // Prevent form entry submission when pressing enter
-    // }
     let answers = userAnswers;
-    answers[currentQuestion - 1].aId = event.target.value;
-    setSelectedAnswer(event.target.value);
+    let ans;
+    switch (getCurrentQuestion().questionType) {
+      case "TEXT":
+        event.preventDefault();  // Prevent form entry submission when pressing enter
+        answers[questionNum - 1].textAnswer = event.target.value;
+        ans = event.target.value;
+        break;
+
+      case "MULTICHOICE-MULTI":
+        let checked = document.querySelectorAll('input[type="checkbox"]:checked');
+        let values = [];
+        checked.forEach(ans => { values.push(ans.value) })
+        answers[questionNum - 1].aIds = values;
+        ans = values.length > 0;
+        break;
+
+      case "MULTICHOICE-SINGLE":
+        answers[questionNum - 1].aIds = [event.target.value];
+        ans = event.target.value;
+        break;
+
+      default:
+        console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
+    }
+    setCurrentAnswer(ans);
     setUserAnswers(answers);
   };
 
   const submitAnswerValue = (value) => {
-    // For memory game
+    // For memory games
     let answers = userAnswers;
-    answers[currentQuestion - 1].value = value;
-    setSelectedAnswer(true);
+    answers[questionNum - 1].value = value;
+    setCurrentAnswer(true);
     setUserAnswers(answers);
-  };
+  }
 
   const getCurrentQuestion = () => {
-    return questionBank[currentQuestion - 1];
+    return questions[questionNum - 1];
   };
 
   const goToQuestion = (num) => {
-    setCurrentQuestion(num);
-    setSelectedAnswer(userAnswers[num - 1].aId);
+    setQuestionNum(num);
+    setCurrentAnswer(null);  // In the future, change this to conditionally render existing answer
     console.log(userAnswers); // for debugging
-  };
-
-  const timeCountDown = () => {
-    if (timeLeft <= 0) {
-      clearInterval(Ref.current);
-      if (allowBackTraversal) {
-        finishTest();
-      } else {
-        nextQuestion();
-      }
-    } else {
-      setTimeLeft(timeLeft - 1);
-    }
-  };
-
-  const startTimer = () => {
-    if (Ref.current) {
-      clearInterval(Ref.current);
-    }
-    const id = setInterval(() => {
-      timeCountDown();
-    }, 1000);
-    Ref.current = id;
-  };
+  }
 
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
-  } else {
+  } else {  
     // Test loaded successfully
-    let testQuestion;
-    startTimer();
-    if (getCurrentQuestion().category === "MEMORY") {
-      if (!allowBackTraversal) {
-        clearInterval(Ref.current); // Stop timer if the test is linear.
+    
+    // Logic if time runs out
+    if (timeLeft <= 0 && !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
+      if (allowBackTraversal) {
+        if (!submitted) {
+          finishTest();
+        }
+        clearInterval(timer.current);
+      } else {
+        nextQuestion();
       }
-      if (getCurrentQuestion().title === "MatchingGame") {
-        testQuestion = (
-          <MatchingGame
-            timeAllowed={questionTimeBank[currentQuestion - 1]}
-            submit={submitAnswerValue}
-            next={nextQuestion}
-          />
-        );
-      } else if (getCurrentQuestion().title === "PatternGame") {
-        testQuestion = (
-          <PatternGame
-            gameDim={6} // width and height of grid
-            order={true} // pattern order/no-order
-            maxHealth={5}
-            timerState={false} // set timer on/off
-            timeAllowed={10} // total time if timer on
-            patternFlashTime={0.5} // time to flash each pattern block
-            randomLevelOrder={false} // each level is randomized
-            randomSeed={"just a seed"}
-            next={nextQuestion}
-            submit={submitAnswerValue}
-          />
-        );
-      }
-    } else {
-      testQuestion = (
-        <Question
-          type={"multichoice"} // Change when the DB has question type.
-          questionImage={getCurrentQuestion().image}
-          text={getCurrentQuestion().description}
-          answers={getCurrentQuestion().answer}
-          submit={submitAnswer}
-          selected={selectedAnswer}
-        />
-      );
     }
 
+    let testQuestion = <Question
+        question={getCurrentQuestion()}
+        submit={submitAnswer}
+        submitValue={submitAnswerValue}
+        nextQuestion={nextQuestion}
+        userAnswer={userAnswers[questionNum - 1]}
+    />
+    
     return (
       <div className="test">
-        {getCurrentQuestion().category === "Spatial Memory" &&
-        !allowBackTraversal ? null : (
+        { 
+          // Timer Display, mm:ss
+          getCurrentQuestion().category === "MEMORY" && !allowBackTraversal ?
+          null : 
           <TimerDisplay seconds={timeLeft} />
-        )}
-
-        {allowBackTraversal && currentQuestion != 1 ? (
+        }
+        
+        {
+          // Previous Question Button
+          allowBackTraversal && questionNum !== 1 ? 
           <button
             className="test__previous"
             onClick={() => previousQuestion()}
@@ -222,15 +214,20 @@ const Test = (props) => {
           >
             <FaCaretLeft size={60} />
           </button>
-        ) : null}
+          : null
+        }
 
         {testQuestion}
 
         <div className="test__progress" title="Progress">
-          {currentQuestion} / {questionBank.length}
+          {questionNum} / {questions.length}
         </div>
 
-        {selectedAnswer === null && !allowBackTraversal ? null : ( // Hide next button if no answer selected
+        {
+          // Next Question Button
+          (!(currentAnswer) && !allowBackTraversal) ||
+          (allowBackTraversal && questionNum === questions.length) ? 
+          null :  // Hide next button if no answer selected
           <button
             className="test__next"
             onClick={() => nextQuestion()}
@@ -238,65 +235,58 @@ const Test = (props) => {
           >
             <FaCaretRight size={60} />
           </button>
-        )}
+        }
 
-        {allowBackTraversal ? (
-          <QuestionNavigation
-            numberOfQuestions={questionBank.length}
+        {
+          allowBackTraversal ? 
+          <QuestionNavigation 
+            numberOfQuestions={questions.length}
             onClick={goToQuestion}
             answers={userAnswers}
-            currentQuestion={currentQuestion}
-          />
-        ) : (
+            currentQuestion={questionNum}
+          /> :
+          null
+        }
+
+
+        {
+          (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) || allowBackTraversal ?
+          null :
           <Timer
-            questionTime={
-              allowBackTraversal
-                ? questionTimeBank.reduce((partialSum, a) => partialSum + a, 0)
-                : questionTimeBank[currentQuestion - 1]
-            }
+            questionTime={ allowBackTraversal ? 
+              totalTime :
+              getCurrentQuestion().totalTime.$numberDecimal}
             timeLeft={timeLeft}
-          />
-        )}
+          /> 
+        }
+
+
+        {
+          allowBackTraversal ?
+          <button className="test__finish-button" onClick={openFinishModal} disabled={false}
+            title="Finish Test"
+          >
+            Finish Test
+          </button> :
+          null
+        }
+
+        {
+          <div className="finish-modal" id="finish-modal">
+            <div className="modal__content">
+              <h2 style={{padding: "2rem"}}>Do you want to end your test?</h2>
+
+              <div className="modal__buttons">
+                <button onClick={closeFinishModal} className="cancel-button">Cancel</button>
+                <button onClick={finishTest} className="finish-button">Finish Test</button>
+              </div>
+            </div>
+          </div>
+        }
+
       </div>
     );
   }
 };
 
 export default Test;
-
-// // ----------- Local Question Importing
-
-// // Function to get all images from a folder as an array.
-// // Array order corresponds to folder order (question is last).
-// function importAll(r) {
-//   let images = [];
-//   r.keys().map((item, index) => {
-//     images.push(r(item));
-//   });
-//   return images;
-
-//   ////Use these line if you want to access each image using the file name.
-//   //let images = {};
-//   //r.keys().map((item, index) => { images[item.replace('./','')] = r(item); });
-// }
-// const images = importAll(
-//   require.context(
-//     "../assets/questions/perception1",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
-// const images2 = importAll(
-//   require.context(
-//     "../assets/questions/perception4",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
-// const images3 = importAll(
-//   require.context(
-//     "../assets/questions/perception12",
-//     false,
-//     /\.(png|jpe?g|svg)$/
-//   )
-// );
