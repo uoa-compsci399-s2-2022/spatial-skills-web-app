@@ -78,7 +78,6 @@ const Editor = (props) => {
             ...settings,
             ...response.data,
           };
-          const decimalFields = ["totalTime", "textGrade", "patternFlashTime"];
           if (CONTEXT === "TEST") {
             newSettings = {
               ...newSettings,
@@ -88,7 +87,7 @@ const Editor = (props) => {
             newSettings = {
               ...newSettings,
               textGrade: response.data.textGrade.$numberDecimal,
-              totalTime: response.data.time.$numberDecimal,
+              totalTime: response.data.totalTime.$numberDecimal,
             };
           }
           if (response.data.multi !== undefined) {
