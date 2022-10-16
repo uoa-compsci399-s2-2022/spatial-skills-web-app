@@ -186,11 +186,18 @@ const Stats = () => {
                             return (
                               <tr key={_question._id}>
                                 <td>
-                                  <img
-                                    alt=""
-                                    src={_question.image}
-                                    className="stats__image"
-                                  />
+                                  {_question.category === "MEMORY" ? (
+                                    <FaGamepad
+                                      size="5em"
+                                      color="var(--accent-color)"
+                                    />
+                                  ) : (
+                                    <img
+                                      alt=""
+                                      src={_question.image}
+                                      className="stats__image"
+                                    />
+                                  )}
                                 </td>
                                 <td>{title}</td>
                                 <td>{`${time}s`}</td>

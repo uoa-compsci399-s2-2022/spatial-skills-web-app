@@ -105,7 +105,10 @@ const Bank = () => {
                               className="dashboard__item section"
                               to={`/dashboard/test/${code}/question/${_question._id}`}
                             >
-                              <FaGamepad class="bank-game__question" />
+                              <FaGamepad
+                                size="5em"
+                                color="var(--accent-color)"
+                              />
                               <div className="bank__test-text">
                                 <h4>{_question.title}</h4>
                                 <p>{_question.category}</p>

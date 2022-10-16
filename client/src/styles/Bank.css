@@ -95,9 +95,3 @@
 .bank__question {
     width: 100%;
 }
-
-.bank-game__question {
-    width: 150px;
-    height: 150px;
-    color: var(--accent-color)
-}
