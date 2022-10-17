@@ -25,6 +25,11 @@ const Test = (props) => {
   
   // Load test data from backend API
   useEffect(() => {
+    if (!userData.name) {
+      // Redirect user if they aren't logged in (refreshed page).
+      window.location.href = `http://localhost:3000/`;
+    }
+    
     axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
         console.log(res);
