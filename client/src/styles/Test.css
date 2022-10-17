@@ -184,18 +184,17 @@
 }
 
 .modal__content {
+    border-radius: 1rem;
+    box-shadow: 0 .5rem 1rem var(--shadow-color);
     background-color: var(--contrast-color);
     margin: 5% auto;
-    padding: 30px;
-    width: 40%;
-    border: 2px solid rgb(0, 0, 0);
-    border-radius: 4px;
-    gap: 2rem;
+    padding: 1rem;
+    width: 30rem;
 }
 
 .modal__buttons {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     padding: 10px;
     gap: 2rem;

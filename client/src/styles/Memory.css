@@ -37,11 +37,11 @@
 }
   
 .memory--game-over{
-    animation: lose_flash 1s;
+    animation: lose_flash .5s;
 }
   
 .memory--victory{
-    animation: won_flash 1s;
+    animation: won_flash .5s;
 }
   
 @keyframes lose_flash{
@@ -52,7 +52,7 @@
   
 @keyframes won_flash{
     0% {background-color: var(--contrast-color);}
-    50% {background-color: #c0ffb0;}
+    50% {background-color: #b8ff9b}
     100% {background-color: var(--contrast-color);}
 }
   

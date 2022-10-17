@@ -8,7 +8,9 @@
     justify-content: center;
     font-weight: bold;
     font-family: var(--font-cta);
-    transition: background-color .25s, color .25s, border .25s, transform .25s;
+    /* transition: background-color .25s, color .25s, border .25s, transform .25s; */
+    transition: transform .25s;
+
 }
 
 .button:hover {

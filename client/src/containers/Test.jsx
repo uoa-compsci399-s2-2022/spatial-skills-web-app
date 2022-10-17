@@ -292,10 +292,13 @@ const Test = (props) => {
               <h2 style={{ padding: "2rem" }}>Do you want to end your test?</h2>
 
               <div className="modal__buttons">
-                <button onClick={closeFinishModal} className="cancel-button">
+                <button
+                  onClick={closeFinishModal}
+                  className="button button--caution"
+                >
                   Cancel
                 </button>
-                <button onClick={finishTest} className="finish-button">
+                <button onClick={finishTest} className="button button--filled">
                   Finish Test
                 </button>
               </div>
