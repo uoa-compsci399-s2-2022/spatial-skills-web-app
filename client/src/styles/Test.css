@@ -121,8 +121,8 @@
 .test__progress {
     position: absolute;
     right: 1rem;
-    top: 5rem;
-    font-size: 32px;
+    top: 1rem;
+    font-size: 48px;
     color: var(--accent-color);
 }
 
@@ -132,9 +132,9 @@
 
 .test__timer {
     position: absolute;
-    top: 5rem;
+    top: 1rem;
     left: 1rem;
-    font-size: 32px;
+    font-size: 48px;
     color: var(--accent-color);
     /* Appear above Card Matching Game */
     z-index: 1;
