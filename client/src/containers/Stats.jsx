@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "../styles/Stats.css";
 import React, { useEffect, useState } from "react";
@@ -10,10 +10,10 @@ import "reactochart/styles.css";
 const iconSize = "1.25em";
 
 const Stats = () => {
+  const navigate = useNavigate();
   const { code } = useParams();
   const [isLoadedTest, setIsLoadedTest] = useState(false);
-  const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
-  const baseURL = "http://localhost:3001/api/test/all";
+  const baseURL = "http://localhost:3001/api/test/mytests";
   const [data, setData] = useState([]);
   var csvArray = [];
   var ansArray = [];
@@ -31,17 +31,6 @@ const Stats = () => {
 
   const test = data.filter((test) => test.code === code)[0];
 
-  const qURL = "http://localhost:3001/api/question/all";
-  const [questionData, setQuestionData] = useState([]);
-
-  useEffect(() => {
-    axiosAPICaller.get(qURL).then((response) => {
-      console.log(response.data);
-      setQuestionData(response.data);
-      setIsLoadedQuestion(true);
-    });
-  }, []);
-
   if (isLoadedTest) {
     test.studentAnswers.map((studentAnswers) => {
       return studentAnswers.answers.map((answers) => {
@@ -50,37 +39,62 @@ const Stats = () => {
     });
   }
 
-  if (isLoadedTest && isLoadedQuestion) {
+  if (isLoadedTest) {
     test.studentAnswers.map((studentAnswer) => {
-      let name = ""
-      let grade = 0
-      let percentage = 0
-      let time = 0
-      if (studentAnswer.studentName !== null && studentAnswer.studentName !== undefined) 
-      {name = studentAnswer.studentName}
-      if (studentAnswer.totalGrade !== null && studentAnswer.totalGrade !== undefined) 
-      {grade = studentAnswer.totalGrade.$numberDecimal}
-      if (studentAnswer.totalPercentage !== null && studentAnswer.totalPercentage !== undefined) 
-      {percentage = studentAnswer.totalPercentage.$numberDecimal}
-      if (studentAnswer.totalTimeTaken !== null && studentAnswer.totalTimeTaken !== undefined) 
-      {time = studentAnswer.totalTimeTaken.$numberDecimal}
+      let name = "";
+      let grade = 0;
+      let percentage = 0;
+      let time = 0;
+      if (
+        studentAnswer.studentName !== null &&
+        studentAnswer.studentName !== undefined
+      ) {
+        name = studentAnswer.studentName;
+      }
+      if (
+        studentAnswer.totalGrade !== null &&
+        studentAnswer.totalGrade !== undefined
+      ) {
+        grade = studentAnswer.totalGrade.$numberDecimal;
+      }
+      if (
+        studentAnswer.totalPercentage !== null &&
+        studentAnswer.totalPercentage !== undefined
+      ) {
+        percentage = studentAnswer.totalPercentage.$numberDecimal;
+      }
+      if (
+        studentAnswer.totalTimeTaken !== null &&
+        studentAnswer.totalTimeTaken !== undefined
+      ) {
+        time = studentAnswer.totalTimeTaken.$numberDecimal;
+      }
 
-      console.log("name", name, "grade", grade, "percentage", percentage, "time", time);
+      console.log(
+        "name",
+        name,
+        "grade",
+        grade,
+        "percentage",
+        percentage,
+        "time",
+        time
+      );
       JSONObject = {
-        Name: name,
-        Grade: grade,
-        Percentage: percentage,
-        Time: time,
+        "Name": name,
+        "Grade": grade,
+        "Percentage": percentage,
+        "Total Time": time,
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        console.log(ansArray[arrayIndex + i].grade)
-        if (ansArray[arrayIndex + i].grade.$numberDecimal === '1') {
+        console.log(ansArray[arrayIndex + i].grade);
+        if (ansArray[arrayIndex + i].grade.$numberDecimal === "1") {
           correct = "Correct";
         } else {
           correct = "Incorrect";
         }
-        JSONObject["Question " + (i + 1).toString()] = correct;
+        JSONObject["Q" + (i + 1).toString()] = correct;
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
@@ -104,8 +118,8 @@ const Stats = () => {
     }
   };
 
-  if (isLoadedTest && isLoadedQuestion) {
-    console.log("Running")
+  if (isLoadedTest) {
+    console.log("Running");
     return (
       <div className="stats">
         <h1>{test.title}</h1>
@@ -128,44 +142,48 @@ const Stats = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {test &&
-                    test.questions.map((question) => {
-                      console.log("Running 2")
-                      return (
-                        questionData &&
-                        questionData.map((_question) => {
-                          if (question === _question._id) {
-                            let grade = 0;
-                            let time = 0;
-                            let title = "";
-                            if (_question.totalMultiGrade !== null && _question.totalMultiGrade !== undefined){
-                              grade = _question.totalMultiGrade.$numberDecimal
-                            }
-                            if (_question.totalTime !== null && _question.totalTime !== undefined){
-                              time = _question.totalTime.$numberDecimal
-                            }
-                            if (_question.title !== null && _question.title !== undefined){
-                              title = _question.title
-                            }
+                {
+                  test &&
+                  test.questions.map((_question) => {
+                    let grade = 0;
+                    let time = 0;
+                    let title = "";
+                    if (
+                        _question.totalMultiGrade !== null &&
+                        _question.totalMultiGrade !== undefined
+                    ) {
+                      grade = _question.totalMultiGrade.$numberDecimal;
+                    }
+                    if (
+                      _question.totalTime !== null &&
+                      _question.totalTime !== undefined
+                    ) {
+                      time = _question.totalTime.$numberDecimal;
+                    }
+                    if (
+                      _question.title !== null &&
+                      _question.title !== undefined
+                    ) {
+                      title = _question.title;
+                    }
 
-                            return (
-                              <tr key={_question._id}>
-                                <td>
-                                  <img
-                                    alt=""
-                                    src={_question.image}
-                                    className="stats__image"
-                                  />
-                                </td>
-                                <td>{title}</td>
-                                <td>{`${time}s`}</td>
-                                <td>{grade}</td>
-                              </tr>
-                            );
-                          }
-                        })
-                      );
-                    })}
+                    return (
+                      <tr key={_question._id}>
+                      <td>
+                      <img
+                        alt=""
+                        src={_question.image}
+                        className="stats__image"
+                      />
+                      </td>
+                      <td>{title}</td>
+                      <td>{`${time}s`}</td>
+                      <td>{grade}</td>
+                      </tr>
+                    );
+                    })
+                    }
+                    
                 </tbody>
               </table>
               <div className="stats__action-container">
@@ -180,9 +198,7 @@ const Stats = () => {
               </div>
             </div>
 
-            <div className="barChart">
-              
-            </div>
+            <div className="barChart"></div>
           </div>
 
           <div className="stats__col" style={{ width: "35%" }}>
@@ -206,10 +222,12 @@ const Stats = () => {
                 </tbody>
               </table>
 
-              <CsvDownload data={csvArray} size={iconSize}>
-                <button className="button button--outlined">
-                  Download as .csv
-                </button>
+              <CsvDownload
+                data={csvArray}
+                size={iconSize}
+                className="button button--outlined"
+              >
+                Download as .csv
               </CsvDownload>
             </div>
           </div>
@@ -225,7 +243,7 @@ const Stats = () => {
             <FaEdit size={iconSize} />
           </Link>
           <button
-            className="button button--filled"
+            className="button button--outlined"
             title="Share"
             onClick={() => {
               navigator.clipboard.writeText(
@@ -235,6 +253,16 @@ const Stats = () => {
           >
             Share
             <FaShareAlt size={iconSize} />
+          </button>
+          <button
+            className="button button--filled"
+            onClick={() => {
+              sessionStorage.setItem("code", code);
+              navigate("/test");
+            }}
+          >
+            Play
+            <FaGamepad size={iconSize} />
           </button>
         </div>
       </div>
