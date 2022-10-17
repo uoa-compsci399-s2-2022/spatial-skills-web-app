@@ -1,5 +1,5 @@
 .matching-game__instructions{
-  width: 25%;
+  width: 50%;
 }
 
 .matching-game__instructions h1{
@@ -54,7 +54,6 @@
   grid-gap: 30px;
   justify-items: center;
   padding: 8.6px;
-  margin-top: 30px;
 }
 
 .matching-game__heart {

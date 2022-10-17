@@ -21,6 +21,7 @@ function PatternGame({
   tested,
   next,
   submit,
+  firstVisit
 }) {
 
   console.log(tested)
@@ -291,7 +292,7 @@ function PatternGame({
           if (health.current === 0) {
             setTimerOn(false);
             setGameOver(true);
-            // submit(level);
+            submit(level);
           }
           return { ...block, clicked: true };
         } else {
@@ -325,7 +326,7 @@ function PatternGame({
                   if (health.current === 0) {
                     setTimerOn(false);
                     setGameOver(true);
-                    // submit(level);
+                    submit(level);
                   }
                   setDisabled(true);
                   setTimeout(() => {
@@ -355,12 +356,14 @@ function PatternGame({
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
+        submit(level);
       }
     } else {
       if (numMatched.current === numberOfPatternBlocks) {
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
+        submit(level);
       }
     }
 
@@ -385,13 +388,13 @@ function PatternGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [victory]);
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    if (gameOver){
-      changeState()
-    }
+  //   if (gameOver){
+  //     // changeState()
+  //   }
     
-  }, [gameOver])
+  // }, [gameOver])
 
 
   // timer
@@ -421,6 +424,7 @@ function PatternGame({
 
   const startGame = () => {
     setStarted(true);
+    submit(0);
     if (!order) {
       setTimeout(() => {
         generatePattern();
@@ -486,9 +490,18 @@ function PatternGame({
         <div className="pattern-game__instructions">
           <h1>Memory Test: Block Patterns</h1>
           <p>{description}</p>
-          <button className="pattern-game__start-button" onClick={startGame}>
-            Start
-          </button>
+          <h2>Instructions</h2>
+          <p>Click on the blocks {order ? "in the pattern" : null} shown
+          <b>{reverse ? " in reverse" : null}</b>.</p>
+          <p>You will lose a life for clicking incorrect blocks.</p>
+          <p>Note: once you start, you cannot redo the question!</p>
+          { firstVisit ?
+            <button className="pattern-game__start-button" onClick={startGame}>
+              Start
+            </button> :
+            <p style={{marginTop: "3rem"}}>You have already done this question!</p>
+            
+          }
         </div>
       ) : null}
       <div
@@ -515,7 +528,7 @@ function PatternGame({
       {gameOver ? (
         <div className="game-over-div">
           <h2 className="game-over-text">Your score: {level}</h2>
-          <button onClick={next}>Next Question</button>
+          {/* <button onClick={next}>Next Question</button> */}
         </div>
       ) : null}
       <div className={renderPage()} style={patternGridStyleNoCorsi()}>

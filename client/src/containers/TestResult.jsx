@@ -1,71 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// import axios from "axios";
-import axiosAPICaller from "../services/api-service.mjs";
+import { Link } from "react-router-dom";
+// import axiosAPICaller from "../services/api-service.mjs";
+import "../styles/Home.css";
+import logo from "../assets/logo.png";
 
 // Test Marking proof of concept.
 
 const TestResult = () => {
-  let { tId, sId } = useParams();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  return (
+    <div className="home">
+      <img src={logo} className="home__logo" alt="" />
+      <div className="home__content">
+        <>
+          <h1>Test Finished</h1>
+          <p>
+            Well done!
+            <br />
+            Your answers have been stored for review.
+            <br />
+            <br />
+          </p>
+          <Link to="/" className="home__input home__input--button">
+            Return Home
+          </Link>
+        </>
 
-  const url = "http://localhost:3001/api/answer/getStudentAnswer";
-  const body = {
-    tId: tId,
-    sId: sId,
-  };
-
-  useEffect(() => {
-    axiosAPICaller.post(url, body).then(
-      (res) => {
-        console.log(res);
-        setData(res.data);
-        setIsLoaded(true);
-      },
-      (error) => {
-        setIsLoaded(true);
-        setError(error);
-      }
-    );
-  }, []);
-
-  const renderAnswers = () => {
-    const answers = data.testQuestions.map((ans) => {
-      return (
-        <li key={ans.qId}>
-          <img src={ans.image} alt="Answer" />
-          <p>Category: {ans.category}</p>
-          <p>Description: {ans.description}</p>
-          <p>Grade: {ans.grade}</p>
-          <p>{ans.correct ? "Correct" : "Wrong"}</p>
-          <p>Value: {ans.value}</p>
-        </li>
-      );
-    });
-    return answers;
-  };
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  } else if (!isLoaded) {
-    return <div>Loading Test...</div>;
-  } else {
-    return (
-      <div className="results" style={{marginTop: '5rem'}}>
-        <div>
-          <h1>Test Result Page</h1>
-          <h1>Test Name: {data.testTitle}</h1>
-          <h1>Student Name: {data.sId}</h1>
-          <h1>
-            Grade: {data.studentGrade} / {data.testMaxGrade}
-          </h1>
-          <ol type="1">{renderAnswers()}</ol>
-        </div>
       </div>
-    );
-  }
+    </div>
+  )
 };
 
 export default TestResult;
