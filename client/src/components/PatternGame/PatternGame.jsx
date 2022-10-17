@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import "../../styles/PatternGame.css";
+import "../../styles/Memory.css";
 import SingleBlock from "./SingleBlock";
 import seedrandom from "seedrandom";
-
-
 
 function PatternGame({
   corsi,
@@ -21,12 +19,11 @@ function PatternGame({
   tested,
   next,
   submit,
-  firstVisit
+  firstVisit,
 }) {
+  console.log(tested);
 
-  console.log(tested)
-
-  if (order){
+  if (order) {
     patternFlashTime = patternFlashTime * 1000;
   } else {
     patternFlashTime = patternFlashTime * 1000 + 300; // pause between levels
@@ -47,36 +44,28 @@ function PatternGame({
     return bArray;
   };
 
-  let totalNumberOfBlocks
-  
-  if (corsi){
+  let totalNumberOfBlocks;
+
+  if (corsi) {
     totalNumberOfBlocks = 9;
   } else {
     totalNumberOfBlocks = gameDim * gameDim;
   }
 
-  let levelList
+  let levelList;
 
   let randomNumber = seedrandom(randomSeed);
   let randomSeedArray = [];
-  let blocksArray
+  let blocksArray;
 
-  if (corsi){
-    levelList = Array.from(
-      { length: totalNumberOfBlocks },
-      (_, i) => i + 1
-    );
-    
+  if (corsi) {
+    levelList = Array.from({ length: totalNumberOfBlocks }, (_, i) => i + 1);
+
     blocksArray = CreateBlockArray(totalNumberOfBlocks);
-
   } else {
-    levelList = Array.from(
-      { length: totalNumberOfBlocks },
-      (_, i) => i + 1
-    );
+    levelList = Array.from({ length: totalNumberOfBlocks }, (_, i) => i + 1);
 
     blocksArray = CreateBlockArray(totalNumberOfBlocks);
-
   }
 
   for (let i = 0; i < totalNumberOfBlocks; i++) {
@@ -98,7 +87,7 @@ function PatternGame({
   const currentPatternIndex = useRef(0);
   const numMatched = useRef(0);
 
-  const test = useRef(0)
+  const test = useRef(0);
 
   const numberOfPatternBlocks = levelList[level];
 
@@ -152,12 +141,11 @@ function PatternGame({
 
     currentPatternIndex.current = 0;
 
-    if (reverse && order){
+    if (reverse && order) {
       numMatched.current = level;
     } else {
       numMatched.current = 0;
     }
-    
 
     if (!order) {
       setDisabled(true);
@@ -216,12 +204,12 @@ function PatternGame({
 
   // show pattern for standard version of game (not ordered)
   const showPattern = (show) => {
-    let pause
+    let pause;
     if (show) {
-      if (order){
-        pause = 0
+      if (order) {
+        pause = 0;
       } else {
-        pause = 300
+        pause = 300;
       }
       setTimeout(() => {
         setTimerOn(true);
@@ -231,7 +219,6 @@ function PatternGame({
           });
         });
       }, pause);
-
     } else {
       setBlocks((prevBlocks) => {
         return prevBlocks.map((block) => {
@@ -313,7 +300,7 @@ function PatternGame({
                 if (
                   userCurrentChoice.id === patternBlockID[numMatched.current]
                 ) {
-                  if (reverse){
+                  if (reverse) {
                     numMatched.current -= 1;
                   } else {
                     numMatched.current += 1;
@@ -338,7 +325,6 @@ function PatternGame({
                 numMatched.current += 1;
                 return { ...block, matched: true, clicked: true };
               }
-
             } else {
               return block;
             }
@@ -351,7 +337,7 @@ function PatternGame({
       }
     }
 
-    if (reverse && order){
+    if (reverse && order) {
       if (numMatched.current < 0) {
         setDisabled(true);
         setVictory(true);
@@ -387,13 +373,12 @@ function PatternGame({
   }, [victory]);
 
   // useEffect(() => {
-    
+
   //   if (gameOver){
   //     // changeState()
   //   }
-    
-  // }, [gameOver])
 
+  // }, [gameOver])
 
   // timer
   useEffect(() => {
@@ -435,32 +420,27 @@ function PatternGame({
 
   const victoryAnimation = () => {
     if (victory) {
-      return "pattern-game-victory";
+      return "memory memory--victory";
     } else if (gameOver) {
-      return "pattern-game-over";
+      return "memory memory--game-over";
     } else {
-      return "pattern-game";
+      return "memory";
     }
   };
 
   const displayTimer = () => {
     if (timerState) {
-      return (
-        <div>
-          <h2 className="pattern-game__timer">{time}</h2>
-        </div>
-      );
+      return <h2 className="memory__timer">{time}</h2>;
     } else {
-      return <div></div>;
+      return null;
     }
   };
 
   // style for dynamic grid size of equal width and height
   const patternGridStyleNoCorsi = () => {
-    if (corsi){
+    if (corsi) {
       let columnSize = "10vh ".repeat(2);
       return { display: "flex" };
-    
     } else {
       let columnSize = "10vh ".repeat(gameDim);
       return { gridTemplateColumns: columnSize };
@@ -469,62 +449,54 @@ function PatternGame({
 
   const renderPage = () => {
     if (started) {
-      if (corsi){
-        return ("corsi-test__blocks-div")
+      if (corsi) {
+        return "corsi-test__blocks-div";
       } else {
-        return ("pattern-game__blocks-grid")
+        return "pattern-game__blocks-grid";
       }
-
     } else {
-      return ("")
+      return "";
     }
-  }
-
-
+  };
 
   return (
     <div className={victoryAnimation()}>
       {!started ? (
-        <div className="pattern-game__instructions">
+        <div className="memory__instructions">
           <h1>Memory Test: Block Patterns</h1>
           <p>{description}</p>
           <p>Note: once you start, you cannot redo the question!</p>
-          { firstVisit ?
-            <button className="pattern-game__start-button" onClick={startGame}>
-              Start
-            </button> :
-            <p style={{marginTop: "3rem"}}>You have already done this question!</p>
-            
-          }
+          {firstVisit ? (
+            <button
+              className="button button--outlined"
+              style={{ fontSize: "1.25rem" }}
+              onClick={startGame}
+            >
+              START
+            </button>
+          ) : (
+            <p style={{ marginTop: "3rem" }}>
+              You have already done this question!
+            </p>
+          )}
         </div>
       ) : null}
-      <div
-        className={
-          started
-            ? "pattern-game__information-div-show"
-            : "pattern-game__information-div-hide"
-        }
-      >
-        <div className="pattern-game__lives-div">
-          <h2 className="pattern-game__lives-number">Lives:</h2>
-          <div className="pattern-game__lives-div__hearts">
-            {[...Array(health.current)].map((e, i) => (
-              <span className="pattern-game__heart" key={i}></span>
-            ))}
-            {[...Array(maxHealth - health.current)].map((e, i) => (
-              <span className="pattern-game__black-heart" key={i}></span>
-            ))}
-          </div>
-        </div>
-        {displayTimer()}
-        <h2 className="pattern-game__score">Score: {level}</h2>
-      </div>
+      {displayTimer()}
       {gameOver ? (
-        <div className="game-over-div">
-          <h2 className="game-over-text">Your score: {level}</h2>
+        <div className="memory__game-over">
+          <h2>Game Over!</h2>
+          <h3>Your score: {level}</h3>
           {/* <button onClick={next}>Next Question</button> */}
         </div>
       ) : null}
+      <div style={{ display: started ? "flex" : "none" }}>
+        {[...Array(health.current)].map((e, i) => (
+          <span className="memory__heart" key={i}></span>
+        ))}
+        {[...Array(maxHealth - health.current)].map((e, i) => (
+          <span className="memory__black-heart" key={i}></span>
+        ))}
+      </div>
       <div className={renderPage()} style={patternGridStyleNoCorsi()}>
         {blocks.map((block) => (
           <SingleBlock

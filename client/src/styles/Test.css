@@ -150,13 +150,14 @@
     width: 100%;
     gap: 1rem;
     position: absolute;
-    bottom: 0.5rem;
+    bottom: 1rem;
     width: 100%;
-    
 }
 
 .question-select__button {
-    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25rem;
     animation: fadeIn 1s;
 }
 .question-select__button:hover {

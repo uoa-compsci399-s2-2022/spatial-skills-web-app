@@ -1,0 +1,148 @@
+.memory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+    gap: 1rem;
+    height: 100vh;
+}
+
+.memory__instructions {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 30rem;
+}
+  
+.memory__game-over {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 5rem;
+    color: var(--contrast-color);
+    background-color: var(--accent-color);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1rem var(--shadow-color);
+    z-index: 1;
+}
+  
+.memory--game-over{
+    animation: lose_flash 1s;
+}
+  
+.memory--victory{
+    animation: won_flash 1s;
+}
+  
+@keyframes lose_flash{
+    0% {background-color: var(--contrast-color);}
+    50% {background-color: var(--error-color);}
+    100% {background-color: var(--contrast-color);}
+}
+  
+@keyframes won_flash{
+    0% {background-color: var(--contrast-color);}
+    50% {background-color: #86ed56;}
+    100% {background-color: var(--contrast-color);}
+}
+  
+.memory__timer {
+    top: 10%;
+    left: 50%;
+    position: absolute;
+}
+  
+  .pattern-game__blocks-grid {
+    margin: auto;
+    width:fit-content;
+    margin-top: 15px;
+    display: grid;
+    column-gap: 20px;
+    row-gap: 20px;
+    justify-items: center;
+  }
+  
+  .corsi-test__blocks-div {
+    position: relative;
+    width: 90vh;
+    height: 70vh;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    min-height: 200px;
+  }
+  
+  .memory__heart {
+    background-color: var(--heart-color);
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    margin: 0 10px;
+    transform: rotate(-45deg); 
+  }
+  
+  .memory__heart:before,
+  .memory__heart:after {
+    content: "";
+    background-color: var(--heart-color);
+    border-radius: 50%;
+    height: 15px;
+    position: absolute;
+    width: 15px;
+  }
+  
+  .memory__heart:before {
+    top: -8px;
+    left: 0;
+  }
+  
+  .memory__heart:after {
+    left: 8px;
+    top: 0;
+  }
+  
+  .memory__black-heart {
+    background-color: var(--accent-muted-color);
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    margin: 0 10px;
+    transform: rotate(-45deg); 
+  }
+  
+  .memory__black-heart:before,
+  .memory__black-heart:after {
+    content: "";
+    background-color: var(--accent-muted-color);
+    border-radius: 50%;
+    height: 15px;
+    position: absolute;
+    width: 15px;
+  }
+  
+  .memory__black-heart:before {
+    top: -8px;
+    left: 0;
+  }
+  
+  .memory__black-heart:after {
+    left: 8px;
+    top: 0;
+  }
+
+
+  .card-grid {
+    margin: auto;
+    width: 50%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 30px;
+    justify-items: center;
+    padding: 8.6px;
+  }
+  
+  

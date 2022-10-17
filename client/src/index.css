@@ -1,6 +1,8 @@
 * {
   box-sizing: border-box;
   --accent-color: #4895EF;
+  --accent-muted-color: #b5c1d4;
+  --accent-dark-color: #313546;
   --accent-color-hover: #deeefc;
   --contrast-color: #ffffff;
   --contrast-color-hover: #dadce0;
@@ -10,6 +12,7 @@
   --dark-color: #262631;
   --dark-color-hover: #2b2e3a;
   --error-color: #f51d24;
+  --heart-color: #f01a50;
   --shadow-color: rgba(13, 13, 88, 0.05);
   --font: 'Quicksand';
   --font-cta: 'Montserrat';
