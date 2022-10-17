@@ -356,12 +356,14 @@ function PatternGame({
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
+        submit(level);
       }
     } else {
       if (numMatched.current === numberOfPatternBlocks) {
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
+        submit(level);
       }
     }
 
@@ -488,6 +490,10 @@ function PatternGame({
         <div className="pattern-game__instructions">
           <h1>Memory Test: Block Patterns</h1>
           <p>{description}</p>
+          <h2>Instructions</h2>
+          <p>Click on the blocks {order ? "in the pattern" : null} shown
+          <b>{reverse ? " in reverse" : null}</b>.</p>
+          <p>You will lose a life for clicking incorrect blocks.</p>
           <p>Note: once you start, you cannot redo the question!</p>
           { firstVisit ?
             <button className="pattern-game__start-button" onClick={startGame}>
