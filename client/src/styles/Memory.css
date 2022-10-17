@@ -16,6 +16,12 @@
     gap: 2rem;
     width: 30rem;
 }
+
+.memory__lives {
+    display: flex;
+    position: absolute;
+    top: 8rem;
+}
   
 .memory__game-over {
     position: absolute;
@@ -40,13 +46,13 @@
   
 @keyframes lose_flash{
     0% {background-color: var(--contrast-color);}
-    50% {background-color: var(--error-color);}
+    50% {background-color: #ff6060;}
     100% {background-color: var(--contrast-color);}
 }
   
 @keyframes won_flash{
     0% {background-color: var(--contrast-color);}
-    50% {background-color: #86ed56;}
+    50% {background-color: #c0ffb0;}
     100% {background-color: var(--contrast-color);}
 }
   
@@ -134,9 +140,7 @@
     top: 0;
   }
 
-
   .card-grid {
-    margin: auto;
     width: 50%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;

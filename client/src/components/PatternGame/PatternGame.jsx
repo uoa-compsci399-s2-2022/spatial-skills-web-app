@@ -489,7 +489,10 @@ function PatternGame({
           {/* <button onClick={next}>Next Question</button> */}
         </div>
       ) : null}
-      <div style={{ display: started ? "flex" : "none" }}>
+      <div
+        className="memory__lives"
+        style={{ display: started ? "flex" : "none" }}
+      >
         {[...Array(health.current)].map((e, i) => (
           <span className="memory__heart" key={i}></span>
         ))}

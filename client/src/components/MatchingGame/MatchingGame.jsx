@@ -188,13 +188,9 @@ const MatchingGame = ({
 
   const displayTimer = () => {
     if (timerState) {
-      return (
-        <div>
-          <h2 className="pattern-game__timer">{time}</h2>
-        </div>
-      );
+      return <h2 className="memory__timer">{time}</h2>;
     } else {
-      return <div></div>;
+      return null;
     }
   };
 
@@ -221,7 +217,10 @@ const MatchingGame = ({
         </div>
       ) : null}
 
-      <div style={{ display: started ? "flex" : "none" }}>
+      <div
+        className="memory__lives"
+        style={{ display: started ? "flex" : "none" }}
+      >
         {[...Array(health.current)].map((e, i) => (
           <span className="memory__heart" key={i}></span>
         ))}
@@ -238,7 +237,7 @@ const MatchingGame = ({
         </div>
       ) : null}
 
-      <div className="card-grid" style={{ display: started ? "flex" : "none" }}>
+      <div className="card-grid" style={{ display: started ? "grid" : "none" }}>
         {cards.map((card) => (
           <SingleCard
             key={card.id}
