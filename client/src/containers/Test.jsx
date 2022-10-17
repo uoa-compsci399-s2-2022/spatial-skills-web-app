@@ -21,6 +21,8 @@ const Test = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentAnswer, setCurrentAnswer] = useState(null); 
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
+  const [started, setStarted] = useState(false);
+  const [testDetails, setTestDetails] = useState({})
   const testCode = sessionStorage.getItem("code");
   
   // Load test data from backend API
@@ -33,6 +35,7 @@ const Test = (props) => {
     axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
         console.log(res);
+        setTestDetails({ title: res.data.title, creator: res.data.creator });
         setQuestions(res.data.questions);
         setTotalTime(res.data.totalTime.$numberDecimal);
         setAllowBackTraversal(res.data.allowBackTraversal);
@@ -59,14 +62,18 @@ const Test = (props) => {
 
   // Timer for time taken.
   useEffect(() => {
-    if (isLoaded) {
+    if (isLoaded && started) {
       timer.current = setInterval(() => {
         setTimeTaken((prevTime) => prevTime + 1);
         setTimeLeft((prevTime) => prevTime - 1)
       }, 1000);
     }
     return () => clearInterval(timer.current);
-  }, [isLoaded, allowBackTraversal]);
+  }, [isLoaded, allowBackTraversal, started]);
+
+  const startTest = () => {
+    setStarted(true);
+  }
 
   const nextQuestion = () => {
     if (questionNum < questions.length) {
@@ -179,7 +186,47 @@ const Test = (props) => {
     return <div>Loading Test...</div>;
   } else {  
     // Test loaded successfully
-    
+
+    // Load test information page before starting the test
+    if (!started) {
+      return (
+        <div className="test">
+          <div className="test__start-screen">
+
+            <div>
+              <h1>{testDetails.title}</h1>
+              <h2>Created by: {testDetails.creator}</h2>
+            </div>
+
+            <div className="test__details">
+              <p>Number of Questions: {questions.length}</p>
+              <p>Test Time: {
+                allowBackTraversal ? totalTime / 60 : 
+                // Sum of individual question time for linear test
+                questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
+              } minutes
+              </p>
+              { allowBackTraversal ? null : <p>Each question has an individual time limit</p>}
+              <p>Traversal between questions {allowBackTraversal ? "enabled" : "disabled"}</p>
+              
+              {
+                questions.map(q => q.category).includes("MEMORY") ? 
+                <p>Interactive memory based games included</p> :
+                null
+              }
+              <b><p>Note: do not refresh / change pages using the browser during the test!</p></b>
+              <p>This will end your test early, without submission.</p>
+
+            </div>
+
+            <button className="test__start-button" onClick={startTest}>
+              Start Test
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     // Logic if time runs out
     if (timeLeft <= 0 && !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
       if (allowBackTraversal) {

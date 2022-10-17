@@ -209,7 +209,7 @@ const MatchingGame = ({
           <p>{description}</p>
 
           <h2>Instructions</h2>
-          <p>When the game starts, {pairs} card pairs will be temporarily shown.</p>
+          <p>When the game starts, {pairs - 1} card pairs will be temporarily shown.</p>
           <p>Match those cards in pairs before time runs out!</p>
           <p>You will lose a life for each mismatch.</p>
           <p>Note: once you start, you cannot redo the question!</p>
