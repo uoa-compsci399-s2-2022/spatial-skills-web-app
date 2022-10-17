@@ -6,7 +6,7 @@ import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const Bank = () => {
-  const { testId } = useParams();
+  const { code } = useParams();
   const [optionValue, setOptionValue] = useState("All");
   const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const [isLoadedTest, setIsLoadedTest] = useState(false);
@@ -25,7 +25,7 @@ const Bank = () => {
     });
   }, []);
 
-  const tURL = "http://localhost:3001/api/test/" + testId;
+  const tURL = "http://localhost:3001/api/test/code/" + code;
   const [testData, setTestData] = useState([]);
 
   useEffect(() => {
@@ -51,10 +51,10 @@ const Bank = () => {
             style={{ width: "100%" }}
           >
             <option value="All">All</option>
-            <option value="MEMORY">MEMORY</option>
-            <option value="PERCEPTION">PERCEPTION</option>
-            <option value="ROTATION">ROTATION</option>
-            <option value="VISUALISATION">VISUALISATION</option>
+            <option value="MEMORY">Memory</option>
+            <option value="PERCEPTION">Perception</option>
+            <option value="ROTATION">Rotation</option>
+            <option value="VISUALISATION">Visualisation</option>
           </select>
           <label>Name</label>
           <input
@@ -74,7 +74,7 @@ const Bank = () => {
                 return (
                   QuestionList &&
                   QuestionList.map((_question) => {
-                    if (question.qId === _question._id || testId === "bank") {
+                    if (question.qId === _question._id || code === "bank") {
                       if (
                         (_question.category === optionValue ||
                           optionValue === "All") &&
@@ -82,11 +82,11 @@ const Bank = () => {
                           .toLowerCase()
                           .includes(data.toLowerCase())
                       ) {
-                        if(_question.category !== "MEMORY"){
+                        if (_question.category !== "MEMORY") {
                           return (
                             <Link
                               className="dashboard__item section"
-                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                              to={`/dashboard/test/${code}/question/${_question._id}`}
                             >
                               <img
                                 alt=""
@@ -99,14 +99,13 @@ const Bank = () => {
                               </div>
                             </Link>
                           );
-
                         } else {
                           return (
                             <Link
                               className="dashboard__item section"
-                              to={`/dashboard/test/${testId}/question/${_question._id}`}
+                              to={`/dashboard/test/${code}/question/${_question._id}`}
                             >
-                              <FaGamepad class="bank-game__question"/>
+                              <FaGamepad class="bank-game__question" />
                               <div className="bank__test-text">
                                 <h4>{_question.title}</h4>
                                 <p>{_question.category}</p>
@@ -120,7 +119,7 @@ const Bank = () => {
                 );
               })}
             <Link
-              to={`/dashboard/test/${testId}/question/create`}
+              to={`/dashboard/test/${code}/question/create`}
               className="dashboard__create"
             >
               <FaPlus size={iconSize} />

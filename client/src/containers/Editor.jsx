@@ -1,83 +1,157 @@
 import "../styles/Editor.css";
-import { FaSave, FaTrash } from "react-icons/fa";
+import { FaSave, FaTrash, FaPlus } from "react-icons/fa";
+import { MdError } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
 const baseURL = "http://localhost:3001/api"; // change later for prod with .env
+const errorTree = {
+  403: "ERROR: Unauthorized!",
+};
+const mutliAnswerMap = ["a", "b", "c", "d", "e"];
 
 const Editor = (props) => {
-  const { userData, isTest } = props;
-  const { testId, questionId } = useParams();
+  const [error, setError] = useState(null);
+  const [published, setPublished] = useState(false);
+  const { userData } = props;
+  const { code, questionId } = useParams();
   const navigate = useNavigate();
+  const MODE = code === "create" || questionId === "create" ? "CREATE" : "EDIT";
+  const CONTEXT = questionId === undefined ? "TEST" : "QUESTION";
   const [settings, setSettings] = useState({
     title: "",
     description: "",
     published: false,
-    timeLimit: null,
+    totalTime: null,
     noTimeLimit: false,
-    linearProgression: false,
+    allowBackTraversal: false,
+    shuffleAnswers: false,
+    shuffleQuestions: false,
     image: "",
+    question: null,
     category: "",
-    type: "",
-    multi: [],
-    text: {
-      answer: "",
-      grade: null,
-    },
+    questionType: "",
+    citation: "",
+    answer: "",
+    textGrade: null,
+    size: null,
+    lives: null,
+    seed: null,
+    corsi: false,
+    reverse: false,
+    randomLevelOrder: false,
+    patternFlashTime: null,
+    creator: userData.name,
+    gameStartDelay: null,
+    selectionDelay: null,
+    testCode: code,
+    a: null,
+    aImage: "",
+    aGrade: null,
+    b: null,
+    bImage: "",
+    bGrade: null,
+    c: null,
+    cImage: "",
+    cGrade: null,
+    d: null,
+    dImage: "",
+    dGrade: null,
+    e: null,
+    eImage: "",
+    eGrade: null,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       await axiosAPICaller
         .get(
-          `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
+          `${baseURL}/${
+            CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
+          }`
         )
         .then((response) => {
-          setSettings({
+          console.log(response.data);
+          let newSettings = {
             ...settings,
-            title: response.data.title,
-            published: response.data.published,
-            description: response.data.description,
-            category: response.data.category,
-            image: response.data.image,
-          });
+            ...response.data,
+          };
+          if (CONTEXT === "TEST") {
+            newSettings = {
+              ...newSettings,
+              totalTime: response.data.totalTime.$numberDecimal,
+            };
+          } else if (response.data.questionType === "TEXT") {
+            newSettings = {
+              ...newSettings,
+              textGrade: response.data.textGrade.$numberDecimal,
+              totalTime: response.data.totalTime.$numberDecimal,
+            };
+          }
+          if (response.data.multi !== undefined) {
+            response.data.multi.map((it, index) => {
+              newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
+              newSettings[`${mutliAnswerMap[index]}Grade`] =
+                it.grade.$numberDecimal;
+            });
+          }
+          setPublished(response.data.published);
+          setSettings(newSettings);
         });
     };
-
-    // only fetch if there is something to fetch
-    if (testId !== "create" && questionId !== "create") {
+    if (MODE === "EDIT") {
       fetchData();
     }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axiosAPICaller.post(
-      `${baseURL}/${isTest ? "test" : "question"}`,
-      isTest
-        ? {
-            title: settings.title,
-            creator: userData.name,
-            published: settings.published,
-          }
-        : {
-            title: settings.title,
-            description: settings.description,
-            image: settings.image,
-            category: settings.category,
-          }
-    );
-    navigate(-1);
+    window.scrollTo(0, 0);
+    let noErrors = true;
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    if (MODE === "EDIT") {
+      await axiosAPICaller
+        .patch(
+          `${baseURL}/${
+            CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
+          }`,
+          settings,
+          config
+        )
+        .catch((e) => {
+          setError(e.response.status);
+          noErrors = false;
+        });
+    } else {
+      await axiosAPICaller.post(
+        `${baseURL}/${CONTEXT === "TEST" ? `test` : `question`}`,
+        settings,
+        config
+      );
+    }
+
+    // Only navigate back if there is no errors
+    if (noErrors) {
+      navigate(-1);
+    }
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    await axios.delete(
-      `${baseURL}/${isTest ? `test/${testId}` : `question/${questionId}`}`
+    await axiosAPICaller.delete(
+      `${baseURL}/${
+        CONTEXT === "TEST" ? `test/code/${code}` : `question/${questionId}`
+      }`
     );
+    if (CONTEXT === "TEST") {
+      navigate("/dashboard");
+    }
     navigate(-1);
   };
 
@@ -87,8 +161,17 @@ const Editor = (props) => {
 
   return (
     <form className="editor" onSubmit={(e) => handleSubmit(e)}>
-      <h1>Create / Edit {isTest ? "Test" : "Question"}</h1>
+      <h1>{`${MODE === "CREATE" ? "Create" : "Edit"} ${
+        CONTEXT === "TEST" ? "Test" : "Question"
+      }`}</h1>
       <div className="divider" />
+      {error !== null ? (
+        <p className="editor__error">
+          <MdError size={iconSize} />
+          {errorTree[error]}
+        </p>
+      ) : null}
+
       <div className="editor__grid">
         <label>Title</label>
         <input
@@ -99,13 +182,13 @@ const Editor = (props) => {
           defaultValue={settings.title}
           required
         />
-        {isTest ? (
+        {CONTEXT === "TEST" ? (
           <>
             <label>Published</label>
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.published}
+              checked={settings.published}
               onChange={(e) => {
                 setSettings({
                   ...settings,
@@ -113,15 +196,40 @@ const Editor = (props) => {
                 });
               }}
             />
-            <label>Linear Progression</label>
+            <label>Back Traversal</label>
             <input
               type="checkbox"
               style={{ width: "min-content" }}
-              defaultChecked={settings.linearProgression}
+              checked={settings.allowBackTraversal}
               onChange={(e) => {
                 setSettings({
                   ...settings,
-                  linearProgression: e.target.checked,
+                  allowBackTraversal: e.target.checked,
+                  individualTime: !e.target.checked,
+                });
+              }}
+            />
+            <label>Shuffle Answers</label>
+            <input
+              type="checkbox"
+              style={{ width: "min-content" }}
+              checked={settings.shuffleAnswers}
+              onChange={(e) => {
+                setSettings({
+                  ...settings,
+                  shuffleAnswers: e.target.checked,
+                });
+              }}
+            />
+            <label>Shuffle Questions</label>
+            <input
+              type="checkbox"
+              style={{ width: "min-content" }}
+              checked={settings.shuffleQuestions}
+              onChange={(e) => {
+                setSettings({
+                  ...settings,
+                  shuffleQuestions: e.target.checked,
                 });
               }}
             />
@@ -139,35 +247,54 @@ const Editor = (props) => {
               className="editor__input"
               required
             />
-            {settings.category !== "memory" ? (
+            <label>Citation</label>
+            <input
+              type="text"
+              placeholder="Citation"
+              className="editor__input"
+              onChange={(e) =>
+                setSettings({ ...settings, citation: e.target.value })
+              }
+              defaultValue={settings.citation}
+            />
+            {settings.category !== "MEMORY" ? (
               <>
                 <label>Image</label>
                 <div className="editor__image-container">
                   <input
+                    disabled={MODE === "EDIT"}
                     type="file"
                     onChange={(e) => {
                       setSettings({
                         ...settings,
+                        question: e.target.files[0],
                         image: URL.createObjectURL(e.target.files[0]),
                       });
                     }}
-                    required
+                    required={MODE === "CREATE"}
                   />
-                  <img
-                    src={settings.image}
-                    className="editor__image"
-                    alt="Preview of question diagram"
-                  />
+                  {settings.image !== "" ? (
+                    <img
+                      src={settings.image}
+                      className="editor__image"
+                      alt=""
+                    />
+                  ) : null}
                 </div>
               </>
             ) : null}
             <label>Category</label>
             <select
+              disabled={MODE === "EDIT"}
               onChange={(e) =>
                 setSettings({ ...settings, category: e.target.value })
               }
               required
+              defaultValue={settings.category}
             >
+              <option selected={settings.category === ""}>
+                Select question category
+              </option>
               <option
                 value="VISUALISATION"
                 selected={settings.category === "VISUALISATION"}
@@ -192,71 +319,220 @@ const Editor = (props) => {
             </select>
             <label>Type</label>
             <select
+              disabled={MODE === "EDIT"}
               onChange={(e) =>
-                setSettings({ ...settings, type: e.target.value })
+                setSettings({ ...settings, questionType: e.target.value })
               }
-              defaultValue={settings.type}
+              defaultValue={settings.questionType}
               required
             >
-              {settings.category === "memory" ? (
+              <option selected={settings.questionType === ""}>
+                Select question type
+              </option>
+
+              {settings.category === "MEMORY" ? (
                 <>
-                  <option value="card">Card</option>
-                  <option value="block">Block</option>
+                  <option
+                    selected={settings.questionType === "DYNAMIC-MEMORY"}
+                    value="DYNAMIC-MEMORY"
+                  >
+                    Match
+                  </option>
+                  <option
+                    selected={settings.questionType === "DYNAMIC-PATTERN"}
+                    value="DYNAMIC-PATTERN"
+                  >
+                    Pattern
+                  </option>
                 </>
               ) : (
                 <>
-                  <option value="text">Text input</option>
-                  <option value="multi">Multichoice</option>
+                  <option
+                    value="TEXT"
+                    selected={settings.questionType === "TEXT"}
+                  >
+                    Text
+                  </option>
+                  <option
+                    value="MULTICHOICE-SINGLE"
+                    selected={settings.questionType === "MULTICHOICE-SINGLE"}
+                  >
+                    Multichoice
+                  </option>
+                  <option
+                    value="MULTICHOICE-MULTI"
+                    selected={settings.questionType === "MULTICHOICE-MULTI"}
+                  >
+                    Multiple Response
+                  </option>
                 </>
               )}
             </select>
-            {settings.category === "memory" ? (
+            {settings.category === "MEMORY" ? (
               <>
-                <label>Size</label>
+                <label>Grid Size</label>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="5"
                   className="editor__input editor__input"
+                  defaultValue={settings.size}
+                  onChange={(e) =>
+                    setSettings({ ...settings, size: e.target.value })
+                  }
                   required
                 />
-                <label>Preview Duration</label>
+                <label>Seed</label>
                 <input
-                  type="text"
-                  placeholder="5"
+                  type="number"
+                  placeholder="12345"
                   className="editor__input editor__input"
+                  defaultValue={settings.seed}
+                  onChange={(e) =>
+                    setSettings({ ...settings, seed: e.target.value })
+                  }
                   required
                 />
-                <label>Matches</label>
+                <label>Lives</label>
                 <input
-                  type="text"
-                  placeholder="5"
+                  type="number"
+                  placeholder="3"
                   className="editor__input editor__input"
+                  defaultValue={settings.lives}
+                  onChange={(e) =>
+                    setSettings({ ...settings, lives: e.target.value })
+                  }
                   required
                 />
-              </>
-            ) : settings.type === "multi" ? (
-              <>
-                <label>Number of Answers</label>
-                <input
-                  type="text"
-                  placeholder="4"
-                  className="editor__input editor__input"
-                  required
-                />
-                {[1, 2, 3, 4].map((index) => (
+                {settings.questionType === "DYNAMIC-PATTERN" ? (
                   <>
-                    <label>Grade</label>
+                    <label>Corsi</label>
                     <input
-                      type="text"
-                      placeholder="1.0"
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      checked={settings.corsi}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          corsi: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Reverse</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      checked={settings.reverse}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          reverse: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Random Level Order</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      checked={settings.randomLevelOrder}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          randomLevelOrder: e.target.checked,
+                        });
+                      }}
+                    />
+                    <label>Pattern Flash Time</label>
+                    <input
+                      type="number"
+                      placeholder="1"
                       className="editor__input editor__input"
+                      defaultValue={settings.patternFlashTime}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          patternFlashTime: e.target.value,
+                        })
+                      }
                       required
                     />
-                    <label>Image</label>
-                    <input type="file" required />
                   </>
-                ))}
+                ) : (
+                  <>
+                    <label>Start Delay</label>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="editor__input editor__input"
+                      defaultValue={settings.gameStartDelay}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          gameStartDelay: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                    <label>Selection Delay</label>
+                    <input
+                      type="number"
+                      placeholder="1"
+                      className="editor__input editor__input"
+                      defaultValue={settings.selectionDelay}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          selectionDelay: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </>
+                )}
               </>
+            ) : settings.questionType.includes("MULTICHOICE") ? (
+              mutliAnswerMap.map((it) => (
+                <>
+                  <label
+                    style={{ gridColumn: "span 2" }}
+                  >{`${it.toUpperCase()}`}</label>
+                  <label>Grade</label>
+                  <input
+                    type="number"
+                    className="editor__input editor__input"
+                    placeholder="1.0"
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        [`${it}Grade`]: e.target.value,
+                      })
+                    }
+                    defaultValue={settings[`${it}Grade`]}
+                  />
+                  <label>Image</label>
+                  <div className="editor__image-container">
+                    <input
+                      disabled={MODE === "EDIT"}
+                      type="file"
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          [it]: e.target.files[0],
+                          [`${it}Image`]: URL.createObjectURL(
+                            e.target.files[0]
+                          ),
+                        });
+                      }}
+                    />
+                    {settings[it] !== "" ? (
+                      <img
+                        src={settings[`${it}Image`]}
+                        className="editor__image"
+                        alt=""
+                      />
+                    ) : null}
+                  </div>
+                </>
+              ))
             ) : (
               <>
                 <label>Answer</label>
@@ -267,30 +543,24 @@ const Editor = (props) => {
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      text: {
-                        ...settings.text,
-                        answer: e.target.value,
-                      },
+                      answer: e.target.value,
                     })
                   }
-                  defaultValue={settings.text.answer}
+                  defaultValue={settings.answer}
                   required
                 />
                 <label>Grade</label>
                 <input
-                  type="text"
+                  type="number"
                   className="editor__input editor__input"
                   placeholder="1.0"
                   onChange={(e) =>
                     setSettings({
                       ...settings,
-                      text: {
-                        ...settings.text,
-                        grade: e.target.value,
-                      },
+                      textGrade: e.target.value,
                     })
                   }
-                  defaultValue={settings.text.grade}
+                  defaultValue={settings.textGrade}
                   required
                 />
               </>
@@ -299,24 +569,15 @@ const Editor = (props) => {
         )}
         <label>Time Limit</label>
         <input
-          type="text"
+          type="number"
           placeholder="60"
           className="editor__input editor__input"
           disabled={settings.noTimeLimit}
-          defaultValue={settings.timeLimit}
+          defaultValue={settings.totalTime}
           onChange={(e) =>
-            setSettings({ ...settings, timeLimit: e.target.value })
+            setSettings({ ...settings, totalTime: e.target.value })
           }
           required
-        />
-        <label>No Time limit</label>
-        <input
-          type="checkbox"
-          style={{ width: "min-content" }}
-          defaultChecked={settings.noTimeLimit}
-          onChange={(e) => {
-            setSettings({ ...settings, noTimeLimit: e.target.checked });
-          }}
         />
       </div>
       <div className="divider" />
@@ -328,8 +589,11 @@ const Editor = (props) => {
           Delete
           <FaTrash size={iconSize} />
         </button>
-        <button className="button button--filled">
-          Save
+        <button
+          className="button button--filled"
+          style={{ display: published ? "none" : "default" }}
+        >
+          {MODE === "EDIT" ? "Save" : "Create"}
           <FaSave size={iconSize} />
         </button>
       </div>

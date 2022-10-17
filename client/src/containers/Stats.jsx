@@ -1,133 +1,138 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import "../styles/Stats.css";
-import axios from "axios";
-import React from "react";
-import {
-  FaSave,
-  FaTrash,
-  FaEdit,
-  FaShareAlt,
-  FaDownload,
-  FaGamepad,
-} from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaEdit, FaShareAlt, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
-import CsvDownload from 'react-json-to-csv';
-import BarChart from 'reactochart/BarChart';
-import XYPlot from 'reactochart/XYPlot';
-import XAxis from 'reactochart/XAxis';
-import YAxis from 'reactochart/YAxis';
-import 'reactochart/styles.css';
+import CsvDownload from "react-json-to-csv";
+import "reactochart/styles.css";
 
 const iconSize = "1.25em";
 
 const Stats = () => {
-  const { testId } = useParams();
+  const navigate = useNavigate();
+  const { code } = useParams();
   const [isLoadedTest, setIsLoadedTest] = useState(false);
   const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
   const baseURL = "http://localhost:3001/api/test/all";
-  const [data, setData] = React.useState([]);
+  const [data, setData] = useState([]);
   var csvArray = [];
   var ansArray = [];
   var JSONObject = {};
   var arrayIndex = 0;
   var correct = "";
-  var barChartData = [];
   var gradeArray = [];
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     axiosAPICaller.get(baseURL).then((response) => {
       setData(response.data);
       setIsLoadedTest(true);
     });
   }, []);
 
-  const test = data.filter((test) => test._id === testId)[0];
+  const test = data.filter((test) => test.code === code)[0];
 
   const qURL = "http://localhost:3001/api/question/all";
   const [questionData, setQuestionData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     axiosAPICaller.get(qURL).then((response) => {
+      console.log(response.data);
       setQuestionData(response.data);
       setIsLoadedQuestion(true);
     });
   }, []);
 
-
   if (isLoadedTest) {
-    test.studentAnswers.map((studentAnswers) => 
-      {
-        return (
-          studentAnswers.answers.map((answers) => {
-              return (
-                ansArray.push(answers)
-              );
-          })
-        );
-      }
-    )
+    test.studentAnswers.map((studentAnswers) => {
+      return studentAnswers.answers.map((answers) => {
+        return ansArray.push(answers);
+      });
+    });
   }
 
-if (isLoadedTest && isLoadedQuestion) {
-  test.studentAnswers.map((studentAnswer) => 
-    {
-      JSONObject = 
-        {
-          "Name" : studentAnswer.sId,
-          "Grade": studentAnswer.grade,
-        }
+  if (isLoadedTest && isLoadedQuestion) {
+    test.studentAnswers.map((studentAnswer) => {
+      let name = "";
+      let grade = 0;
+      let percentage = 0;
+      let time = 0;
+      if (
+        studentAnswer.studentName !== null &&
+        studentAnswer.studentName !== undefined
+      ) {
+        name = studentAnswer.studentName;
+      }
+      if (
+        studentAnswer.totalGrade !== null &&
+        studentAnswer.totalGrade !== undefined
+      ) {
+        grade = studentAnswer.totalGrade.$numberDecimal;
+      }
+      if (
+        studentAnswer.totalPercentage !== null &&
+        studentAnswer.totalPercentage !== undefined
+      ) {
+        percentage = studentAnswer.totalPercentage.$numberDecimal;
+      }
+      if (
+        studentAnswer.totalTimeTaken !== null &&
+        studentAnswer.totalTimeTaken !== undefined
+      ) {
+        time = studentAnswer.totalTimeTaken.$numberDecimal;
+      }
+
+      console.log(
+        "name",
+        name,
+        "grade",
+        grade,
+        "percentage",
+        percentage,
+        "time",
+        time
+      );
+      JSONObject = {
+        Name: name,
+        Grade: grade,
+        Percentage: percentage,
+        Time: time,
+      };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        if (ansArray[arrayIndex+i].correct === true){
+        console.log(ansArray[arrayIndex + i].grade);
+        if (ansArray[arrayIndex + i].grade.$numberDecimal === "1") {
           correct = "Correct";
         } else {
           correct = "Incorrect";
         }
-        JSONObject["Question " + (i+1).toString()] = correct;
+        JSONObject["Question " + (i + 1).toString()] = correct;
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
-      gradeArray.push(studentAnswer.grade);
-
-      barChartData.push({x: studentAnswer.sId.substring(0, 7), y: studentAnswer.grade});
-      
-      return (csvArray.push(JSONObject));
-        
-
-    }
-  )
-}
-
-
-const BarChartWithDefs = (props) => {
-  if (isLoadedTest) {
-      const data = barChartData;
-      return <div>
-        <svg width="0" height="0" style={{ position: 'absolute' }}></svg>
-        <XYPlot width={1050} height={300}>
-          <XAxis title="Students"/>
-          <YAxis title="Grade"/>
-          <BarChart
-            data={data}
-            x={d => d.x}
-            y={d => d.y}
-            barThickness={800/barChartData.length}
-          />
-        </XYPlot>
-        <br></br>
-        Mean Grade: {(gradeArray.reduce((a, b) => a + b, 0) / gradeArray.length).toFixed(2)}
-        <br></br>
-        Median Grade: {gradeArray.sort()[(gradeArray.length/2)]}
-      </div>
+      gradeArray.push(grade);
+      return csvArray.push(JSONObject);
+    });
   }
-};
 
-
+  const BarChart = (props) => {
+    if (isLoadedTest) {
+      return (
+        <div>
+          Mean Grade:{" "}
+          {(gradeArray.reduce((a, b) => a + b, 0) / gradeArray.length).toFixed(
+            2
+          )}
+          <br></br>
+          Median Grade: {gradeArray.sort()[gradeArray.length / 2]}
+        </div>
+      );
+    }
+  };
 
   if (isLoadedTest && isLoadedQuestion) {
+    console.log("Running");
     return (
       <div className="stats">
         <h1>{test.title}</h1>
@@ -139,7 +144,7 @@ const BarChartWithDefs = (props) => {
           <div className="stats__col" style={{ width: "65%" }}>
             <div className="stats__section section">
               <h2>Questions</h2>
-              <div className="divider" id="width"/>
+              <div className="divider" id="width" />
               <table>
                 <thead>
                   <tr>
@@ -152,35 +157,47 @@ const BarChartWithDefs = (props) => {
                 <tbody>
                   {test &&
                     test.questions.map((question) => {
+                      console.log("Running 2");
                       return (
                         questionData &&
                         questionData.map((_question) => {
-                          if (question.qId === _question._id) {
-                            if(_question.category !== "MEMORY"){
-                              console.log(question.category);
-                              return (
-                                <tr key={question._id}>
-                                  <img
-                                  alt=""
-                                  src={_question.image}
-                                  class="stats__image"
-                                />
-                                  <td>{_question.title}</td>
-                                  <td>{`${question.time}s`}</td>
-                                  <td>{question.grade.toFixed(1)}</td>
-                                </tr>
-                              );
-                            } else {
-                              return (
-                                <tr key={question._id}>
-                                  <FaGamepad class="stats__image"/>
-                                  <td>{_question.title}</td>
-                                  <td>{`${question.time}s`}</td>
-                                  <td>{question.grade.toFixed(1)}</td>
-                                </tr>
-                              );
-
+                          if (question === _question._id) {
+                            let grade = 0;
+                            let time = 0;
+                            let title = "";
+                            if (
+                              _question.totalMultiGrade !== null &&
+                              _question.totalMultiGrade !== undefined
+                            ) {
+                              grade = _question.totalMultiGrade.$numberDecimal;
                             }
+                            if (
+                              _question.totalTime !== null &&
+                              _question.totalTime !== undefined
+                            ) {
+                              time = _question.totalTime.$numberDecimal;
+                            }
+                            if (
+                              _question.title !== null &&
+                              _question.title !== undefined
+                            ) {
+                              title = _question.title;
+                            }
+
+                            return (
+                              <tr key={_question._id}>
+                                <td>
+                                  <img
+                                    alt=""
+                                    src={_question.image}
+                                    className="stats__image"
+                                  />
+                                </td>
+                                <td>{title}</td>
+                                <td>{`${time}s`}</td>
+                                <td>{grade}</td>
+                              </tr>
+                            );
                           }
                         })
                       );
@@ -191,7 +208,7 @@ const BarChartWithDefs = (props) => {
                 <Link
                   className="button button--outlined"
                   title="Edit"
-                  to={`/dashboard/test/${testId}/question`}
+                  to={`/dashboard/test/${code}/question`}
                 >
                   Edit
                   <FaEdit size={iconSize} />
@@ -199,11 +216,7 @@ const BarChartWithDefs = (props) => {
               </div>
             </div>
 
-            <div className="barChart">
-            
-            <BarChartWithDefs width="1000"/>
-          
-            </div>
+            <div className="barChart"></div>
           </div>
 
           <div className="stats__col" style={{ width: "35%" }}>
@@ -220,15 +233,20 @@ const BarChartWithDefs = (props) => {
                 <tbody>
                   {test.studentAnswers.map((student) => (
                     <tr key={student._id}>
-                      <td>{student.sId}</td>
-                      <td>{student.grade}</td>
+                      <td>{student.studentName}</td>
+                      <td>{student.totalGrade.$numberDecimal}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              
-                <CsvDownload data={csvArray} size={iconSize}><button className="button button--outlined">Download as .csv</button></CsvDownload>
-              
+
+              <CsvDownload
+                data={csvArray}
+                size={iconSize}
+                className="button button--outlined"
+              >
+                Download as .csv
+              </CsvDownload>
             </div>
           </div>
         </div>
@@ -236,14 +254,14 @@ const BarChartWithDefs = (props) => {
 
         <div className="stats__action-container">
           <Link
-            to={`/dashboard/test/${testId}`}
+            to={`/dashboard/test/${code}`}
             className="button button--outlined"
           >
             Edit
             <FaEdit size={iconSize} />
           </Link>
           <button
-            className="button button--filled"
+            className="button button--outlined"
             title="Share"
             onClick={() => {
               navigator.clipboard.writeText(
@@ -253,6 +271,16 @@ const BarChartWithDefs = (props) => {
           >
             Share
             <FaShareAlt size={iconSize} />
+          </button>
+          <button
+            className="button button--filled"
+            onClick={() => {
+              sessionStorage.setItem("code", code);
+              navigate("/test");
+            }}
+          >
+            Play
+            <FaGamepad size={iconSize} />
           </button>
         </div>
       </div>
