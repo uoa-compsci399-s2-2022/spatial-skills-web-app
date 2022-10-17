@@ -72,6 +72,10 @@ const Navbar = (props) => {
     </>,
   ];
 
+  if (location.pathname === "/test") {
+    return null;
+  }
+
   return (
     <nav
       className="navbar"

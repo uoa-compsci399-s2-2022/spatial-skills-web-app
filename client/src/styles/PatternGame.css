@@ -1,7 +1,7 @@
 
 
 .pattern-game__instructions {
-  width: 25%;
+  width: 50%;
 }
 
 .pattern-game__instructions h1{
@@ -20,7 +20,6 @@
   display: flex;
   flex-direction: column;
 
-  
 }
 
 .pattern-game-over{
