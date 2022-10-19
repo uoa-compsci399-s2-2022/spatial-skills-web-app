@@ -368,6 +368,20 @@ const deleteTest = async (req, res, next) => {
     );
   }
 
+  //Delete questions in the test
+  for (const q in test.questions){
+    try{
+      await Question.findByIdAndDelete(test.questions[q]).exec();
+    }catch (e){
+      return next(
+        new APIError(
+          "Could not delete questions in test",
+          500
+        )
+      );
+    }
+  }
+
   try {
     await Test.findOneAndDelete({
       creator: req.name,
