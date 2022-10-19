@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useState, useRef } from "react";
 import "../styles/Stats.css";
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaShareAlt, FaGamepad } from "react-icons/fa";

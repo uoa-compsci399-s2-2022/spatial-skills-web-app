@@ -5,8 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"cd server && npm run start\" \"cd client && npm run start\"",
-    "init": "concurrently \"cd server && npm install\" \"cd client && npm install\"",
-    "start": "node server/app.js"
+    "init": "concurrently \"cd server && npm install\" \"cd client && npm install\""
   },
   "repository": {
     "type": "git",

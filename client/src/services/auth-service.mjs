@@ -1,12 +1,6 @@
 import axios from "axios";
 
-let url;
-
-//DEV
-// url = "http://localhost:3001/api/"
-
-//PROD
-url = "api/";
+const url = process.env.NODE_ENV === 'production'? `${process.env.REACT_APP_DOMAIN}/api/`: "http://localhost:3001/api/";
 
 const createStudent = async (name, code) => {
       return axios

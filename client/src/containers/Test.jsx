@@ -111,7 +111,7 @@ const Test = (props) => {
         };
         console.log(testData)
         
-        axiosAPICaller.post("/api/answer/", testData)
+        axiosAPICaller.post("/answer/", testData)
         .then(setSubmitted(true))
         .then(window.location.href = process.env.NODE_ENV === 'production'? `${process.env.REACT_APP_DOMAIN}/finish`:`http://localhost:3000/finish`)
         
