@@ -17,6 +17,7 @@ class QuestionOut {
     this.patternFlashTime = question.patternFlashTime;
     this.corsi = question.corsi;
     this.reverse = question.reverse;
+    this.order = question.order;
     this.gameStartDelay = question.gameStartDelay;
     this.selectionDelay = question.selectionDelay;
     this.tId = question.tId;

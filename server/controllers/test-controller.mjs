@@ -100,6 +100,7 @@ const questionOutAdmin = async (qId) => {
   question.testCode = adminQ.testCode;
   question.qId = adminQ._id;
   question.totalTime = adminQ.totalTime;
+  question.order = adminQ.order;
 
   return question;
 };
@@ -139,6 +140,7 @@ const questionOutStudent = async (test, qId) => {
   studentQ.randomLevelOrder = adminQ.randomLevelOrder;
   studentQ.corsi = adminQ.corsi;
   studentQ.reverse = adminQ.reverse;
+  studentQ.order = adminQ.order;
   studentQ.gameStartDelay = adminQ.gameStartDelay;
   studentQ.selectionDelay = adminQ.selectionDelay;
   studentQ.qId = adminQ._id;
