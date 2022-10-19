@@ -15,7 +15,8 @@ const Bank = () => {
     setOptionValue(e.target.value);
   };
 
-  const qURL = "http://localhost:3001/api/question/all";
+  const qURL = "/question/all";
+
   const [questionData, setQuestionData] = useState([]);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const Bank = () => {
     });
   }, []);
 
-  const tURL = "http://localhost:3001/api/test/code/" + code;
+  const tURL = "/test/code/" + code;
   const [testData, setTestData] = useState([]);
 
   useEffect(() => {

@@ -6,7 +6,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const iconSize = "1.25em";
-const baseURL = "http://localhost:3001/api"; // change later for prod with .env
+
+const baseURL = "";
 const errorTree = {
   403: "ERROR: Unauthorized!",
 };

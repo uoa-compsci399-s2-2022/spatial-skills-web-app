@@ -13,7 +13,7 @@ const Stats = () => {
   const navigate = useNavigate();
   const { code } = useParams();
   const [isLoadedTest, setIsLoadedTest] = useState(false);
-  const baseURL = "http://localhost:3001/api/test/mytests";
+  const baseURL = "/test/mytests";
   const [data, setData] = useState([]);
   var csvArray = [];
   var ansArray = [];
