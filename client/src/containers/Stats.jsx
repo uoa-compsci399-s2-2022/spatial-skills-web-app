@@ -14,8 +14,7 @@ const Stats = () => {
   const navigate = useNavigate();
   const { code } = useParams();
   const [isLoadedTest, setIsLoadedTest] = useState(false);
-  const [isLoadedQuestion, setIsLoadedQuestion] = useState(false);
-  const baseURL = "http://localhost:3001/api/test/all";
+  const baseURL = "http://localhost:3001/api/test/mytests";
   const [data, setData] = useState([]);
   var csvArray = [];
   var ansArray = [];
@@ -33,17 +32,6 @@ const Stats = () => {
 
   const test = data.filter((test) => test.code === code)[0];
 
-  const qURL = "http://localhost:3001/api/question/all";
-  const [questionData, setQuestionData] = useState([]);
-
-  useEffect(() => {
-    axiosAPICaller.get(qURL).then((response) => {
-      console.log(response.data);
-      setQuestionData(response.data);
-      setIsLoadedQuestion(true);
-    });
-  }, []);
-
   if (isLoadedTest) {
     test.studentAnswers.map((studentAnswers) => {
       return studentAnswers.answers.map((answers) => {
@@ -52,7 +40,7 @@ const Stats = () => {
     });
   }
 
-  if (isLoadedTest && isLoadedQuestion) {
+  if (isLoadedTest) {
     test.studentAnswers.map((studentAnswer) => {
       let name = "";
       let grade = 0;
@@ -94,10 +82,10 @@ const Stats = () => {
         time
       );
       JSONObject = {
-        Name: name,
-        Grade: grade,
-        Percentage: percentage,
-        Time: time,
+        "Name": name,
+        "Grade": grade,
+        "Percentage": percentage,
+        "Total Time": time,
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
@@ -107,7 +95,7 @@ const Stats = () => {
         } else {
           correct = "Incorrect";
         }
-        JSONObject["Question " + (i + 1).toString()] = correct;
+        JSONObject["Q" + (i + 1).toString()] = correct;
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
@@ -131,7 +119,7 @@ const Stats = () => {
     }
   };
 
-  if (isLoadedTest && isLoadedQuestion) {
+  if (isLoadedTest) {
     console.log("Running");
     return (
       <div className="stats">
@@ -155,53 +143,48 @@ const Stats = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {test &&
-                    test.questions.map((question) => {
-                      console.log("Running 2");
-                      return (
-                        questionData &&
-                        questionData.map((_question) => {
-                          if (question === _question._id) {
-                            let grade = 0;
-                            let time = 0;
-                            let title = "";
-                            if (
-                              _question.totalMultiGrade !== null &&
-                              _question.totalMultiGrade !== undefined
-                            ) {
-                              grade = _question.totalMultiGrade.$numberDecimal;
-                            }
-                            if (
-                              _question.totalTime !== null &&
-                              _question.totalTime !== undefined
-                            ) {
-                              time = _question.totalTime.$numberDecimal;
-                            }
-                            if (
-                              _question.title !== null &&
-                              _question.title !== undefined
-                            ) {
-                              title = _question.title;
-                            }
+                {
+                  test &&
+                  test.questions.map((_question) => {
+                    let grade = 0;
+                    let time = 0;
+                    let title = "";
+                    if (
+                        _question.totalMultiGrade !== null &&
+                        _question.totalMultiGrade !== undefined
+                    ) {
+                      grade = _question.totalMultiGrade.$numberDecimal;
+                    }
+                    if (
+                      _question.totalTime !== null &&
+                      _question.totalTime !== undefined
+                    ) {
+                      time = _question.totalTime.$numberDecimal;
+                    }
+                    if (
+                      _question.title !== null &&
+                      _question.title !== undefined
+                    ) {
+                      title = _question.title;
+                    }
 
-                            return (
-                              <tr key={_question._id}>
-                                <td>
-                                  <img
-                                    alt=""
-                                    src={_question.image}
-                                    className="stats__image"
-                                  />
-                                </td>
-                                <td>{title}</td>
-                                <td>{`${time}s`}</td>
-                                <td>{grade}</td>
-                              </tr>
-                            );
-                          }
-                        })
-                      );
-                    })}
+                    return (
+                      <tr key={_question._id}>
+                      <td>
+                      <img
+                        alt=""
+                        src={_question.image}
+                        className="stats__image"
+                      />
+                      </td>
+                      <td>{title}</td>
+                      <td>{`${time}s`}</td>
+                      <td>{grade}</td>
+                      </tr>
+                    );
+                    })
+                    }
+                    
                 </tbody>
               </table>
               <div className="stats__action-container">

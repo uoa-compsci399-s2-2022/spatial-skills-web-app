@@ -88,11 +88,10 @@ const Question = (props) => {
   const renderPatternGame = () => {
     return (
       <PatternGame 
-        // corsi={question.corsi}
-        corsi={true}
+        corsi={question.corsi}
         description={question.description}
         gameDim={question.size}  // width and height of grid
-        order={true}  // pattern order/no-order
+        order={false}  // pattern order/no-order
         maxHealth={question.lives}
         timerState={question.totalTime.$numberDecimal === 0 ? true : false}  // set timer on/off
         timeAllowed={question.totalTime.$numberDecimal}  // total time if timer on
