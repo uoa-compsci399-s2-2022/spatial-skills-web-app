@@ -1,5 +1,5 @@
 Set NODE_ENV to production
 
-Linux/Unix systems (in terminal/bash):
+Linux/Unix systems with pm2 (in terminal/bash):
 
-export NODE_ENV=production
+sudo NODE_ENV=production pm2 start app.js
