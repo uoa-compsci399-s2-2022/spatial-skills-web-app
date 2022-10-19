@@ -3,10 +3,10 @@ import axios from "axios";
 let url;
 
 //DEV
-url = "http://localhost:3001/api/"
+// url = "http://localhost:3001/api/"
 
 //PROD
-// url = "api/";
+url = "api/";
 
 const createStudent = async (name, code) => {
       return axios

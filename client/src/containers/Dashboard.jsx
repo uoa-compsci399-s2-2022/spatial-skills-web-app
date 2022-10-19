@@ -8,9 +8,11 @@ const iconSize = "1.25em";
 const Dashboard = () => {
   const [data, setData] = useState([]);
 
+  const url = "/test/mytests";
+
   useEffect(() => {
     axiosAPICaller
-      .get("http://localhost:3001/api/test/mytests")
+      .get(url)
       .then((response) => {
         console.log(response);
         setData(response.data);

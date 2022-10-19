@@ -19,12 +19,9 @@ const port = process.env.PORT || 3001;
 // Connect to database
 connectDB();
 
-if (process.env.PRODUCTION === "prod") {
-  app.use(cors({ origin: "https://hydrohomiebeerbro.com", credentials: true })); // Allows fetch api to access localhost 
-} else {
-  app.use(cors({ origin: "http://localhost:3000", credentials: true })); // Allows fetch api to access localhost endpoints
-}
+const ALLOWED_ORIGIN = process.env.NODE_ENV === "production" ? process.env.REACT_APP_DOMAIN : "http://localhost:3000";
 
+app.use(cors({ origin: ALLOWED_ORIGIN, credentials: true })); // Allows fetch api to access localhost 
 
 //parse json requests
 app.use(express.json());
@@ -47,13 +44,12 @@ app.use("/api/answer", answerRouter);
 //user APIs
 app.use("/api/user", userRouter);
 
-
 // https://bobbyhadz.com/blog/javascript-dirname-is-not-defined-in-es-module-scope#:~:text=To%20solve%20the%20%22__dirname%20is,directory%20name%20of%20the%20path.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Serve frontend build from backend if in production
-if (process.env.PRODUCTION === "prod") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
 
   app.get("*", (req, res) =>

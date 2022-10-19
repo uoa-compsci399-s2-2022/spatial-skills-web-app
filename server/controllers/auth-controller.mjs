@@ -10,7 +10,9 @@ import APIError from "../handlers/APIError.js";
 
 // GLOBAL VARS
 const accessTokenTime = "30m";
-const refreshTokenTime = "50m";
+const refreshTokenTime = "3h";
+
+const SECURECOOKIE = process.env.NODE_ENV === "production" ? true : false;
 
 // HELPER FUNCTIONS
 const createTokens = async (res, name, permissions) => {
@@ -39,9 +41,8 @@ const createTokens = async (res, name, permissions) => {
   // Creating securing cookie using refresh token named jwt
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    secure: false, // ***************SET TRUE IN DEPLOYEMENT NEED HTTPS*****************
-    sameSite: "None", //allow cross-site as server and client stored in different hosts
-    maxAge: 24 * 60 * 60 * 1000, //match cookie expiry to refresh token
+    secure: SECURECOOKIE,
+    maxAge: 3 * 60 * 60 * 1000, //match cookie expiry to refresh token
   });
 
   res.json({ accessToken });
@@ -130,7 +131,7 @@ const refresh = async (req, res, next) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: accessTokenTime } // Set to 15min+ after dev
+      { expiresIn: accessTokenTime }
     );
   } catch (e) {
     return next(new APIError("Could not create token.", 500));
@@ -145,8 +146,7 @@ const logout = async (req, res, next) => {
   if (!req.cookies?.jwt) {
     return next(new APIError("Missing cookie.", 400));
   }
-  // ***************SET secure: TRUE IN DEPLOYEMENT NEED HTTPS*****************
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false });
+  res.clearCookie("jwt", { httpOnly: true, secure: SECURECOOKIE });
   res.json({ message: "Logged out" });
 };
 

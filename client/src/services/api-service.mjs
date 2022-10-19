@@ -1,13 +1,7 @@
 import axios from "axios";
 import { refreshToken } from "./auth-service.mjs";
 
-let BASE_URL;
-
-// DEV
-BASE_URL = "http://localhost:3001/api/"
-
-// PROD
-// BASE_URL = "https:hydrohomiebeerbro.com/api";
+const BASE_URL = process.env.NODE_ENV === 'production'? `${process.env.REACT_APP_DOMAIN}/api`: "http://localhost:3001/api";
 
 const axiosAPICaller = axios.create({
   baseURL: BASE_URL,

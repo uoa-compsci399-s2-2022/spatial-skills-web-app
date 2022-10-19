@@ -29,7 +29,7 @@ const Test = (props) => {
   useEffect(() => {
     if (!userData.name) {
       // Redirect user if they aren't logged in (refreshed page).
-      window.location.href = `http://localhost:3000/`;
+      window.location.href = process.env.NODE_ENV === 'production'? process.env.REACT_APP_DOMAIN : `http://localhost:3000/`;
     }
     
     axiosAPICaller.get(`/test/code/${testCode}`).then(
@@ -111,13 +111,13 @@ const Test = (props) => {
         };
         console.log(testData)
         
-        axiosAPICaller.post("http://localhost:3001/api/answer/", testData)
+        axiosAPICaller.post("/api/answer/", testData)
         .then(setSubmitted(true))
-        .then(window.location.href = `http://localhost:3000/finish`)
+        .then(window.location.href = process.env.NODE_ENV === 'production'? `${process.env.REACT_APP_DOMAIN}/finish`:`http://localhost:3000/finish`)
         
       } else {
         console.log("Test Finished, Not User Found");
-        window.location.href = `http://localhost:3000/finish`;
+        window.location.href = process.env.NODE_ENV === 'production'? `${process.env.REACT_APP_DOMAIN}/finish`:`http://localhost:3000/finish`;
       }
     }
   }

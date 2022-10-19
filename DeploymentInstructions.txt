@@ -1,0 +1,5 @@
+Set NODE_ENV to production
+
+Linux/Unix systems (in terminal/bash):
+
+export NODE_ENV=production
