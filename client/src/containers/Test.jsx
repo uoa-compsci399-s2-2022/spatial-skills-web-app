@@ -25,6 +25,15 @@ const Test = (props) => {
   const [testDetails, setTestDetails] = useState({})
   const testCode = sessionStorage.getItem("code");
   
+  // Disable enter key entirely, prevents next button from disappearing.
+  window.addEventListener('keydown', function(e) { 
+    if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter') {
+      if (e.target.nodeName=='INPUT'&&e.target.type=='text') {
+        e.preventDefault();return false;
+      }
+    }
+  }, true);
+
   // Load test data from backend API
   useEffect(() => {
     if (!userData.name) {
