@@ -27,12 +27,10 @@ const Test = (props) => {
   
   // Disable enter key entirely, prevents next button from disappearing.
   window.addEventListener('keydown', function(e) { 
-    if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter') {
-      if (e.target.nodeName=='INPUT'&&e.target.type=='text') {
-        e.preventDefault();return false;
-      }
+    if (e.key === "Enter") {
+        e.preventDefault();
     }
-  }, true);
+  });
 
   // Load test data from backend API
   useEffect(() => {
@@ -212,7 +210,9 @@ const Test = (props) => {
               <p>Test Time: {
                 allowBackTraversal ? totalTime / 60 : 
                 // Sum of individual question time for linear test
-                questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
+                Math.round(
+                  questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
+                )
               } minutes
               </p>
               { allowBackTraversal ? null : <p>Each question has an individual time limit</p>}
