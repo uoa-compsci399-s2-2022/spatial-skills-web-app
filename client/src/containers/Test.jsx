@@ -25,6 +25,13 @@ const Test = (props) => {
   const [testDetails, setTestDetails] = useState({})
   const testCode = sessionStorage.getItem("code");
   
+  // Disable enter key entirely, prevents next button from disappearing.
+  window.addEventListener('keydown', function(e) { 
+    if (e.key === "Enter") {
+        e.preventDefault();
+    }
+  });
+
   // Load test data from backend API
   useEffect(() => {
     if (!userData.name) {
@@ -48,7 +55,7 @@ const Test = (props) => {
         
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
+          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: "", value: null });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
@@ -203,7 +210,9 @@ const Test = (props) => {
               <p>Test Time: {
                 allowBackTraversal ? totalTime / 60 : 
                 // Sum of individual question time for linear test
-                questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
+                Math.round(
+                  questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
+                )
               } minutes
               </p>
               { allowBackTraversal ? null : <p>Each question has an individual time limit</p>}
