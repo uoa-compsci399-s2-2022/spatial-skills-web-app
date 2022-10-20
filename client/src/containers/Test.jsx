@@ -48,7 +48,7 @@ const Test = (props) => {
         
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
+          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: "", value: null });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
