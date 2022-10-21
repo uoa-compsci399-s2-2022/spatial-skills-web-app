@@ -1,10 +1,11 @@
 import "../styles/Editor.css";
-import { FaSave, FaTrash } from "react-icons/fa";
+import { FaSave, FaTrash, FaQuestionCircle } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosAPICaller from "../services/api-service.mjs";
 import Return from "../components/Return";
+import Help from "../components/Help";
 
 const iconSize = "1.25em";
 
@@ -165,10 +166,10 @@ const Editor = (props) => {
           {errorTree[error]}
         </p>
       ) : null}
-
       <div className="editor__grid">
         <label>Title</label>
         <input
+          title="The name of the test/question."
           type="text"
           placeholder="Title"
           className="editor__input"
@@ -176,6 +177,7 @@ const Editor = (props) => {
           defaultValue={settings.title}
           required
         />
+        <Help content="The name of the question/test" disabled />
         {CONTEXT === "TEST" ? (
           <>
             <label>Published</label>
@@ -190,6 +192,7 @@ const Editor = (props) => {
                 });
               }}
             />
+            <Help content="Publishing a test will disable the ability to edit said test!" />
             <label>Back Traversal</label>
             <input
               type="checkbox"
@@ -203,6 +206,15 @@ const Editor = (props) => {
                 });
               }}
             />
+            <Help
+              content="
+                Enabling this setting will allow students to freely view different 
+                questions without answering the previous questions. Enabling this 
+                setting will also disable the individual time setting for each 
+                question. The total quiz duration will be decided by the 
+                `Time Limit` field instead.
+            "
+            />
             <label>Shuffle Answers</label>
             <input
               type="checkbox"
@@ -214,6 +226,10 @@ const Editor = (props) => {
                   shuffleAnswers: e.target.checked,
                 });
               }}
+            />
+            <Help
+              content="Enabling this setting will shuffle the order of multi-answer questions."
+              disabled
             />
             <label>Shuffle Questions</label>
             <input
@@ -227,6 +243,7 @@ const Editor = (props) => {
                 });
               }}
             />
+            <Help content="Enabling this setting will shuffle the question order for each student." />
           </>
         ) : (
           <>
@@ -241,6 +258,10 @@ const Editor = (props) => {
               className="editor__input"
               required
             />
+            <Help
+              content="The question prompt displayed with the question."
+              disabled
+            />
             <label>Citation</label>
             <input
               type="text"
@@ -251,6 +272,7 @@ const Editor = (props) => {
               }
               defaultValue={settings.citation}
             />
+            <Help content="Reference to original source." />
             {settings.category !== "MEMORY" ? (
               <>
                 <label>Image</label>
@@ -275,6 +297,7 @@ const Editor = (props) => {
                     />
                   ) : null}
                 </div>
+                <Help content="The question image." disabled />
               </>
             ) : null}
             <label>Category</label>
@@ -311,6 +334,10 @@ const Editor = (props) => {
                 Memory
               </option>
             </select>
+            <Help
+              content="The area within the spatial memory field being used for this question."
+              disabled
+            />
             <label>Type</label>
             <select
               disabled={MODE === "EDIT"}
@@ -323,7 +350,6 @@ const Editor = (props) => {
               <option selected={settings.questionType === ""}>
                 Select question type
               </option>
-
               {settings.category === "MEMORY" ? (
                 <>
                   <option
@@ -362,6 +388,7 @@ const Editor = (props) => {
                 </>
               )}
             </select>
+            <Help content="The user input method for the question." />
             {settings.category === "MEMORY" ? (
               <>
                 <label>Grid Size</label>
@@ -375,6 +402,10 @@ const Editor = (props) => {
                   }
                   required
                 />
+                <Help
+                  content="The number of rows/columns within the game space."
+                  disabled
+                />
                 <label>Seed</label>
                 <input
                   type="number"
@@ -386,6 +417,10 @@ const Editor = (props) => {
                   }
                   required
                 />
+                <Help
+                  content="The seed used to generate any random variables of the game"
+                  disabled
+                />
                 <label>Lives</label>
                 <input
                   type="number"
@@ -396,6 +431,10 @@ const Editor = (props) => {
                     setSettings({ ...settings, lives: e.target.value })
                   }
                   required
+                />
+                <Help
+                  content="The number of failed selections before ending the game."
+                  disabled
                 />
                 {settings.questionType === "DYNAMIC-PATTERN" ? (
                   <>
@@ -411,6 +450,14 @@ const Editor = (props) => {
                         });
                       }}
                     />
+                    <Help
+                      content="
+                      Enabling this setting will convert this question into a 
+                      traditional 'Corsi Block Tapping' test. This test has 9 
+                      blocks spaced out in random positions. MANY settings will 
+                      be igored if enabled.
+                      "
+                    />
                     <label>Reverse</label>
                     <input
                       type="checkbox"
@@ -423,6 +470,7 @@ const Editor = (props) => {
                         });
                       }}
                     />
+                    <Help content="Enabling this setting will require students to repeat the pattern in reverse order." />
                     <label>Random Level Order</label>
                     <input
                       type="checkbox"
@@ -435,6 +483,13 @@ const Editor = (props) => {
                         });
                       }}
                     />
+                    <Help
+                      content="
+                      Enabling this setting will randomise each pattern in the 
+                      sequence, otherwise the pattern will build upon the previous 
+                      sequence.
+                      "
+                    />
                     <label>Pattern in Order</label>
                     <input
                       type="checkbox"
@@ -446,6 +501,13 @@ const Editor = (props) => {
                           order: e.target.checked,
                         });
                       }}
+                    />
+                    <Help
+                      content="
+                      Enabling this setting will display each block one by one 
+                      in order, otherwise it will display the entire 
+                      pattern at once.
+                      "
                     />
                     <label>Pattern Flash Time</label>
                     <input
@@ -462,6 +524,7 @@ const Editor = (props) => {
                       }
                       required
                     />
+                    <Help content="How long a pattern is revealed for." />
                   </>
                 ) : (
                   <>
@@ -480,6 +543,7 @@ const Editor = (props) => {
                       }
                       required
                     />
+                    <Help content="Time delay between revealing all cards and the start of the game." />
                     <label>Selection Delay</label>
                     <input
                       type="number"
@@ -495,6 +559,7 @@ const Editor = (props) => {
                       }
                       required
                     />
+                    <Help content="Time delay after revealing two selected cards." />
                   </>
                 )}
               </>
@@ -502,7 +567,7 @@ const Editor = (props) => {
               mutliAnswerMap.map((it) => (
                 <>
                   <label
-                    style={{ gridColumn: "span 2" }}
+                    style={{ gridColumn: "span 3" }}
                   >{`${it.toUpperCase()}`}</label>
                   <label>Grade</label>
                   <input
@@ -518,6 +583,7 @@ const Editor = (props) => {
                     }
                     defaultValue={settings[`${it}Grade`]}
                   />
+                  <Help content="Grade for the potential answer" disabled />
                   <label>Image</label>
                   <div className="editor__image-container">
                     <input
@@ -541,6 +607,7 @@ const Editor = (props) => {
                       />
                     ) : null}
                   </div>
+                  <Help content="Image of the potential answer" disabled />
                 </>
               ))
             ) : (
@@ -559,6 +626,10 @@ const Editor = (props) => {
                   defaultValue={settings.answer}
                   required
                 />
+                <Help
+                  content="Answer of the question. e.g. 13, B, A, etc."
+                  disabled
+                />
                 <label>Grade</label>
                 <input
                   type="number"
@@ -573,6 +644,10 @@ const Editor = (props) => {
                   }
                   defaultValue={settings.textGrade}
                   required
+                />
+                <Help
+                  content="The grade for answering this question correctly"
+                  disabled
                 />
               </>
             )}
@@ -591,6 +666,7 @@ const Editor = (props) => {
           }
           required
         />
+        <Help content="The time limit for the question/test." disabled />
       </div>
       <div className="divider" />
       <div className="editor__action-container">

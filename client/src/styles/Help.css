@@ -1,0 +1,22 @@
+.help {
+    position: relative;
+    cursor: pointer;
+}
+
+.help--disabled {
+    opacity: 0;
+}
+
+.help__tooltip {
+    z-index: 2;
+    top: 0;
+    right: calc(100% + .5rem);
+    font-size: .8rem;
+    position: absolute;
+    background-color: var(--contrast-color);
+    box-shadow: 0 .5rem 1rem var(--shadow-color);
+    border-radius: .5rem;
+    padding: 1rem;
+    max-width: max-content;
+    width: 25rem;
+}
