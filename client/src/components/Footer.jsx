@@ -13,7 +13,7 @@ const Footer = () => {
       style={{ display: location.pathname === "/" ? "flex" : "none" }}
     >
       <p>
-        [untitled-project] is developed by Team Marshmallow
+        Visuo is developed by Team Marshmallow
         <br />
         Legal | Privacy
       </p>

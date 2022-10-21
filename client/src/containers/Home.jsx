@@ -88,10 +88,9 @@ const Home = (props) => {
           // Introduction to the test
           <>
             <p>
-              Welcome <b>{userData.name}</b> to the [untitled-project]. You will
-              be tested on your <i>visuospatial</i> ability. There are [x]
-              number of questions, you will have [x] minutes to complete the
-              test.
+              Welcome <b>{userData.name}</b> to Visuo. You will be tested on
+              your <i>visuospatial</i> ability. There are [x] number of
+              questions, you will have [x] minutes to complete the test.
               <br />
               <br />
               To begin, click on the big <b>"Start!"</b> button below. <br />

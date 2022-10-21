@@ -12,13 +12,13 @@ First you must have the following installed.
 After installing the above prerequisites. Clone the repository locally.
 
 ```
-git clone https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app.git
+git clone https://github.com/uoa-compsci399-s2-2022/visuo.git
 ```
 
 Then install the necessary dependencies.
 
 ```
-cd spatial-skills-web-app
+cd visuo
 npm install
 npm run init
 ```
@@ -37,7 +37,7 @@ Bellow is an illustration of the workflow this project uses.
 
 ![Git workflow diagram displaying the use of a develop branch with feature branches.](/.github/git-workflow.png)
 
-> Reference: https://rovitpm.com/5-git-workflows-to-improve-development/ 
+> Reference: https://rovitpm.com/5-git-workflows-to-improve-development/
 
 - **MASTER(or MAIN)**: For product release, hotfix and general documentation.
 - **DEVELOP**: This branch will contain multiple features for a new product release.
@@ -60,6 +60,7 @@ git commit -m "[message name]"
 > Example message names: "Add navbar component", "Fix navbar styling", "Add responsiveness to navbar at smaller resolutions"
 
 **Note**: For commit messages it is good to follow these guidelines,
+
 - Do not use a period to end messages.
 - Use active voice, for example "Add navbar component" instead of "Added navbar component".
 - Think of a commit message as a pitch to the team.
