@@ -76,22 +76,18 @@ const Editor = (props) => {
           }`
         )
         .then((response) => {
-          let newSettings = {
-            ...settings,
-            ...response.data,
-          };
-          if (CONTEXT === "TEST") {
-            newSettings = {
-              ...newSettings,
-              totalTime: response.data.totalTime.$numberDecimal,
-            };
-          } else if (response.data.questionType === "TEXT") {
-            newSettings = {
-              ...newSettings,
-              textGrade: response.data.textGrade.$numberDecimal,
-              totalTime: response.data.totalTime.$numberDecimal,
-            };
-          }
+          const newSettings = { ...settings, ...response.data };
+          [
+            "totalTime",
+            "textGrade",
+            "patternFlashTime",
+            "gameStartDelay",
+            "selectionDelay",
+          ].forEach((it) => {
+            try {
+              newSettings[it] = response.data[it].$numberDecimal;
+            } catch (error) {}
+          });
           if (response.data.multi !== undefined) {
             response.data.multi.map((it, index) => {
               newSettings[`${mutliAnswerMap[index]}Image`] = it.image;
@@ -454,6 +450,7 @@ const Editor = (props) => {
                     <label>Pattern Flash Time</label>
                     <input
                       type="number"
+                      step="any"
                       placeholder="1"
                       className="editor__input editor__input"
                       defaultValue={settings.patternFlashTime}
@@ -471,6 +468,7 @@ const Editor = (props) => {
                     <label>Start Delay</label>
                     <input
                       type="number"
+                      step="any"
                       placeholder="1"
                       className="editor__input editor__input"
                       defaultValue={settings.gameStartDelay}
@@ -485,6 +483,7 @@ const Editor = (props) => {
                     <label>Selection Delay</label>
                     <input
                       type="number"
+                      step="any"
                       placeholder="1"
                       className="editor__input editor__input"
                       defaultValue={settings.selectionDelay}
@@ -508,6 +507,7 @@ const Editor = (props) => {
                   <label>Grade</label>
                   <input
                     type="number"
+                    step="any"
                     className="editor__input editor__input"
                     placeholder="1.0"
                     onChange={(e) =>
@@ -562,6 +562,7 @@ const Editor = (props) => {
                 <label>Grade</label>
                 <input
                   type="number"
+                  step="any"
                   className="editor__input editor__input"
                   placeholder="1.0"
                   onChange={(e) =>
@@ -580,6 +581,7 @@ const Editor = (props) => {
         <label>Time Limit</label>
         <input
           type="number"
+          step="any"
           placeholder="60"
           className="editor__input editor__input"
           disabled={settings.noTimeLimit}
