@@ -44,6 +44,7 @@ const Editor = (props) => {
     corsi: false,
     reverse: false,
     randomLevelOrder: false,
+    order: false,
     patternFlashTime: null,
     creator: userData.name,
     gameStartDelay: null,
@@ -438,6 +439,18 @@ const Editor = (props) => {
                         });
                       }}
                     />
+                    <label>Pattern in Order</label>
+                    <input
+                      type="checkbox"
+                      style={{ width: "min-content" }}
+                      checked={settings.order}
+                      onChange={(e) => {
+                        setSettings({
+                          ...settings,
+                          order: e.target.checked,
+                        });
+                      }}
+                    />
                     <label>Pattern Flash Time</label>
                     <input
                       type="number"
@@ -580,18 +593,18 @@ const Editor = (props) => {
       <div className="divider" />
       <div className="editor__action-container">
         <button
-          className="button button--caution"
-          onClick={(e) => handleDelete(e)}
-        >
-          Delete
-          <FaTrash size={iconSize} />
-        </button>
-        <button
           className="button button--filled"
           style={{ display: published ? "none" : "default" }}
         >
           {MODE === "EDIT" ? "Save" : "Create"}
           <FaSave size={iconSize} />
+        </button>
+        <button
+          className="button button--caution"
+          onClick={(e) => handleDelete(e)}
+        >
+          Delete
+          <FaTrash size={iconSize} />
         </button>
       </div>
       <Return />
