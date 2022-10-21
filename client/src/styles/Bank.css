@@ -1,7 +1,7 @@
 .bank {
     display: flex;
     gap: 3rem;
-    margin: 6rem 5rem 6rem 5rem;
+    margin: 6rem 8rem;
 }
 
 .bank__side {

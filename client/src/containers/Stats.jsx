@@ -6,6 +6,7 @@ import { FaEdit, FaShareAlt, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
 import CsvDownload from "react-json-to-csv";
 import "reactochart/styles.css";
+import Return from "../components/Return";
 
 const iconSize = "1.25em";
 
@@ -250,6 +251,7 @@ const Stats = () => {
             <FaGamepad size={iconSize} />
           </button>
         </div>
+        <Return />
       </div>
     );
   }

@@ -3,6 +3,7 @@ import "../styles/Bank.css";
 import { Link, useParams } from "react-router-dom";
 import { FaPlus, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
+import Return from "../components/Return";
 
 const iconSize = "1.25em";
 const Bank = () => {
@@ -127,6 +128,7 @@ const Bank = () => {
             </Link>
           </div>
         </div>
+        <Return />
       </div>
     );
   }

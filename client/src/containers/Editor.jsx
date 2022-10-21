@@ -1,9 +1,10 @@
 import "../styles/Editor.css";
-import { FaSave, FaTrash, FaPlus } from "react-icons/fa";
+import { FaSave, FaTrash } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosAPICaller from "../services/api-service.mjs";
+import Return from "../components/Return";
 
 const iconSize = "1.25em";
 
@@ -593,6 +594,7 @@ const Editor = (props) => {
           <FaSave size={iconSize} />
         </button>
       </div>
+      <Return />
     </form>
   );
 };
