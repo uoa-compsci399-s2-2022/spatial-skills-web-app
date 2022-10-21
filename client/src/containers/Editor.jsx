@@ -74,7 +74,6 @@ const Editor = (props) => {
           }`
         )
         .then((response) => {
-          console.log(response.data);
           let newSettings = {
             ...settings,
             ...response.data,
@@ -155,10 +154,6 @@ const Editor = (props) => {
     }
     navigate(-1);
   };
-
-  useEffect(() => {
-    console.log(settings);
-  }, [settings]);
 
   return (
     <form className="editor" onSubmit={(e) => handleSubmit(e)}>

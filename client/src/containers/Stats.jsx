@@ -70,25 +70,14 @@ const Stats = () => {
         time = studentAnswer.totalTimeTaken.$numberDecimal;
       }
 
-      console.log(
-        "name",
-        name,
-        "grade",
-        grade,
-        "percentage",
-        percentage,
-        "time",
-        time
-      );
       JSONObject = {
-        "Name": name,
-        "Grade": grade,
-        "Percentage": percentage,
+        Name: name,
+        Grade: grade,
+        Percentage: percentage,
         "Total Time": time,
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        console.log(ansArray[arrayIndex + i].grade);
         if (ansArray[arrayIndex + i].grade.$numberDecimal === "1") {
           correct = "Correct";
         } else {
@@ -119,7 +108,6 @@ const Stats = () => {
   };
 
   if (isLoadedTest) {
-    console.log("Running");
     return (
       <div className="stats">
         <h1>{test.title}</h1>
@@ -142,48 +130,45 @@ const Stats = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {
-                  test &&
-                  test.questions.map((_question) => {
-                    let grade = 0;
-                    let time = 0;
-                    let title = "";
-                    if (
+                  {test &&
+                    test.questions.map((_question) => {
+                      let grade = 0;
+                      let time = 0;
+                      let title = "";
+                      if (
                         _question.totalMultiGrade !== null &&
                         _question.totalMultiGrade !== undefined
-                    ) {
-                      grade = _question.totalMultiGrade.$numberDecimal;
-                    }
-                    if (
-                      _question.totalTime !== null &&
-                      _question.totalTime !== undefined
-                    ) {
-                      time = _question.totalTime.$numberDecimal;
-                    }
-                    if (
-                      _question.title !== null &&
-                      _question.title !== undefined
-                    ) {
-                      title = _question.title;
-                    }
+                      ) {
+                        grade = _question.totalMultiGrade.$numberDecimal;
+                      }
+                      if (
+                        _question.totalTime !== null &&
+                        _question.totalTime !== undefined
+                      ) {
+                        time = _question.totalTime.$numberDecimal;
+                      }
+                      if (
+                        _question.title !== null &&
+                        _question.title !== undefined
+                      ) {
+                        title = _question.title;
+                      }
 
-                    return (
-                      <tr key={_question._id}>
-                      <td>
-                      <img
-                        alt=""
-                        src={_question.image}
-                        className="stats__image"
-                      />
-                      </td>
-                      <td>{title}</td>
-                      <td>{`${time}s`}</td>
-                      <td>{grade}</td>
-                      </tr>
-                    );
-                    })
-                    }
-                    
+                      return (
+                        <tr key={_question._id}>
+                          <td>
+                            <img
+                              alt=""
+                              src={_question.image}
+                              className="stats__image"
+                            />
+                          </td>
+                          <td>{title}</td>
+                          <td>{`${time}s`}</td>
+                          <td>{grade}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
               <div className="stats__action-container">

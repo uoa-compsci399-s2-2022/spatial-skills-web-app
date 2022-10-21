@@ -21,15 +21,14 @@ const Home = (props) => {
     const code = codeRef.current.value;
     if (name.length === 0) {
       setError("Invalid name!");
-    } else if (code === "admin"){
+    } else if (code === "admin") {
       setError("Invalid code!");
-    }else {
+    } else {
       createStudent(name, code)
         .then((res) => {
           return studentLogin(name, code);
         })
         .then((res) => {
-          console.log("passed");
           sessionStorage.setItem("code", code);
           setUserData({
             name: name,

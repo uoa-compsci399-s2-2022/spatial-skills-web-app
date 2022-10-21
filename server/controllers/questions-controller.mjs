@@ -129,13 +129,10 @@ const createMCQ = async (req) => {
 };
 
 const createTQ = async (req) => {
-  console.log(req.files);
   // Includes question image
   if (!Object.keys(req.files).includes("question") || !req.body.answer) {
     throw new APIError("Missing question (image)", 400);
   }
-
-  console.log("IMAGE OK");
 
   // Get unique file directory
   let fileDir;
@@ -327,7 +324,7 @@ const updateDPQ = async (req, question) => {
   question.corsi = req.body.corsi == null ? question.corsi : req.body.corsi;
   question.reverse =
     req.body.reverse == null ? question.reverse : req.body.reverse;
-  question.order = req.body.order == null ? question.order: req.body.order;
+  question.order = req.body.order == null ? question.order : req.body.order;
 };
 
 ////////////////////////

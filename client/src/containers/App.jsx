@@ -24,17 +24,11 @@ function App() {
     email: null,
     picture: null,
   });
-
-
-  const [test, setTest] = useState(false)
+  const [test, setTest] = useState(false);
 
   const changeState = () => {
-    setTest(true)
-    console.log(test)
-  }
-
-
-
+    setTest(true);
+  };
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
@@ -73,14 +67,12 @@ function App() {
           <Route
             path="dashboard/test/:code"
             element={<Editor userData={userData} />}
-          />          
-
+          />
         </Routes>
         <Footer />
       </BrowserRouter>
     </GoogleOAuthProvider>
   );
-
 }
 
 export default App;
