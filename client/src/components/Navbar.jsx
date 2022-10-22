@@ -27,7 +27,6 @@ const Navbar = (props) => {
   const handleChange = () => {
     if(darkMode === false){
       r.style.setProperty('--accent-color', 'white');
-      r.style.setProperty('--navbar-color', 'none');
       r.style.setProperty('--contrast-color', '#0A0A0A');
       r.style.setProperty('--offwhite-color', '#121111');
       r.style.setProperty('--base-300', '#0A0A0A');
@@ -40,7 +39,6 @@ const Navbar = (props) => {
       setDarkMode(true);
     } else {
       r.style.setProperty('--accent-color', '#4895EF');
-      r.style.setProperty('--navbar-color', '#4895EF');
       r.style.setProperty('--contrast-color', '#ffffff');
       r.style.setProperty('--offwhite-color', '#f2f6f8');
       r.style.setProperty('--base-300', '#e6e8ec');
@@ -104,7 +102,7 @@ const Navbar = (props) => {
       className="navbar"
       style={{
         backgroundColor:
-          location.pathname === "/" ? "inherit" : "var(--navbar-color)",
+          location.pathname === "/" ? "inherit" : "var(--accent-color)",
       }}
     >
       <Link to="/" style={{ marginRight: "auto" }}>
