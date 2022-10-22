@@ -8,13 +8,12 @@ const iconSize = "1.25em";
 const Dashboard = () => {
   const [data, setData] = useState([]);
 
+  const url = "/test/mytests";
+
   useEffect(() => {
-    axiosAPICaller
-      .get("http://localhost:3001/api/test/mytests")
-      .then((response) => {
-        console.log(response);
-        setData(response.data);
-      });
+    axiosAPICaller.get(url).then((response) => {
+      setData(response.data);
+    });
   }, []);
 
   // we'll need to authenticate users below this route, maybe check
@@ -36,7 +35,6 @@ const Dashboard = () => {
         className="dashboard__create"
         title="Create new test"
         to="/dashboard/test/create"
-        onClick={() => console.log("POST new test")}
       >
         <FaPlus size={iconSize} />
       </Link>

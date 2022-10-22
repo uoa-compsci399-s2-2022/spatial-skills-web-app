@@ -9,7 +9,7 @@
 
 .editor__grid {
     display: grid;
-    grid-template-columns: 10rem 1fr;
+    grid-template-columns: 10rem 1fr 1rem;
     align-items: center;
     gap: 1rem 3rem;
 }

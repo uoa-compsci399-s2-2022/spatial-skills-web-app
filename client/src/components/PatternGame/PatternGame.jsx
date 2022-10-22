@@ -17,14 +17,10 @@ function PatternGame({
   randomLevelOrder,
   randomSeed = null,
   description,
-  changeState,
-  tested,
   next,
   submit,
   firstVisit
 }) {
-
-  console.log(tested)
 
   if (order){
     patternFlashTime = patternFlashTime * 1000;
@@ -98,7 +94,7 @@ function PatternGame({
   const currentPatternIndex = useRef(0);
   const numMatched = useRef(0);
 
-  const test = useRef(0)
+  const userScore = useRef(0);
 
   const numberOfPatternBlocks = levelList[level];
 
@@ -118,8 +114,6 @@ function PatternGame({
         return randomNumber() - 0.5;
       }
     });
-
-    console.log(randomIDsarray);
 
     return randomIDsarray.slice(0, length);
   };
@@ -292,7 +286,7 @@ function PatternGame({
           if (health.current === 0) {
             setTimerOn(false);
             setGameOver(true);
-            submit(level);
+            submit(Math.round((userScore.current + Number.EPSILON) * 100) / 100);
           }
           return { ...block, clicked: true };
         } else {
@@ -313,6 +307,8 @@ function PatternGame({
                 if (
                   userCurrentChoice.id === patternBlockID[numMatched.current]
                 ) {
+                  userScore.current += 1/numberOfPatternBlocks
+
                   if (reverse){
                     numMatched.current -= 1;
                   } else {
@@ -326,7 +322,7 @@ function PatternGame({
                   if (health.current === 0) {
                     setTimerOn(false);
                     setGameOver(true);
-                    submit(level);
+                    submit(Math.round((userScore.current + Number.EPSILON) * 100) / 100);
                   }
                   setDisabled(true);
                   setTimeout(() => {
@@ -336,6 +332,7 @@ function PatternGame({
                 }
               } else {
                 numMatched.current += 1;
+                userScore.current += 1/numberOfPatternBlocks
                 return { ...block, matched: true, clicked: true };
               }
 
@@ -356,14 +353,14 @@ function PatternGame({
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
-        submit(level);
+        submit(Math.round((userScore.current + Number.EPSILON) * 100) / 100);
       }
     } else {
       if (numMatched.current === numberOfPatternBlocks) {
         setDisabled(true);
         setVictory(true);
         setLevel((prevLevel) => prevLevel + 1);
-        submit(level);
+        submit(Math.round((userScore.current + Number.EPSILON) * 100) / 100);
       }
     }
 
@@ -387,15 +384,6 @@ function PatternGame({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [victory]);
-
-  // useEffect(() => {
-    
-  //   if (gameOver){
-  //     // changeState()
-  //   }
-    
-  // }, [gameOver])
-
 
   // timer
   useEffect(() => {
@@ -523,11 +511,13 @@ function PatternGame({
           </div>
         </div>
         {displayTimer()}
-        <h2 className="pattern-game__score">Score: {level}</h2>
+        <h2 className="pattern-game__score">Score: 
+        {level}
+        </h2>
       </div>
       {gameOver ? (
         <div className="game-over-div">
-          <h2 className="game-over-text">Your score: {level}</h2>
+          <h2 className="game-over-text">Your score: {Math.round((userScore.current + Number.EPSILON) * 100) / 100}</h2>
           {/* <button onClick={next}>Next Question</button> */}
         </div>
       ) : null}

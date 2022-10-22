@@ -21,15 +21,14 @@ const Home = (props) => {
     const code = codeRef.current.value;
     if (name.length === 0) {
       setError("Invalid name!");
-    } else if (code === "admin"){
+    } else if (code === "admin") {
       setError("Invalid code!");
-    }else {
+    } else {
       createStudent(name, code)
         .then((res) => {
           return studentLogin(name, code);
         })
         .then((res) => {
-          console.log("passed");
           sessionStorage.setItem("code", code);
           setUserData({
             name: name,
@@ -89,10 +88,9 @@ const Home = (props) => {
           // Introduction to the test
           <>
             <p>
-              Welcome <b>{userData.name}</b> to the [untitled-project]. You will
-              be tested on your <i>visuospatial</i> ability. There are [x]
-              number of questions, you will have [x] minutes to complete the
-              test.
+              Welcome <b>{userData.name}</b> to Visuo. You will be tested on
+              your <i>visuospatial</i> ability. There are [x] number of
+              questions, you will have [x] minutes to complete the test.
               <br />
               <br />
               To begin, click on the big <b>"Start!"</b> button below. <br />

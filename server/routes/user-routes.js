@@ -11,6 +11,6 @@ const userRouter = express.Router();
 userRouter.post("/createStudent", loginLimiter, createStudent);
 
 //PROTECTED ENDPOINTS
-userRouter.use(jwtHandler);
+// userRouter.use(jwtHandler);
 
 export default userRouter;

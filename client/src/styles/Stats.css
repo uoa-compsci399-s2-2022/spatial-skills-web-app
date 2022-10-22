@@ -1,6 +1,5 @@
 .stats {
-    margin-top: 4rem;
-    padding: 5rem;
+    padding: 6rem 8rem;
     gap: 1rem;
     display: flex;
     flex-direction: column;

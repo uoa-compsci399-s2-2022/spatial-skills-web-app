@@ -1,6 +1,4 @@
 import Test from "../models/test.js";
-import TestOut from "../models/test-out.js";
-import QuestionOut from "../models/question-out.js";
 import Question from "../models/question.js";
 import APIError from "../handlers/APIError.js";
 
@@ -100,6 +98,7 @@ const questionOutAdmin = async (qId) => {
   question.testCode = adminQ.testCode;
   question.qId = adminQ._id;
   question.totalTime = adminQ.totalTime;
+  question.order = adminQ.order;
 
   return question;
 };
@@ -139,6 +138,7 @@ const questionOutStudent = async (test, qId) => {
   studentQ.randomLevelOrder = adminQ.randomLevelOrder;
   studentQ.corsi = adminQ.corsi;
   studentQ.reverse = adminQ.reverse;
+  studentQ.order = adminQ.order;
   studentQ.gameStartDelay = adminQ.gameStartDelay;
   studentQ.selectionDelay = adminQ.selectionDelay;
   studentQ.qId = adminQ._id;
@@ -366,6 +366,20 @@ const deleteTest = async (req, res, next) => {
     );
   }
 
+  //Delete questions in the test
+  for (const q in test.questions){
+    try{
+      await Question.findByIdAndDelete(test.questions[q]).exec();
+    }catch (e){
+      return next(
+        new APIError(
+          "Could not delete questions in test",
+          500
+        )
+      );
+    }
+  }
+
   try {
     await Test.findOneAndDelete({
       creator: req.name,
@@ -378,133 +392,8 @@ const deleteTest = async (req, res, next) => {
   res.json({ message: "Successfully deleted test" });
 };
 
-/////////////////////////////
-//// DEPRECATED FUNCTIONS ///
-/////////////////////////////
-
-//DEPRECATE IN FAVOUR OF get test by code enpoints
-const getQuestionsBytId = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
-  if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.body.tId)
-  ) {
-    return next(new APIError("Forbidden.", 403));
-  }
-
-  let test;
-  try {
-    test = await Test.findById(req.body.tId).exec();
-  } catch (e) {
-    return next(new APIError("Test not found.", 404));
-  }
-
-  const qidArr = test.questions.map((q) => q.qId);
-
-  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
-  if (questions.length < qidArr.length) {
-    return next(new APIError("Could not find all test questions.", 404));
-  }
-
-  let questionsOut = questions.map((q) => new QuestionOut(q));
-  if (req.body.shuffle) {
-    questionsOut = FisherYatesShuffle(questionsOut);
-  }
-  const timeOut = questionsOut.map(
-    (qo) => test.questions.find((q) => q.qId === qo.id).time
-  );
-  const combined = { questions: questionsOut, times: timeOut };
-  res.json(combined);
-};
-
-//DEPRECATE IN FAVOUR OF get test by code endpoints
-const getTestById = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
-  if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.params.tid)
-  ) {
-    return next(new APIError("Forbidden.", 403));
-  }
-
-  let test;
-  try {
-    test = await Test.findById(req.params.tid).exec();
-    if (!test) {
-      throw new Error();
-    }
-  } catch (e) {
-    return next(new APIError("Test not found.", 404));
-  }
-  const testOut = new TestOut(test);
-  res.json(testOut);
-};
-
-//DEPRECATE - functionality included in getTestByCode
-const getQuestionsByCode = async (req, res, next) => {
-  //Can only access test if have admin or test permissions
-  if (
-    !req.permissions.includes("admin") &&
-    !req.permissions.includes(req.body.code)
-  ) {
-    return next(new APIError("Forbidden.", 403));
-  }
-
-  let test;
-  try {
-    test = await Test.findOne({ code: req.body.code }).exec();
-  } catch (e) {
-    return next(new APIError("Test not found.", 404));
-  }
-
-  const qidArr = test.questions.map((q) => q.qId);
-
-  // Questions will be in order of creation date
-  const questions = await Question.find({ _id: { $in: qidArr } }).exec();
-  if (questions.length < qidArr.length) {
-    return next(new APIError("Could not find all test questions.", 404));
-  }
-  // Sort the questions in the original order.
-  var orderedQuestions = [];
-  for (let i = 0; i < qidArr.length; i++) {
-    let question = questions.find((q) => q._id == qidArr[i]);
-    if (req.body.shuffleAnswers) {
-      question.answer = FisherYatesShuffle(question.answer);
-    }
-    orderedQuestions.push(question);
-  }
-
-  let questionsOut = orderedQuestions.map((q) => new QuestionOut(q));
-  if (req.body.shuffleQuestions) {
-    questionsOut = FisherYatesShuffle(questionsOut);
-  }
-  const timeOut = questionsOut.map(
-    (qo) => test.questions.find((q) => q.qId === qo.id).time
-  );
-
-  const combined = {
-    questions: questionsOut,
-    times: timeOut,
-    allowBackTraversal: test.allowBackTraversal,
-    // totalTime: test.totalTime,
-    totalTime: timeOut.reduce((partialSum, a) => partialSum + a, 0), // Sum of question times
-    tId: test._id,
-  };
-  res.json(combined);
-};
-
-//DEPRECATE in favour of get my tests
-const getAllTests = async (req, res, next) => {
-  const tests = await Test.find().exec();
-  res.json(tests);
-};
-
 export {
   createTest,
-  getAllTests,
-  getTestById,
-  getQuestionsBytId,
-  getQuestionsByCode,
   getTestByCode,
   getMyTests,
   editTest,

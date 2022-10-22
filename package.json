@@ -1,5 +1,5 @@
 {
-  "name": "spatial-skills-web-app",
+  "name": "visuo",
   "version": "1.0.0",
   "description": "Web application to test visuospatial comprehension.",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app.git"
+    "url": "git+https://github.com/uoa-compsci399-s2-2022/visuo.git"
   },
   "author": "Damon Greenhalgh",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app/issues"
+    "url": "https://github.com/uoa-compsci399-s2-2022/visuo/issues"
   },
-  "homepage": "https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app#readme",
+  "homepage": "https://github.com/uoa-compsci399-s2-2022/visuo#readme",
   "devDependencies": {
     "concurrently": "^7.3.0"
   },

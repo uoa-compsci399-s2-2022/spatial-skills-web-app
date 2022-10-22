@@ -1,6 +1,6 @@
 import "../styles/Test.css";
 import React, { useState, useRef, useEffect } from "react";
-import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
+import { FaCaretLeft, FaCaretRight, FaPassport } from "react-icons/fa";
 import TimerDisplay from "../components/TimerDisplay";
 import Timer from "../components/Timer";
 import Question from "../components/Question";
@@ -19,22 +19,31 @@ const Test = (props) => {
   const [userAnswers, setUserAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currentAnswer, setCurrentAnswer] = useState(null); 
+  const [currentAnswer, setCurrentAnswer] = useState(null);
   const [allowBackTraversal, setAllowBackTraversal] = useState(null);
   const [started, setStarted] = useState(false);
-  const [testDetails, setTestDetails] = useState({})
+  const [testDetails, setTestDetails] = useState({});
   const testCode = sessionStorage.getItem("code");
-  
+
+  // Disable enter key entirely, prevents next button from disappearing.
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  });
+
   // Load test data from backend API
   useEffect(() => {
     if (!userData.name) {
       // Redirect user if they aren't logged in (refreshed page).
-      window.location.href = `http://localhost:3000/`;
+      window.location.href =
+        process.env.NODE_ENV === "production"
+          ? process.env.REACT_APP_DOMAIN
+          : `http://localhost:3000/`;
     }
-    
+
     axiosAPICaller.get(`/test/code/${testCode}`).then(
       (res) => {
-        console.log(res);
         setTestDetails({ title: res.data.title, creator: res.data.creator });
         setQuestions(res.data.questions);
         setTotalTime(res.data.totalTime.$numberDecimal);
@@ -45,10 +54,16 @@ const Test = (props) => {
           setTimeLeft(res.data.questions[0].totalTime.$numberDecimal);
           // setTimeLeft(10);
         }
-        
+
         let defaultAns = [];
         for (const q of res.data.questions) {
-          defaultAns.push({ qId: q.qId, questionType: q.questionType, aIds: [], textAnswer: null, value: null });
+          defaultAns.push({
+            qId: q.qId,
+            questionType: q.questionType,
+            aIds: [],
+            textAnswer: "",
+            value: null,
+          });
         }
         setUserAnswers(defaultAns);
         setIsLoaded(true);
@@ -65,7 +80,7 @@ const Test = (props) => {
     if (isLoaded && started) {
       timer.current = setInterval(() => {
         setTimeTaken((prevTime) => prevTime + 1);
-        setTimeLeft((prevTime) => prevTime - 1)
+        setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     }
     return () => clearInterval(timer.current);
@@ -73,7 +88,7 @@ const Test = (props) => {
 
   const startTest = () => {
     setStarted(true);
-  }
+  };
 
   const nextQuestion = () => {
     if (questionNum < questions.length) {
@@ -83,7 +98,7 @@ const Test = (props) => {
       }
       return;
     } else {
-      finishTest();  // No more questions
+      finishTest(); // No more questions
     }
   };
 
@@ -95,57 +110,65 @@ const Test = (props) => {
         setTimeLeft(getCurrentQuestion().totalTime.$numberDecimal);
       }
     }
-  }
+  };
 
   const finishTest = () => {
-    console.log("Already Submitted: ", submitted);
     if (!submitted) {
-      
       if (userData.name) {
         // Create answer in DB if user logged in
         let testData = {
           testCode: testCode,
           studentName: userData.name,
           answers: userAnswers,
-          totalTimeTaken: timeTaken
+          totalTimeTaken: timeTaken,
         };
-        console.log(testData)
-        
-        axiosAPICaller.post("http://localhost:3001/api/answer/", testData)
-        .then(setSubmitted(true))
-        .then(window.location.href = `http://localhost:3000/finish`)
-        
+
+        axiosAPICaller
+          .post("/answer/", testData)
+          .then(setSubmitted(true))
+          .then(
+            (window.location.href =
+              process.env.NODE_ENV === "production"
+                ? `${process.env.REACT_APP_DOMAIN}/finish`
+                : `http://localhost:3000/finish`)
+          );
       } else {
-        console.log("Test Finished, Not User Found");
-        window.location.href = `http://localhost:3000/finish`;
+        window.location.href =
+          process.env.NODE_ENV === "production"
+            ? `${process.env.REACT_APP_DOMAIN}/finish`
+            : `http://localhost:3000/finish`;
       }
     }
-  }
+  };
 
   const openFinishModal = () => {
     let modal = document.getElementById("finish-modal");
     modal.style.display = "block";
-  }
+  };
 
   const closeFinishModal = () => {
     let modal = document.getElementById("finish-modal");
     modal.style.display = "none";
-  }
+  };
 
   const submitAnswer = (event) => {
     let answers = userAnswers;
     let ans;
     switch (getCurrentQuestion().questionType) {
       case "TEXT":
-        event.preventDefault();  // Prevent form entry submission when pressing enter
+        event.preventDefault(); // Prevent form entry submission when pressing enter
         answers[questionNum - 1].textAnswer = event.target.value;
         ans = event.target.value;
         break;
 
       case "MULTICHOICE-MULTI":
-        let checked = document.querySelectorAll('input[type="checkbox"]:checked');
+        let checked = document.querySelectorAll(
+          'input[type="checkbox"]:checked'
+        );
         let values = [];
-        checked.forEach(ans => { values.push(ans.value) })
+        checked.forEach((ans) => {
+          values.push(ans.value);
+        });
         answers[questionNum - 1].aIds = values;
         ans = values.length > 0;
         break;
@@ -156,7 +179,7 @@ const Test = (props) => {
         break;
 
       default:
-        console.log(`Invalid question type ${getCurrentQuestion().questionType}`)
+        break;
     }
     setCurrentAnswer(ans);
     setUserAnswers(answers);
@@ -168,7 +191,7 @@ const Test = (props) => {
     answers[questionNum - 1].value = value;
     setCurrentAnswer(true);
     setUserAnswers(answers);
-  }
+  };
 
   const getCurrentQuestion = () => {
     return questions[questionNum - 1];
@@ -176,15 +199,14 @@ const Test = (props) => {
 
   const goToQuestion = (num) => {
     setQuestionNum(num);
-    setCurrentAnswer(null);  // In the future, change this to conditionally render existing answer
-    console.log(userAnswers); // for debugging
-  }
+    setCurrentAnswer(null); // In the future, change this to conditionally render existing answer
+  };
 
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
     return <div>Loading Test...</div>;
-  } else {  
+  } else {
     // Test loaded successfully
 
     // Load test information page before starting the test
@@ -192,7 +214,6 @@ const Test = (props) => {
       return (
         <div className="test">
           <div className="test__start-screen">
-
             <div>
               <h1>{testDetails.title}</h1>
               <h2>Created by: {testDetails.creator}</h2>
@@ -200,23 +221,36 @@ const Test = (props) => {
 
             <div className="test__details">
               <p>Number of Questions: {questions.length}</p>
-              <p>Test Time: {
-                allowBackTraversal ? totalTime / 60 : 
-                // Sum of individual question time for linear test
-                questions.map(q => parseInt(q.totalTime.$numberDecimal)).reduce((a, b) => a + b, 0) / 60
-              } minutes
+              <p>
+                Test Time:{" "}
+                {allowBackTraversal
+                  ? totalTime / 60
+                  : // Sum of individual question time for linear test
+                    Math.round(
+                      questions
+                        .map((q) => parseInt(q.totalTime.$numberDecimal))
+                        .reduce((a, b) => a + b, 0) / 60
+                    )}{" "}
+                minutes
               </p>
-              { allowBackTraversal ? null : <p>Each question has an individual time limit</p>}
-              <p>Traversal between questions {allowBackTraversal ? "enabled" : "disabled"}</p>
-              
-              {
-                questions.map(q => q.category).includes("MEMORY") ? 
-                <p>Interactive memory based games included</p> :
-                null
-              }
-              <b><p>Note: do not refresh / change pages using the browser during the test!</p></b>
-              <p>This will end your test early, without submission.</p>
+              {allowBackTraversal ? null : (
+                <p>Each question has an individual time limit</p>
+              )}
+              <p>
+                Traversal between questions{" "}
+                {allowBackTraversal ? "enabled" : "disabled"}
+              </p>
 
+              {questions.map((q) => q.category).includes("MEMORY") ? (
+                <p>Interactive memory based games included</p>
+              ) : null}
+              <b>
+                <p>
+                  Note: do not refresh / change pages using the browser during
+                  the test!
+                </p>
+              </b>
+              <p>This will end your test early, without submission.</p>
             </div>
 
             <button className="test__start-button" onClick={startTest}>
@@ -224,11 +258,14 @@ const Test = (props) => {
             </button>
           </div>
         </div>
-      )
+      );
     }
 
     // Logic if time runs out
-    if (timeLeft <= 0 && !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)) {
+    if (
+      timeLeft <= 0 &&
+      !(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal)
+    ) {
       if (allowBackTraversal) {
         if (!submitted) {
           finishTest();
@@ -239,34 +276,37 @@ const Test = (props) => {
       }
     }
 
-    let testQuestion = <Question
+    let testQuestion = (
+      <Question
         question={getCurrentQuestion()}
         submit={submitAnswer}
         submitValue={submitAnswerValue}
         nextQuestion={nextQuestion}
         userAnswer={userAnswers[questionNum - 1]}
-    />
-    
+      />
+    );
+
     return (
       <div className="test">
-        { 
+        {
           // Timer Display, mm:ss
-          getCurrentQuestion().category === "MEMORY" && !allowBackTraversal ?
-          null : 
-          <TimerDisplay seconds={timeLeft} />
+          getCurrentQuestion().category === "MEMORY" &&
+          !allowBackTraversal ? null : (
+            <TimerDisplay seconds={timeLeft} />
+          )
         }
-        
+
         {
           // Previous Question Button
-          allowBackTraversal && questionNum !== 1 ? 
-          <button
-            className="test__previous"
-            onClick={() => previousQuestion()}
-            title="Previous Question"
-          >
-            <FaCaretLeft size={60} />
-          </button>
-          : null
+          allowBackTraversal && questionNum !== 1 ? (
+            <button
+              className="test__previous"
+              onClick={() => previousQuestion()}
+              title="Previous Question"
+            >
+              <FaCaretLeft size={60} />
+            </button>
+          ) : null
         }
 
         {testQuestion}
@@ -277,65 +317,66 @@ const Test = (props) => {
 
         {
           // Next Question Button
-          (!(currentAnswer) && !allowBackTraversal) ||
-          (allowBackTraversal && questionNum === questions.length) ? 
-          null :  // Hide next button if no answer selected
-          <button
-            className="test__next"
-            onClick={() => nextQuestion()}
-            title="Next Question"
-          >
-            <FaCaretRight size={60} />
-          </button>
+          (!currentAnswer && !allowBackTraversal) ||
+          (allowBackTraversal && questionNum === questions.length) ? null : ( // Hide next button if no answer selected
+            <button
+              className="test__next"
+              onClick={() => nextQuestion()}
+              title="Next Question"
+            >
+              <FaCaretRight size={60} />
+            </button>
+          )
         }
 
-        {
-          allowBackTraversal ? 
-          <QuestionNavigation 
+        {allowBackTraversal ? (
+          <QuestionNavigation
             numberOfQuestions={questions.length}
             onClick={goToQuestion}
             answers={userAnswers}
             currentQuestion={questionNum}
-          /> :
-          null
-        }
+          />
+        ) : null}
 
-
-        {
-          (getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) || allowBackTraversal ?
-          null :
+        {(getCurrentQuestion().category === "MEMORY" && !allowBackTraversal) ||
+        allowBackTraversal ? null : (
           <Timer
-            questionTime={ allowBackTraversal ? 
-              totalTime :
-              getCurrentQuestion().totalTime.$numberDecimal}
+            questionTime={
+              allowBackTraversal
+                ? totalTime
+                : getCurrentQuestion().totalTime.$numberDecimal
+            }
             timeLeft={timeLeft}
-          /> 
-        }
+          />
+        )}
 
-
-        {
-          allowBackTraversal ?
-          <button className="test__finish-button" onClick={openFinishModal} disabled={false}
+        {allowBackTraversal ? (
+          <button
+            className="test__finish-button"
+            onClick={openFinishModal}
+            disabled={false}
             title="Finish Test"
           >
             Finish Test
-          </button> :
-          null
-        }
+          </button>
+        ) : null}
 
         {
           <div className="finish-modal" id="finish-modal">
             <div className="modal__content">
-              <h2 style={{padding: "2rem"}}>Do you want to end your test?</h2>
+              <h2 style={{ padding: "2rem" }}>Do you want to end your test?</h2>
 
               <div className="modal__buttons">
-                <button onClick={closeFinishModal} className="cancel-button">Cancel</button>
-                <button onClick={finishTest} className="finish-button">Finish Test</button>
+                <button onClick={closeFinishModal} className="cancel-button">
+                  Cancel
+                </button>
+                <button onClick={finishTest} className="finish-button">
+                  Finish Test
+                </button>
               </div>
             </div>
           </div>
         }
-
       </div>
     );
   }

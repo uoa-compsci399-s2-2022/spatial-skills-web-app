@@ -129,13 +129,10 @@ const createMCQ = async (req) => {
 };
 
 const createTQ = async (req) => {
-  console.log(req.files);
   // Includes question image
   if (!Object.keys(req.files).includes("question") || !req.body.answer) {
     throw new APIError("Missing question (image)", 400);
   }
-
-  console.log("IMAGE OK");
 
   // Get unique file directory
   let fileDir;
@@ -263,6 +260,7 @@ const createDPQ = async (req) => {
       reverse: req.body.reverse,
       totalTime: 0,
       testCode: req.body.testCode,
+      order: req.body.order == null ? true : req.body.order,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -326,6 +324,7 @@ const updateDPQ = async (req, question) => {
   question.corsi = req.body.corsi == null ? question.corsi : req.body.corsi;
   question.reverse =
     req.body.reverse == null ? question.reverse : req.body.reverse;
+  question.order = req.body.order == null ? question.order : req.body.order;
 };
 
 ////////////////////////
@@ -381,7 +380,8 @@ const updateQuestion = async (req, res, next) => {
     throw new APIError("Failed to save changes in test.", 500);
   }
 
-  question.totalTime = req.body.totalTime == null ? question.totalTime : req.body.totalTime;
+  question.totalTime =
+    req.body.totalTime == null ? question.totalTime : req.body.totalTime;
 
   try {
     if (
@@ -518,7 +518,8 @@ const deleteQuestionById = async (req, res, next) => {
       (q) => q !== question._id.toString()
     );
     if (test.individualTime) {
-      test.totalTime = parseFloat(test.totalTime) - parseFloat(question.totalTime);
+      test.totalTime =
+        parseFloat(test.totalTime) - parseFloat(question.totalTime);
     }
     test.save();
   } catch (e) {

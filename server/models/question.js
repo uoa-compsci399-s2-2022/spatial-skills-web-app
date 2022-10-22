@@ -55,6 +55,7 @@ const questionSchema = new mongoose.Schema({
   randomLevelOrder: { type: Boolean, required: false, default: null },
   corsi: { type: Boolean, required: false, default: null },
   reverse: { type: Boolean, required: false, default: null },
+  order: { type: Boolean, required: false, default: null },
 
   // questionType DYNAMIC-MEMORY
   gameStartDelay: { type: mongoose.Decimal128, required: false, default: null },

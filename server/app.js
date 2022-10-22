@@ -2,6 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors"; // https://www.npmjs.com/package/cors
 import fileUpload from "express-fileupload";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import connectDB from "./db/db.js";
 import authRouter from "./routes/auth-routes.js";
@@ -17,7 +19,10 @@ const port = process.env.PORT || 3001;
 // Connect to database
 connectDB();
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true })); // Allows fetch api to access localhost endpoints
+const ALLOWED_ORIGIN = process.env.NODE_ENV === "production" ? process.env.REACT_APP_DOMAIN : "http://localhost:3000";
+
+app.use(cors({ origin: ALLOWED_ORIGIN, credentials: true })); // Allows fetch api to access localhost 
+
 //parse json requests
 app.use(express.json());
 //parse cookies
@@ -39,7 +44,22 @@ app.use("/api/answer", answerRouter);
 //user APIs
 app.use("/api/user", userRouter);
 
-app.get("/", (req, res) => res.send("Hello world!"));
+// https://bobbyhadz.com/blog/javascript-dirname-is-not-defined-in-es-module-scope#:~:text=To%20solve%20the%20%22__dirname%20is,directory%20name%20of%20the%20path.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve frontend build from backend if in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, "../", "client", "build", "index.html")
+    )
+  );
+} else {
+  app.get("/", (req, res) => res.send("Hello world!"));
+}
 
 //error handler
 app.use(errorHandler);

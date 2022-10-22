@@ -15,6 +15,11 @@ const createStudent = async (req, res, next) => {
     return next(new APIError("Invalid test code", 400));
   }
 
+  //Check if test is published
+  if (!testExists.published){
+    return next(new APIError("Cannot do unpublished test", 400));
+  }
+
   // Prevent creating admin user
   if (req.body.permissions.includes("admin")) {
     return next(new APIError("Forbidden.", 403));
