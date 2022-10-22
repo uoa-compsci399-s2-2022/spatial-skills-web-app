@@ -9,7 +9,7 @@ const studentAnswerSchema = new mongoose.Schema({
       questionType: {type: String, required: true },
       aIds: [{ type: String, required: false, default: null }],
       textAnswer: { type: String, required: false, default: null },
-      value: { type: String, required: false, default: null },
+      value: { type: mongoose.Decimal128, required: false, default: null },
       grade: { type: mongoose.Decimal128, required: false, default: null },
       percentage: {type: mongoose.Decimal128, required: false, default: null},
       possibleGrade: { type: mongoose.Decimal128, required: false, default: null },

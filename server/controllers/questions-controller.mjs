@@ -95,8 +95,8 @@ const createMCQ = async (req) => {
       });
       totalMultiGrade =
         totalMultiGrade +
-        Number(
-          req.body[`${fKeys[i]}Grade`] == null
+        parseFloat(
+          (req.body[`${fKeys[i]}Grade`] == null || req.body[`${fKeys[i]}Grade`] < 0)
             ? 0
             : req.body[`${fKeys[i]}Grade`]
         );
@@ -182,6 +182,7 @@ const createTQ = async (req) => {
       totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
       textGrade: req.body.textGrade == null ? 0 : req.body.textGrade,
+      totalMultiGrade: req.body.textGrade == null ? 0 : req.body.textGrade,
     });
     await createdQuestion.validate();
   } catch (e) {
@@ -217,7 +218,7 @@ const createDMQ = async (req) => {
       citation: "Jack Huang - The University of Auckland (2022)",
       gameStartDelay: req.body.gameStartDelay,
       selectionDelay: req.body.selectionDelay,
-      totalTime: 0,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
     });
     await createdQuestion.validate();
@@ -258,7 +259,7 @@ const createDPQ = async (req) => {
       randomLevelOrder: req.body.randomLevelOrder,
       corsi: req.body.corsi,
       reverse: req.body.reverse,
-      totalTime: 0,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
       order: req.body.order == null ? true : req.body.order,
     });
@@ -271,28 +272,23 @@ const createDPQ = async (req) => {
 };
 
 const updateMCQ = async (req, question) => {
+  const gradeKeys = ["aGrade","bGrade","cGrade","dGrade","eGrade"];
   let newGradeTotal = 0;
 
-  if (req.body.multi != null) {
-    if (question.multi.length !== req.body.multi.length) {
-      throw new APIError("Multi array lengths do not match.", 400);
-    }
-    for (let i = 0; i < question.numMulti; i++) {
-      for (let j = 0; j < question.numMulti; j++) {
-        if (question.multi[j]._id.toString() == req.body.multi[i]._id) {
-          question.multi[j].grade = req.body.multi[i].grade;
-          newGradeTotal = newGradeTotal + req.body.multi[i].grade;
-        }
-      }
-    }
-    question.totalMultiGrade = newGradeTotal;
+  for (let i=0;i<question.numMulti;i++){
+    question.multi[i].grade = parseFloat(req.body[gradeKeys[i]]);
+    newGradeTotal = newGradeTotal + (parseFloat(req.body[gradeKeys[i]]) < 0 ? 0 :parseFloat(req.body[gradeKeys[i]]));
   }
+  question.totalMultiGrade = newGradeTotal;
+  
 };
 
 const updateTQ = async (req, question) => {
   question.answer = req.body.answer == null ? question.answer : req.body.answer;
   question.textGrade =
     req.body.textGrade == null ? question.textGrade : req.body.textGrade;
+  //For editor viewing purposes
+  question.totalMultiGrade = req.body.textGrade == null ? question.textGrade : req.body.textGrade;
 };
 
 const updateDMQ = async (req, question) => {
