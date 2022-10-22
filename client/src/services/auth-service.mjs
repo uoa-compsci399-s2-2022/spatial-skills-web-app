@@ -35,6 +35,7 @@ const studentLogin = async (name, code) => {
     )
     .then((res) => {
       sessionStorage.setItem("accessToken", res.data.accessToken);
+      sessionStorage.removeItem("adminRights")
       return res.data;
     });
     

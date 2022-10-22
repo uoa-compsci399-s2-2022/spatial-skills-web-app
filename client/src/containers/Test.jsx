@@ -35,13 +35,14 @@ const Test = (props) => {
 
   // Load test data from backend API
   useEffect(() => {
-    if (!userData.name) {
+    if (!userData.name && !sessionStorage.getItem("adminRights")) {
       // Redirect user if they aren't logged in (refreshed page).
       window.location.href =
         process.env.NODE_ENV === "production"
           ? process.env.REACT_APP_DOMAIN
           : `http://localhost:3000/`;
-    } else {
+    } else if (!sessionStorage.getItem("adminRights")) {
+      // User is not doing a preview, prevent them from redoing test
       setUserData({
         name: null,
         email: null,
