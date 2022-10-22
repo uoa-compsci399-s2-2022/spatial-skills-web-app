@@ -218,7 +218,7 @@ const createDMQ = async (req) => {
       citation: "Jack Huang - The University of Auckland (2022)",
       gameStartDelay: req.body.gameStartDelay,
       selectionDelay: req.body.selectionDelay,
-      totalTime: 0,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
     });
     await createdQuestion.validate();
@@ -259,7 +259,7 @@ const createDPQ = async (req) => {
       randomLevelOrder: req.body.randomLevelOrder,
       corsi: req.body.corsi,
       reverse: req.body.reverse,
-      totalTime: 0,
+      totalTime: req.body.totalTime == null ? 0 : req.body.totalTime,
       testCode: req.body.testCode,
       order: req.body.order == null ? true : req.body.order,
     });

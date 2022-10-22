@@ -20,7 +20,7 @@ const Stats = () => {
   var ansArray = [];
   var JSONObject = {};
   var arrayIndex = 0;
-  var correct = "";
+  // var correct = "";
   var gradeArray = [];
 
   useEffect(() => {
@@ -79,12 +79,14 @@ const Stats = () => {
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        if (ansArray[arrayIndex + i].grade.$numberDecimal === "1") {
-          correct = "Correct";
-        } else {
-          correct = "Incorrect";
-        }
-        JSONObject["Q" + (i + 1).toString()] = correct;
+        JSONObject[`Q${i + 1} grade`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
+         : ansArray[arrayIndex + i].grade.$numberDecimal;
+        JSONObject[`Q${i + 1} percentage`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
+        :ansArray[arrayIndex + i].percentage.$numberDecimal;
+        JSONObject[`Q${i + 1} possibleGrade`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
+        : ansArray[arrayIndex + i].possibleGrade.$numberDecimal;
+        JSONObject[`Q${i + 1} value`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType)  ?
+        ansArray[arrayIndex + i].value.$numberDecimal: "n/a";
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
@@ -93,20 +95,20 @@ const Stats = () => {
     });
   }
 
-  const BarChart = (props) => {
-    if (isLoadedTest) {
-      return (
-        <div>
-          Mean Grade:{" "}
-          {(gradeArray.reduce((a, b) => a + b, 0) / gradeArray.length).toFixed(
-            2
-          )}
-          <br></br>
-          Median Grade: {gradeArray.sort()[gradeArray.length / 2]}
-        </div>
-      );
-    }
-  };
+  // const BarChart = (props) => {
+  //   if (isLoadedTest) {
+  //     return (
+  //       <div>
+  //         Mean Grade:{" "}
+  //         {(gradeArray.reduce((a, b) => a + b, 0) / gradeArray.length).toFixed(
+  //           2
+  //         )}
+  //         <br></br>
+  //         Median Grade: {gradeArray.sort()[gradeArray.length / 2]}
+  //       </div>
+  //     );
+  //   }
+  // };
 
   if (isLoadedTest) {
     return (
