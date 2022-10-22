@@ -8,7 +8,7 @@ import QuestionNavigation from "../components/QuestionNavigation";
 import axiosAPICaller from "../services/api-service.mjs";
 
 const Test = (props) => {
-  const { userData } = props;
+  const { userData, setUserData } = props;
   const timer = useRef(null); // Used for countdown timer
   const [questions, setQuestions] = useState([]);
   const [totalTime, setTotalTime] = useState(null);
@@ -24,6 +24,7 @@ const Test = (props) => {
   const [started, setStarted] = useState(false);
   const [testDetails, setTestDetails] = useState({});
   const testCode = sessionStorage.getItem("code");
+  const studentName = userData.name;
 
   // Disable enter key entirely, prevents next button from disappearing.
   window.addEventListener("keydown", function (e) {
@@ -40,6 +41,12 @@ const Test = (props) => {
         process.env.NODE_ENV === "production"
           ? process.env.REACT_APP_DOMAIN
           : `http://localhost:3000/`;
+    } else {
+      setUserData({
+        name: null,
+        email: null,
+        picture: null,
+      });
     }
 
     axiosAPICaller.get(`/test/code/${testCode}`).then(
@@ -114,30 +121,23 @@ const Test = (props) => {
 
   const finishTest = () => {
     if (!submitted) {
-      if (userData.name) {
-        // Create answer in DB if user logged in
-        let testData = {
-          testCode: testCode,
-          studentName: userData.name,
-          answers: userAnswers,
-          totalTimeTaken: timeTaken,
-        };
+    // Create studentanswer in DB
+    let testData = {
+      testCode: testCode,
+      studentName: studentName,
+      answers: userAnswers,
+      totalTimeTaken: timeTaken,
+    };
 
-        axiosAPICaller
-          .post("/answer/", testData)
-          .then(setSubmitted(true))
-          .then(
-            (window.location.href =
-              process.env.NODE_ENV === "production"
-                ? `${process.env.REACT_APP_DOMAIN}/finish`
-                : `http://localhost:3000/finish`)
-          );
-      } else {
-        window.location.href =
+    axiosAPICaller
+      .post("/answer/", testData)
+      .then(setSubmitted(true))
+      .then(
+        (window.location.href =
           process.env.NODE_ENV === "production"
             ? `${process.env.REACT_APP_DOMAIN}/finish`
-            : `http://localhost:3000/finish`;
-      }
+            : `http://localhost:3000/finish`)
+      );
     }
   };
 

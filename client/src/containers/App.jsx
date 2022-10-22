@@ -45,7 +45,7 @@ function App() {
               <AdminLogin userData={userData} setUserData={setUserData} />
             }
           />
-          <Route path="/test" element={<Test userData={userData} />} />
+          <Route path="/test" element={<Test userData={userData} setUserData={setUserData}/>} />
           <Route path="/finish" element={<TestResult />} />
           <Route
             path="*"
