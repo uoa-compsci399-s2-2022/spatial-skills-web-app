@@ -55,6 +55,7 @@ const adminLogin = async (name,gIdToken) => {
   )
   .then((res) => {
     sessionStorage.setItem("accessToken", res.data.accessToken);
+    sessionStorage.setItem("adminRights", true);
     return res.data;
   });
 }
@@ -72,6 +73,7 @@ const logout = async () => {
     .then((res) => {
       sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("code");
+      sessionStorage.removeItem("adminRights")
     });
 };
 
