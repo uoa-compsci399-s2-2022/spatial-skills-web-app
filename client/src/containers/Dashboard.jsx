@@ -1,5 +1,5 @@
 import "../styles/Dashboard.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axiosAPICaller from "../services/api-service.mjs";
@@ -15,6 +15,12 @@ const Dashboard = () => {
       setData(response.data);
     });
   }, []);
+
+  // Redirect non-admin user to home page
+  // TODO: if user refreshes page, sessionstorage persists
+  if (!sessionStorage.getItem("adminRights")) {
+    return <Navigate to="/" />
+  }
 
   // we'll need to authenticate users below this route, maybe check
   // their email with db for admin privilege?

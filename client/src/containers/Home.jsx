@@ -1,6 +1,6 @@
 import "../styles/Home.css";
 import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { MdErrorOutline } from "react-icons/md";
 import logo from "../assets/logo.png";
 
@@ -11,6 +11,11 @@ const Home = (props) => {
   const nameRef = useRef(null);
   const codeRef = useRef(null);
   const [error, setError] = useState("");
+
+  // Redirect admin user to dashboard
+  if (sessionStorage.getItem("adminRights") && userData.name) {
+    return <Navigate to="/dashboard" />
+  }
 
   sessionStorage.setItem("redirectAdmin", "false");
 
@@ -88,17 +93,17 @@ const Home = (props) => {
           // Introduction to the test
           <>
             <p>
-              Welcome <b>{userData.name}</b> to Visuo. You will be tested on
-              your <i>visuospatial</i> ability. There are [x] number of
-              questions, you will have [x] minutes to complete the test.
+              Logged in as: <b>{userData.name}</b> 
+              <br />
+              Test Code: <b>{sessionStorage.getItem("code")}</b>
               <br />
               <br />
-              To begin, click on the big <b>"Start!"</b> button below. <br />
+              To begin, click on the big <b>"Start"</b> button below. <br />
               <br />
               <b>Good Luck!</b>
             </p>
             <Link to="/test" className="home__input home__input--button">
-              Start!
+              Start
             </Link>
           </>
         )}
