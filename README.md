@@ -1,6 +1,20 @@
 # Visuo
 
-Web application to test visuospatial comprehension.
+## Description
+
+Visuospatial comprehension is a significant predictor of achievement in STEM fields. Visuo is a web application for educators to test STEM students visuospatial comprehension. This will assist educators in identifying weaknesses and helping students aspiring for success in STEM.
+
+The web application functionalities include,
+
+- Creating timed tests
+- Creating multichoice and text questions
+- Question editor
+- Two inbuilt dynamic memory questions (pattern tapping & card matching)
+- Student access to tests through a unique code
+- Automated marking of tests
+- Spreadsheet export of student grades
+
+Link to report: (pending)
 
 ## Management
 
@@ -18,7 +32,11 @@ We used the following tools during development of the app,
 - Express `v4.18.1` (Backend framework)
 - MongoDB `v6.0.1` (Document database)
 - AWS S3 (Content Delivery Network)
-- Google Cloud (Authentication)
+- Google OAuth 2.0 (Authentication & Authorisation)
+- Certbot & LetEncrypt (SSL certificate)
+- AWS EC2 Ubuntu 22.04 LTS (Deployment)
+- Nginx `v1.18.0` (Web-server)
+- pm2 `v5.2.2` (Node process manager)
 
 ## Getting started
 
@@ -47,7 +65,7 @@ To run the project.
 npm run dev
 ``` 
 
-To run the backend environment you must have the associated `.env` file which contains sensitive information for AWS, Google, and MongoDB. Contact Anna Trofimova (anna.trofimova@auckland.ac.nz) for this file.
+To run the backend environment you must have the associated `.env` file which contains sensitive information for AWS, Google, JWT and MongoDB. Contact Anna Trofimova (anna.trofimova@auckland.ac.nz) for this file.
 
 ## Usage 
 
@@ -60,10 +78,15 @@ https://hydrohomiebeerbro.com (placeholder)
 - Dark Mode/Alternate themes
 - Global question bank, enable users to share questions
 - Mobile support
+- Student answer viewer, enable admins to view the answers students gave
 
 ## Acknowledgements
 
 We would like to thank Burkhard Wuensche for his feedback during the development process.
+
+Tutorials used:
+- Obtaining SSL certificate - https://www.linode.com/docs/guides/enabling-https-using-certbot-with-nginx-on-ubuntu/
+- Deployment - https://betterprogramming.pub/deploy-mern-stack-app-on-aws-ec2-with-letsencrypt-ssl-8f463c01502a
 
 ## Team
 
