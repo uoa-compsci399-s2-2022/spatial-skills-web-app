@@ -79,14 +79,30 @@ const Stats = () => {
       };
 
       for (let i = 0; i < studentAnswer.answers.length; i++) {
-        JSONObject[`Q${i + 1} grade`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
-         : ansArray[arrayIndex + i].grade.$numberDecimal;
-        JSONObject[`Q${i + 1} percentage`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
-        :ansArray[arrayIndex + i].percentage.$numberDecimal;
-        JSONObject[`Q${i + 1} possibleGrade`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType) ? "n/a"
-        : ansArray[arrayIndex + i].possibleGrade.$numberDecimal;
-        JSONObject[`Q${i + 1} value`] = ["DYNAMIC-MEMORY","DYNAMIC-PATTERN"].includes(ansArray[arrayIndex + i].questionType)  ?
-        ansArray[arrayIndex + i].value.$numberDecimal: "n/a";
+        JSONObject[`Q${i + 1} grade`] = [
+          "DYNAMIC-MEMORY",
+          "DYNAMIC-PATTERN",
+        ].includes(ansArray[arrayIndex + i].questionType)
+          ? "n/a"
+          : ansArray[arrayIndex + i].grade.$numberDecimal;
+        JSONObject[`Q${i + 1} percentage`] = [
+          "DYNAMIC-MEMORY",
+          "DYNAMIC-PATTERN",
+        ].includes(ansArray[arrayIndex + i].questionType)
+          ? "n/a"
+          : ansArray[arrayIndex + i].percentage.$numberDecimal;
+        JSONObject[`Q${i + 1} possibleGrade`] = [
+          "DYNAMIC-MEMORY",
+          "DYNAMIC-PATTERN",
+        ].includes(ansArray[arrayIndex + i].questionType)
+          ? "n/a"
+          : ansArray[arrayIndex + i].possibleGrade.$numberDecimal;
+        JSONObject[`Q${i + 1} value`] = [
+          "DYNAMIC-MEMORY",
+          "DYNAMIC-PATTERN",
+        ].includes(ansArray[arrayIndex + i].questionType)
+          ? ansArray[arrayIndex + i].value.$numberDecimal
+          : "n/a";
       }
 
       arrayIndex = arrayIndex + studentAnswer.answers.length;
@@ -175,14 +191,16 @@ const Stats = () => {
                 </tbody>
               </table>
               <div className="stats__action-container">
-                <Link
-                  className="button button--outlined"
-                  title="Edit"
-                  to={`/dashboard/test/${code}/question`}
-                >
-                  Edit
-                  <FaEdit size={iconSize} />
-                </Link>
+                {test.published ? null : (
+                  <Link
+                    className="button button--outlined"
+                    title="Edit"
+                    to={`/dashboard/test/${code}/question`}
+                  >
+                    Edit
+                    <FaEdit size={iconSize} />
+                  </Link>
+                )}
               </div>
             </div>
 
