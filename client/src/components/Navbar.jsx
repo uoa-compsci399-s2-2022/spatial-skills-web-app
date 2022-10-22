@@ -1,4 +1,6 @@
 import "../styles/Navbar.css";
+import "../index.css";
+import "../styles/Home.css";
 import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -8,6 +10,7 @@ import { GoSettings } from "react-icons/go";
 import { IoMdHelp } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
+import React, { useEffect } from "react";
 
 import { logout } from "../services/auth-service.mjs"
 
@@ -18,6 +21,39 @@ const Navbar = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [id, setId] = useState(0);
+  let r = document.documentElement;
+
+  let [darkMode, setDarkMode] = useState(false);
+  const handleChange = () => {
+    if(darkMode === false){
+      r.style.setProperty('--accent-color', 'white');
+      r.style.setProperty('--navbar-color', 'none');
+      r.style.setProperty('--contrast-color', '#0A0A0A');
+      r.style.setProperty('--offwhite-color', '#121111');
+      r.style.setProperty('--base-300', '#0A0A0A');
+      r.style.setProperty('--mid-color', 'white');
+      r.style.setProperty('--dark-color', 'white');
+      r.style.setProperty('--dark-color-hover', 'white');
+      r.style.setProperty('--error-color', 'white');
+      r.style.setProperty('--shadow-color', '#121111');
+      r.style.setProperty('--light-font', 'white');
+      setDarkMode(true);
+    } else {
+      r.style.setProperty('--accent-color', '#4895EF');
+      r.style.setProperty('--navbar-color', '#4895EF');
+      r.style.setProperty('--contrast-color', '#ffffff');
+      r.style.setProperty('--offwhite-color', '#f2f6f8');
+      r.style.setProperty('--base-300', '#e6e8ec');
+      r.style.setProperty('--mid-color', '#323944');
+      r.style.setProperty('--dark-color', '#262631');
+      r.style.setProperty('--dark-color-hover', '#2b2e3a');
+      r.style.setProperty('--error-color', '#f51d24');
+      r.style.setProperty('--shadow-color', 'rgba(13, 13, 88, 0.05)');
+      r.style.setProperty('--light-font', '#54757C');
+
+      setDarkMode(false);
+    }
+  };
 
   const contentDb = [
     null,
@@ -43,57 +79,38 @@ const Navbar = (props) => {
     </>,
     <>
       <h2>Settings</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ac
-        purus laoreet, consequat ante eu, aliquam neque.
-      </p>
       <h3>Dark Mode</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      <h3>Slider Timer</h3>
-      <p>Show the remaining question time using a moving bar.</p>
+      <button className="button__dark_mode" onClick={() => handleChange()}></button>
+      <div className="button__dark_mode_background"></div>
     </>,
     <>
-      <h2>Looking for some help?</h2>
+      <h2>Where do I start?</h2>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ac
-        purus laoreet, consequat ante eu, aliquam neque. Fusce finibus tristique
-        dui ac pretium.{" "}
+        You must log in using a name and a test code provided to you by the test creator,
+        such as your lecturer or teacher. Once logged in, you may begin the test.{" "}
       </p>
-      <h3>Sub-title describing cool stuff!</h3>
+      <h3>What is this test for?</h3>
       <p>
-        Nulla commodo dui at convallis placerat. Etiam congue odio quis
-        ultricies dignissim. Proin fringilla dignissim nibh, tempus efficitur
-        dolor maximus eget.
-        <br></br>
-        <br></br>
-        Quisque diam quam, tristique gravida lectus id, hendrerit eleifend
-        felis.
+        Testing spatial skills has been proven in a multitude of studies to provide an indication
+        of success and understanding within STEM subjects (Science, Technology, Engineering, and Mathematics),
+        and therefore is used by teachers and academics as an indicator of your performance within these subjects
+        when mapping statistical data.
       </p>
     </>,
   ];
-
-  if (location.pathname === "/test") {
-    return null;
-  }
 
   return (
     <nav
       className="navbar"
       style={{
         backgroundColor:
-          location.pathname === "/" ? "inherit" : "var(--accent-color)",
+          location.pathname === "/" ? "inherit" : "var(--navbar-color)",
       }}
     >
       <Link to="/" style={{ marginRight: "auto" }}>
         <img src={logo} className="navbar__icon" alt="Logo" />
       </Link>
-      <button onClick={() => setId(2)} className="navbar__button">
-        <GoSettings
-          className="navbar__icon"
-          size={iconSize}
-          alt="Settings button"
-        />
-      </button>
+      
       <button onClick={() => setId(3)} className="navbar__button">
         <IoMdHelp className="navbar__icon" size={iconSize} alt="Help button" />
       </button>
