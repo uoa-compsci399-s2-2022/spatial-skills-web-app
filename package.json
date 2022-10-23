@@ -1,23 +1,32 @@
 {
-  "name": "spatial-skills-web-app",
+  "name": "visuo",
   "version": "1.0.0",
   "description": "Web application to test visuospatial comprehension.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"cd server && npm run start\" \"cd client && npm run start\"",
-    "init": "concurrently \"cd server && npm install\" \"cd client && npm install\"" 
+    "init": "concurrently \"cd server && npm install\" \"cd client && npm install\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app.git"
+    "url": "git+https://github.com/uoa-compsci399-s2-2022/visuo.git"
   },
   "author": "Damon Greenhalgh",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app/issues"
+    "url": "https://github.com/uoa-compsci399-s2-2022/visuo/issues"
   },
-  "homepage": "https://github.com/uoa-compsci399-s2-2022/spatial-skills-web-app#readme",
+  "homepage": "https://github.com/uoa-compsci399-s2-2022/visuo#readme",
   "devDependencies": {
     "concurrently": "^7.3.0"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "react-helmet": "^6.1.0",
+    "react-icons": "^4.4.0",
+    "react-json-to-csv": "^1.0.4",
+    "reactochart": "^6.1.0",
+    "seedrandom": "^3.0.5"
   }
 }

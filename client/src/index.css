@@ -1,13 +1,93 @@
-body {
+* {
+  box-sizing: border-box;
+  --accent-color: #4895EF;
+  --accent-color-hover: #deeefc;
+  --contrast-color: #ffffff;
+  --contrast-color-hover: #dadce0;
+  --offwhite-color: #f2f6f8;
+  --base-300: #e6e8ec;
+  --mid-color: #323944;
+  --dark-color: #262631;
+  --dark-color-hover: #2b2e3a;
+  --error-color: #f51d24;
+  --shadow-color: rgba(13, 13, 88, 0.05);
+  --font: 'Quicksand';
+  --font-cta: 'Montserrat';
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+p {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-cta);
+  margin: 0;
+}
+
+body {
+  color: var(--mid-color);
+  background-color: var(--offwhite-color);
+  margin: 0;
+  font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+input {
+  outline: none;
+  border: none;
+  font-family: var(--font);
+  font-size: .8rem;
+}
+
+textarea {
+  outline: none;
+  border: none;
+  font-family: var(--font);
+  font-size: .8rem;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  font-family: var(--font-cta);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+}
+
+th, td {
+  text-align: start;
+  padding: .5rem;
+  border: none;
+}
+
+tr:nth-child(odd) {
+  background-color: var(--offwhite-color);
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./fonts/Quicksand.ttf');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat.ttf');
 }
