@@ -192,8 +192,10 @@ const Editor = (props) => {
                 });
               }}
             />
-            <Help content="Students can only do published tests.
-             Publishing a test will disable the ability to edit said test!" />
+            <Help
+              content="Students can only do published tests.
+             Publishing a test will disable the ability to edit said test!"
+            />
             <label>Back Traversal</label>
             <input
               type="checkbox"
@@ -654,7 +656,7 @@ const Editor = (props) => {
             )}
           </>
         )}
-        <label>Time Limit</label>
+        <label>{"Time Limit (s)"}</label>
         <input
           type="number"
           step="any"
