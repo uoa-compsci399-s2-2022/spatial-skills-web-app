@@ -69,29 +69,29 @@ To run the backend environment you must have the associated `.env` file which co
 
 ## Screenshots
 
-![Home page](.github/home.png)
-
 > Home Page
 
-![Example test multi-answer question](.github/test-multi.png)
+![Home page](.github/screenshots/home.png)
 
 > Example test multi-answer question
 
-![Example test text answer question](.github/test-text.png)
+![Example test multi-answer question](.github/screenshots/test-multi.png)
 
 > Example test text answer question
 
-![Question bank](.github/bank.png)
+![Example test text answer question](.github/screenshots/test-text.png)
 
 > Question bank
 
-![Test editor](.github/editor-test.png)
+![Question bank](.github/screenshots/bank.png)
 
 > Test editor
 
-![Question editor](.github/editor-question.png)
+![Test editor](.github/screenshots/editor-test.png)
 
 > Question editor
+
+![Question editor](.github/screenshots/editor-question.png)
 
 ## Deployment
 
