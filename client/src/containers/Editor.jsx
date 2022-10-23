@@ -394,7 +394,11 @@ const Editor = (props) => {
             <Help content="The user input method for the question." />
             {settings.category === "MEMORY" ? (
               <>
-                <label>Grid Size</label>
+                <label>
+                  {settings.questionType === "DYNAMIC-MEMORY"
+                    ? "Number of Pairs"
+                    : "Grid Size"}
+                </label>
                 <input
                   type="number"
                   placeholder="5"
