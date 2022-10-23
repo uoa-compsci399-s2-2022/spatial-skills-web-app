@@ -512,7 +512,7 @@ const Editor = (props) => {
                       pattern at once.
                       "
                     />
-                    <label>Pattern Flash Time</label>
+                    <label>{"Pattern Flash Time (s)"}</label>
                     <input
                       type="number"
                       step="any"
@@ -531,7 +531,7 @@ const Editor = (props) => {
                   </>
                 ) : (
                   <>
-                    <label>Start Delay</label>
+                    <label>{"Start Delay (s)"}</label>
                     <input
                       type="number"
                       step="any"
@@ -547,7 +547,7 @@ const Editor = (props) => {
                       required
                     />
                     <Help content="Time delay between revealing all cards and the start of the game." />
-                    <label>Selection Delay</label>
+                    <label>{"Selection Delay (s)"}</label>
                     <input
                       type="number"
                       step="any"
