@@ -122,23 +122,23 @@ const Test = (props) => {
 
   const finishTest = () => {
     if (!submitted) {
-    // Create studentanswer in DB
-    let testData = {
-      testCode: testCode,
-      studentName: studentName,
-      answers: userAnswers,
-      totalTimeTaken: timeTaken,
-    };
+      // Create studentanswer in DB
+      let testData = {
+        testCode: testCode,
+        studentName: studentName,
+        answers: userAnswers,
+        totalTimeTaken: timeTaken,
+      };
 
-    axiosAPICaller
-      .post("/answer/", testData)
-      .then(setSubmitted(true))
-      .then(
-        (window.location.href =
-          process.env.NODE_ENV === "production"
-            ? `${process.env.REACT_APP_DOMAIN}/finish`
-            : `http://localhost:3000/finish`)
-      );
+      axiosAPICaller
+        .post("/answer/", testData)
+        .then(setSubmitted(true))
+        .then(
+          (window.location.href =
+            process.env.NODE_ENV === "production"
+              ? `${process.env.REACT_APP_DOMAIN}/finish`
+              : `http://localhost:3000/finish`)
+        );
     }
   };
 
@@ -353,7 +353,7 @@ const Test = (props) => {
 
         {allowBackTraversal ? (
           <button
-            className="test__finish-button"
+            className="test__finish-button button button--filled"
             onClick={openFinishModal}
             disabled={false}
             title="Finish Test"
@@ -368,10 +368,13 @@ const Test = (props) => {
               <h2 style={{ padding: "2rem" }}>Do you want to end your test?</h2>
 
               <div className="modal__buttons">
-                <button onClick={closeFinishModal} className="cancel-button">
+                <button
+                  onClick={closeFinishModal}
+                  className="button button--caution"
+                >
                   Cancel
                 </button>
-                <button onClick={finishTest} className="finish-button">
+                <button onClick={finishTest} className="button button--filled">
                   Finish Test
                 </button>
               </div>

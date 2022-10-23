@@ -8,11 +8,11 @@
     justify-content: center;
     font-weight: bold;
     font-family: var(--font-cta);
-    transition: background-color .25s, color .25s, border .25s, transform .25s;
+    transition: background-color .25s, color .25s, outline .25s, transform .25s;
 }
 
 .button--outlined {
-    border: 1px solid var(--accent-color);
+    outline: 1px solid var(--accent-color);
     color: var(--accent-color);
 }
 
@@ -24,10 +24,6 @@
 .button--filled {
     background-color: var(--accent-color);
     color: var(--contrast-color)
-}
-
-.button--filled:hover {
-    transform: translateY(-.5rem);
 }
 
 .button--caution {

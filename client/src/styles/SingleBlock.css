@@ -10,7 +10,7 @@
 .block__correct-match {
     height: 10vh;
     width: 10vh;
-    background-color: #28CFA7;
+    background-color: var(--accent-color);
     border-radius: 25px;
   }
 
