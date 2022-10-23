@@ -185,14 +185,13 @@ const MatchingGame = ({
     setBothMatched(true)
     setdisAbled(false)
 
-    // setTurns(prevTurns => prevTurns + 1)
   }
 
   const displayTimer = () => {
     if (timerState) {
       return (
         <div>
-          <h2 className="pattern-game__timer">{time}</h2>
+          <h2 className="matching-game__timer">{time}</h2>
         </div>
       );
     } else {

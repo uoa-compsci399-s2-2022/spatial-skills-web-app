@@ -45,6 +45,7 @@ function PatternGame({
 
   let totalNumberOfBlocks
   
+  // Corsi block typing test has 9 blocks in total
   if (corsi){
     totalNumberOfBlocks = 9;
   } else {
@@ -53,16 +54,17 @@ function PatternGame({
 
   let levelList
 
+  // setting up a random seed
   let randomNumber = seedrandom(randomSeed);
   let randomSeedArray = [];
   let blocksArray
+
 
   if (corsi){
     levelList = Array.from(
       { length: totalNumberOfBlocks },
       (_, i) => i + 1
     );
-    
     blocksArray = CreateBlockArray(totalNumberOfBlocks);
 
   } else {
@@ -444,7 +446,6 @@ function PatternGame({
       return <div></div>;
     }
   };
-
   // style for dynamic grid size of equal width and height
   const patternGridStyleNoCorsi = () => {
     if (corsi){
@@ -511,7 +512,7 @@ function PatternGame({
           </div>
         </div>
         {displayTimer()}
-        <h2 className="pattern-game__score">Score: 
+        <h2 className="pattern-game__score">level: 
         {level}
         </h2>
       </div>
