@@ -83,14 +83,14 @@
 
 .pattern-game__score {
   top: 10%;
-  left: 65%;
+  left: 62%;
   position: absolute;
 }
 
 .pattern-game__timer {
-  top: 10%;
+  top: 42%;
   left: 50%;
-  position: absolute;
+  position: relative;
 }
 
 .pattern-game__blocks-grid {
@@ -172,10 +172,9 @@
   width: fit-content;
   margin: auto;
   margin-top: 65px;
-  display: flex;
-  height: 100px;
-  justify-items: center;
-  column-gap: 100px;
+  display: grid;
+  height: 150px;
+  grid-template-columns: 1fr 1fr 1fr;
 
 }
 
