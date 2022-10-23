@@ -406,8 +406,8 @@ const Editor = (props) => {
                   required
                 />
                 <Help
-                  content="The number of rows/columns within the game space."
-                  disabled
+                  content="The number of rows/columns within the game space for the pattern game,
+                            or number of pairs of cards in matching game"
                 />
                 <label>Seed</label>
                 <input
