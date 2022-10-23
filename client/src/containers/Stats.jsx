@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { FaEdit, FaShareAlt, FaGamepad } from "react-icons/fa";
 import axiosAPICaller from "../services/api-service.mjs";
 import CsvDownload from "react-json-to-csv";
-import "reactochart/styles.css";
 import Return from "../components/Return";
 
 const iconSize = "1.25em";
