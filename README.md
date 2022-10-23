@@ -24,7 +24,7 @@ We used the following tools during development of the app,
 - [Issues](https://github.com/uoa-compsci399-s2-2022/visuo/issues?q=is%3Aopen+is%3Aissue)
 - [Minutes](https://drive.google.com/drive/folders/1QIsV_Z1b1XvqFnn_NmShdaVvuUFazeZc?usp=sharing)
 
-## Tools and Technologies 
+## Tools and Technologies
 
 - Git `v2.36.1` (Version control)
 - Node `v16.13.0` (JavaScript runtime)
@@ -63,11 +63,35 @@ To run the project.
 
 ```
 npm run dev
-``` 
+```
 
 To run the backend environment you must have the associated `.env` file which contains sensitive information for AWS, Google, JWT and MongoDB. Contact Anna Trofimova (anna.trofimova@auckland.ac.nz) for this file.
 
-## Usage 
+## Screenshots
+
+![Home page](.github/home.png)
+
+> Home Page
+
+![Example test multi-answer question](.github/test-multi.png)
+
+> Example test multi-answer question
+
+![Example test text answer question](.github/test-text.png)
+
+> Example test text answer question
+
+![Question bank](.github/bank.png)
+
+> Question bank
+
+![Test editor](.github/editor-test.png)
+
+> Test editor
+
+![Question editor](.github/editor-question.png)
+
+> Question editor
 
 ## Deployment
 
@@ -85,11 +109,11 @@ https://hydrohomiebeerbro.com (placeholder)
 We would like to thank Burkhard Wuensche for his feedback during the development process.
 
 Tutorials used:
+
 - Obtaining SSL certificate - https://www.linode.com/docs/guides/enabling-https-using-certbot-with-nginx-on-ubuntu/
 - Deployment - https://betterprogramming.pub/deploy-mern-stack-app-on-aws-ec2-with-letsencrypt-ssl-8f463c01502a
 
 ## Team
-
 
 <table>
   <tr>
