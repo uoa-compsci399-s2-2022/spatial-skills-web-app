@@ -253,9 +253,7 @@ const Stats = () => {
             className="button button--outlined"
             title="Share"
             onClick={() => {
-              navigator.clipboard.writeText(
-                `https://www.spatialskills.com?code=${test.code}`
-              );
+              navigator.clipboard.writeText(test.code);
             }}
           >
             Share
