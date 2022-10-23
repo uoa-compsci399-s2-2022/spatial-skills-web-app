@@ -48,7 +48,7 @@
 }
 
 .editor__image {
-    max-width: 100%;
+    max-width: 50%;
     border: 1px solid var(--accent-color);
 }
 
