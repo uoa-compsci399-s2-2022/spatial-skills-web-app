@@ -22,7 +22,8 @@ const gradeAnswer = async (answer) => {
   let value = 0;
 
   if (["DYNAMIC-MEMORY", "DYNAMIC-PATTERN"].includes(q.questionType)) {
-    value = answer.value;
+    answer.value ? value = answer.value : 0;  // Use 0 if unanswered
+    // value = answer.value;
   } else if (
     ["MULTICHOICE-SINGLE", "MULTICHOICE-MULTI"].includes(q.questionType)
   ) {

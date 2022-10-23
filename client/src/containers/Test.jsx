@@ -225,7 +225,7 @@ const Test = (props) => {
               <p>
                 Test Time:{" "}
                 {allowBackTraversal
-                  ? totalTime / 60
+                  ? Math.round(totalTime / 60)
                   : // Sum of individual question time for linear test
                     Math.round(
                       questions

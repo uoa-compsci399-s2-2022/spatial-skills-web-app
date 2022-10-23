@@ -9,6 +9,12 @@ const QuestionNavigation = (props) => {
           className={`question-select__button button ${
             currentQuestion === i + 1 ? "button--filled" : "button--outlined"
           }`}
+          // Show completed questions with different background
+          style={{background: (
+            answers[i].aIds.length !== 0 ||
+            answers[i].value ||
+            answers[i].textAnswer)
+            && !(currentQuestion === i + 1) ? "#cbe3ff" : null}}
           onClick={() => onClick(i + 1)}
           title="Go to question"
           key={i + 1}
