@@ -195,16 +195,14 @@ const Stats = () => {
                 </tbody>
               </table>
               <div className="stats__action-container">
-                {test.published ? null : (
-                  <Link
-                    className="button button--outlined"
-                    title="Edit"
-                    to={`/dashboard/test/${code}/question`}
-                  >
-                    Edit
-                    <FaEdit size={iconSize} />
-                  </Link>
-                )}
+                <Link
+                  className="button button--outlined"
+                  title="Edit"
+                  to={`/dashboard/test/${code}/question`}
+                >
+                  Edit
+                  <FaEdit size={iconSize} />
+                </Link>
               </div>
             </div>
 

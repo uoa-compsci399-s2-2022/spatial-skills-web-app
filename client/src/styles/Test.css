@@ -146,7 +146,7 @@
 
 .test__question-select {
     position: absolute;
-    bottom: 0.5rem;
+    bottom: 1rem;
     width: 100%;
     align-items: center;
     justify-content: center;
