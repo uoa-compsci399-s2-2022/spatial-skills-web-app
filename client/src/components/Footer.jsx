@@ -12,11 +12,7 @@ const Footer = () => {
       className="footer"
       style={{ display: location.pathname === "/" ? "flex" : "none" }}
     >
-      <p>
-        Visuo is developed by Team Marshmallow
-        <br />
-        Legal | Privacy
-      </p>
+      <p>Visuo is developed by Team Marshmallow</p>
     </footer>
   );
 };
