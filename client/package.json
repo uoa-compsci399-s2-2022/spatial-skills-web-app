@@ -16,7 +16,6 @@
     "react-json-to-csv": "^1.0.4",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
-    "reactochart": "^6.1.0",
     "seedrandom": "^3.0.5",
     "web-vitals": "^2.1.4"
   },
