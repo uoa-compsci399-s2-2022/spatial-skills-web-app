@@ -1,5 +1,7 @@
 # Visuo
 
+![Logo](.github/logo.png)
+
 ## Description
 
 Visuospatial comprehension is a significant predictor of achievement in STEM fields. Visuo is a web application for educators to test STEM students visuospatial comprehension. This will assist educators in identifying weaknesses and helping students aspiring for success in STEM.
