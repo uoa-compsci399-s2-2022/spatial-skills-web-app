@@ -69,6 +69,13 @@ npm run dev
 
 To run the backend environment you must have the associated `.env` file which contains sensitive information for AWS, Google, JWT and MongoDB. Contact Anna Trofimova (anna.trofimova@auckland.ac.nz) for this file.
 
+## Usage Example
+To take a spatial skills test, go to [hydrohomiebeerbro.com](https://hydrohomiebeerbro.com).
+
+On the home page, enter a name and a test code.
+
+Some sample test codes: `angkag`, `9n5j97`
+
 ## Screenshots
 
 > Home Page
