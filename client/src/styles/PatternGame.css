@@ -82,14 +82,12 @@
 }
 
 .pattern-game__score {
-  top: 10%;
-  left: 62%;
-  position: absolute;
+  top: 50%;
+  position: relative;
 }
 
 .pattern-game__timer {
-  top: 42%;
-  left: 50%;
+  top: 50%;
   position: relative;
 }
 
@@ -148,10 +146,8 @@
 }
 
 .pattern-game__lives-div__hearts {
-  display: flex;
-  position: absolute;
-  top: 30%;
-  left: 110%;
+  top: 55%;
+  position: relative;
 }
 
 .pattern-game__lives-number {
@@ -162,10 +158,6 @@
 .pattern-game__lives-div {
   display: flex;
   column-gap: 30px;
-  width: fit-content;
-  position: absolute;
-  top: 10%;
-  left: 30%;
 }
 
 .pattern-game__information-div-show {
@@ -175,7 +167,6 @@
   display: grid;
   height: 150px;
   grid-template-columns: 1fr 1fr 1fr;
-
 }
 
 .pattern-game__information-div-hide {
