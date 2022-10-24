@@ -30,6 +30,12 @@ const MatchingGame = ({
   firstVisit
   }) => {
 
+  if (pairs > 8) {
+    pairs = 8
+  } else if (pairs < 1) {
+    pairs = 1
+  }
+
   const [cards, setCards] = useState([])
   // const [turns, setTurns] = useState(0) // add later if turns need to be recorded
   const [choiceOne, setChoiceOne] = useState(null)
@@ -231,7 +237,7 @@ const MatchingGame = ({
             </div>         
         </div>
           {displayTimer()}
-          <h2 className='matching-game__score'>Score: {matchedPair.current}</h2>
+          <h2 className='matching-game__score'>Score: &nbsp;{matchedPair.current}</h2>
       </div>
 
       {gameOver ? 

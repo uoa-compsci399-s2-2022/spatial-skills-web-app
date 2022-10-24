@@ -119,8 +119,6 @@
   display: grid;
   height: 150px;
   grid-template-columns: 1fr 1fr 1fr;
-
-  
 }
 
 .matching-game__information-div-hide {
