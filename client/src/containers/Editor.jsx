@@ -671,7 +671,6 @@ const Editor = (props) => {
         />
         <Help
           content="The time limit for the question/test. For memory games, setting the time limit to 0 will remove the time limit from the question."
-          disabled
         />
       </div>
       <div className="divider" />
