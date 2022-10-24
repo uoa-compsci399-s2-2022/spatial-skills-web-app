@@ -673,7 +673,9 @@ const Editor = (props) => {
           }
           required
         />
-        <Help content="The time limit for the question/test." disabled />
+        <Help
+          content="The time limit for the question/test. For memory games, setting the time limit to 0 will remove the time limit from the question."
+        />
       </div>
       <div className="divider" />
       <div className="editor__action-container">

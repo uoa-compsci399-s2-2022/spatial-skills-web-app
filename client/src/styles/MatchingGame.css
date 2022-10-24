@@ -119,8 +119,6 @@
   display: grid;
   height: 150px;
   grid-template-columns: 1fr 1fr 1fr;
-
-  
 }
 
 .matching-game__information-div-hide {
@@ -169,7 +167,7 @@
   height: 200px;
   flex-direction: column;
   z-index: 1;
-  
+  border: 2px solid var(--accent-color);
 }
 
 .game-over-text {

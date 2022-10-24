@@ -513,7 +513,7 @@ function PatternGame({
         </div>
         {displayTimer()}
         <h2 className="pattern-game__score">level: 
-        {level}
+        &nbsp;{level}
         </h2>
       </div>
       {gameOver ? (
