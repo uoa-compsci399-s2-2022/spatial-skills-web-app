@@ -162,8 +162,7 @@
 
 .pattern-game__information-div-show {
   width: fit-content;
-  /* margin: auto; */
-  margin-top: 65px;
+  margin: 65px auto;
   display: grid;
   height: 10vh;
   grid-template-columns: 1fr 1fr 1fr;
