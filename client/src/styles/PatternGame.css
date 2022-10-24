@@ -170,10 +170,10 @@
 
 .pattern-game__information-div-show {
   width: fit-content;
-  margin: auto;
+  /* margin: auto; */
   margin-top: 65px;
   display: grid;
-  height: 150px;
+  height: 10vh;
   grid-template-columns: 1fr 1fr 1fr;
 
 }
@@ -226,7 +226,7 @@
   height: 200px;
   flex-direction: column;
   z-index: 1;
-  
+  border: 2px solid var(--accent-color);
 }
 
 .game-over-text {

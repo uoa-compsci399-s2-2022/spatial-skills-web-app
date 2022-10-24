@@ -169,7 +169,7 @@
   height: 200px;
   flex-direction: column;
   z-index: 1;
-  
+  border: 2px solid var(--accent-color);
 }
 
 .game-over-text {
